@@ -7,6 +7,8 @@
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "ios:iphone17": "xcrun simctl boot 6DCB7D91-F046-4CAA-8FC8-95B162E6C3BE || true && open -a Simulator || true && npx expo run:ios --udid 6DCB7D91-F046-4CAA-8FC8-95B162E6C3BE",
+    "run-ios:iphone17": "xcrun simctl boot 6DCB7D91-F046-4CAA-8FC8-95B162E6C3BE || true && open -a Simulator || true && npx react-native run-ios --udid 6DCB7D91-F046-4CAA-8FC8-95B162E6C3BE",
     "web": "expo start --web",
     "lint": "expo lint"
   },

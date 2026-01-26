@@ -17,7 +17,7 @@ export default function WelcomeScreen() {
           </View>
           <View style={styles.titleBlock}>
             <Text style={styles.title}>Sewa Eats</Text>
-            <Text style={styles.tagline}>FOOD • COMMUNITY • SERVICE</Text>
+            <Text style={styles.tagline}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
           </View>
         </View>
 

@@ -71,7 +71,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
 
           <Animated.View style={[styles.titleBlock, textStyle, !isWide && styles.titleBlockStacked]}>
             <Text style={styles.title}>Sewa Eats</Text>
-            <Text style={styles.tagline}>FOOD • COMMUNITY • SERVICE</Text>
+            <Text style={styles.tagline}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
           </Animated.View>
         </View>
 

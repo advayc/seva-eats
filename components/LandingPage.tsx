@@ -32,7 +32,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-destructive text-sm md:text-base tracking-widest mt-2 mb-8 text-center"
         >
-          FOOD • COMMUNITY • SERVICE
+          {"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}
         </motion.p>
 
         {/* Logo with background */}
