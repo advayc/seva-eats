@@ -1,11 +1,12 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useCart, type MenuItem } from '@/context';
 import { restaurants, storeSections } from '@/constants/mock-data';
 import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
+import { useCart, type MenuItem } from '@/context';
 
 function parsePrice(priceStr: string): number {
   // Convert "$0.27" to 27 cents
@@ -68,12 +69,12 @@ export default function StoreScreen() {
 
         <View style={styles.searchBar}>
           <MaterialIcons name="search" size={18} color={Colors.light.mutedText} />
-          <Text style={styles.searchText}>Search stores and products...</Text>
+          <Text style={styles.searchText}>Search meal boxes and seva items...</Text>
         </View>
 
         <View style={styles.deliveryRow}>
           <MaterialIcons name="schedule" size={18} color={Colors.light.text} />
-          <Text style={styles.deliveryText}>In 60 minutes</Text>
+          <Text style={styles.deliveryText}>Estimated 60 minutes</Text>
         </View>
 
         <View style={styles.segmentRow}>
@@ -94,7 +95,7 @@ export default function StoreScreen() {
             style={styles.promoImage}
           />
           <View style={styles.promoOverlay}>
-            <Text style={styles.promoText}>$0 Delivery Fee with selected products</Text>
+            <Text style={styles.promoText}>Community delivery powered by seva</Text>
           </View>
         </View>
 
@@ -118,8 +119,8 @@ export default function StoreScreen() {
                       </Text>
                     </Pressable>
                     <Text style={styles.itemName}>{item.name}</Text>
-                    <Text style={styles.itemPrice}>{item.price}</Text>
                     <Text style={styles.itemUnit}>{item.unit}</Text>
+                    <Text style={styles.itemSeva}>Seva-supported</Text>
                   </View>
                 );
               })}
@@ -345,8 +346,14 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   itemUnit: {
-    fontSize: 11,
+    fontSize: 10,
     color: Colors.light.mutedText,
+    marginBottom: 4,
+  },
+  itemSeva: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.light.accent,
   },
   cartBar: {
     position: 'absolute',

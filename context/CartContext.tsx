@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 import type { CartItem, MenuItem } from './types';
 
@@ -18,7 +18,7 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | null>(null);
 
-const DELIVERY_FEE = 299; // $2.99 in cents
+const DELIVERY_FEE = 0;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);

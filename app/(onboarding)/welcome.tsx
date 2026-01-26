@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors, Radii, Spacing } from '@/constants/theme';
 
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     color: '#F97316',
   },
   primaryButton: {
-    backgroundColor: Colors.light.text,
+    backgroundColor: Colors.light.accent,
     borderRadius: Radii.pill,
     paddingVertical: 14,
     alignItems: 'center',

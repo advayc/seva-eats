@@ -5,16 +5,16 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#111827';
+const tintColorLight = '#F97316';
 const tintColorDark = '#FFFFFF';
 
 // Sewa Eats brand colors
 export const SewaColors = {
-  primary: '#8FD9B6', // Mint green from logo
-  primaryDark: '#6BC498',
-  background: '#1A1F25', // Dark background from splash
-  text: '#FFFFFF',
-  textSecondary: '#8FD9B6',
+  primary: '#F97316',
+  primaryDark: '#EA580C',
+  background: '#FFFFFF',
+  text: '#111827',
+  textSecondary: '#F97316',
 };
 
 export const Colors = {
@@ -29,26 +29,26 @@ export const Colors = {
     surfaceElevated: '#FFFFFF',
     border: '#E5E7EB',
     mutedText: '#6B7280',
-    success: '#16A34A',
+    success: '#F97316',
     warning: '#F59E0B',
-    accent: '#111827',
-    chip: '#111827',
+    accent: '#F97316',
+    chip: '#F97316',
   },
   dark: {
     text: '#F9FAFB',
     background: '#1A1F25',
-    tint: '#8FD9B6',
+    tint: '#F97316',
     icon: '#9CA3AF',
     tabIconDefault: '#9CA3AF',
-    tabIconSelected: '#8FD9B6',
+    tabIconSelected: '#F97316',
     surface: '#242A32',
     surfaceElevated: '#2D343D',
     border: '#374151',
     mutedText: '#9CA3AF',
-    success: '#8FD9B6',
+    success: '#F97316',
     warning: '#FBBF24',
-    accent: '#8FD9B6',
-    chip: '#8FD9B6',
+    accent: '#F97316',
+    chip: '#F97316',
   },
 };
 

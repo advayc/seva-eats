@@ -1,18 +1,14 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 
-import { useOrders, ORDER_STATUS_LABELS, ORDER_STATUS_ORDER, type OrderStatus } from '@/context';
 import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
+import { ORDER_STATUS_LABELS, ORDER_STATUS_ORDER, useOrders } from '@/context';
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-}
-
-function formatPrice(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
 }
 
 export default function OrderTrackingScreen() {
@@ -20,6 +16,7 @@ export default function OrderTrackingScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getOrder, orders } = useOrders();
   const [order, setOrder] = useState(getOrder(id ?? ''));
+  const [isMapExpanded, setIsMapExpanded] = useState(false);
 
   // Re-fetch order when orders change (for status updates)
   useEffect(() => {
@@ -35,7 +32,7 @@ export default function OrderTrackingScreen() {
           <Pressable onPress={() => router.back()} style={styles.iconButton}>
             <MaterialIcons name="arrow-back" size={20} color={Colors.light.text} />
           </Pressable>
-          <Text style={styles.headerTitle}>Order Not Found</Text>
+          <Text style={styles.headerTitle}>Request Not Found</Text>
           <View style={styles.iconButtonPlaceholder} />
         </View>
       </SafeAreaView>
@@ -45,10 +42,7 @@ export default function OrderTrackingScreen() {
   const currentStatusIndex = ORDER_STATUS_ORDER.indexOf(order.status);
 
   // Calculate map region to show both store and delivery
-  const storeLocation = {
-    latitude: 37.7749,
-    longitude: -122.4194,
-  };
+  const storeLocation = order.storeLocation;
   const deliveryLocation = order.deliveryLocation;
   const driverLocation = order.driverLocation;
 
@@ -69,7 +63,7 @@ export default function OrderTrackingScreen() {
         <Pressable onPress={() => router.replace('/(tabs)')} style={styles.iconButton}>
           <MaterialIcons name="arrow-back" size={20} color={Colors.light.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Order Tracking</Text>
+        <Text style={styles.headerTitle}>Seva Tracking</Text>
         <View style={styles.iconButtonPlaceholder} />
       </View>
 
@@ -121,6 +115,11 @@ export default function OrderTrackingScreen() {
               lineDashPattern={[10, 5]}
             />
           </MapView>
+          
+          {/* Expand Map Button */}
+          <Pressable style={styles.expandButton} onPress={() => setIsMapExpanded(true)}>
+            <MaterialIcons name="fullscreen" size={24} color={Colors.light.text} />
+          </Pressable>
         </View>
 
         {/* Status Card */}
@@ -180,24 +179,19 @@ export default function OrderTrackingScreen() {
               <View key={item.menuItem.id} style={styles.orderItem}>
                 <Text style={styles.orderItemQty}>{item.quantity}x</Text>
                 <Text style={styles.orderItemName}>{item.menuItem.name}</Text>
-                <Text style={styles.orderItemPrice}>{item.menuItem.priceDisplay}</Text>
+                <Text style={styles.orderItemPrice}>Seva-supported</Text>
               </View>
             ))}
           </View>
 
-          <View style={styles.divider} />
+        </View>
 
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>{formatPrice(order.subtotal)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Delivery Fee</Text>
-            <Text style={styles.summaryValue}>{formatPrice(order.deliveryFee)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>{formatPrice(order.total)}</Text>
+        {/* Pickup Location */}
+        <View style={styles.addressCard}>
+          <MaterialIcons name="storefront" size={20} color={Colors.light.text} />
+          <View style={styles.addressDetails}>
+            <Text style={styles.addressTitle}>Pickup Location</Text>
+            <Text style={styles.addressText}>{order.storeLocation.address}</Text>
           </View>
         </View>
 
@@ -205,11 +199,67 @@ export default function OrderTrackingScreen() {
         <View style={styles.addressCard}>
           <MaterialIcons name="location-on" size={20} color={Colors.light.text} />
           <View style={styles.addressDetails}>
-            <Text style={styles.addressTitle}>Delivery Address</Text>
+            <Text style={styles.addressTitle}>Drop-off Address</Text>
             <Text style={styles.addressText}>{order.deliveryLocation.address}</Text>
           </View>
         </View>
       </ScrollView>
+
+      {/* Fullscreen Map Modal */}
+      <Modal visible={isMapExpanded} animationType="slide" statusBarTranslucent>
+        <SafeAreaView style={styles.fullscreenMapContainer}>
+          <MapView
+            style={styles.fullscreenMap}
+            provider={PROVIDER_DEFAULT}
+            initialRegion={{
+              latitude: midLat,
+              longitude: midLng,
+              latitudeDelta: Math.max(latDelta, 0.02),
+              longitudeDelta: Math.max(lngDelta, 0.02),
+            }}>
+            {/* Store Marker */}
+            <Marker coordinate={storeLocation} title={order.storeName}>
+              <View style={styles.markerStore}>
+                <MaterialIcons name="storefront" size={16} color={Colors.light.background} />
+              </View>
+            </Marker>
+
+            {/* Delivery Location Marker */}
+            <Marker
+              coordinate={{
+                latitude: deliveryLocation.latitude,
+                longitude: deliveryLocation.longitude,
+              }}
+              title="Delivery Address">
+              <View style={styles.markerDelivery}>
+                <MaterialIcons name="home" size={16} color={Colors.light.background} />
+              </View>
+            </Marker>
+
+            {/* Driver Marker (if on the way) */}
+            {driverLocation && order.status === 'on_the_way' && (
+              <Marker coordinate={driverLocation} title="Driver">
+                <View style={styles.markerDriver}>
+                  <MaterialIcons name="delivery-dining" size={16} color={Colors.light.background} />
+                </View>
+              </Marker>
+            )}
+
+            {/* Route Line */}
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeColor={Colors.light.text}
+              strokeWidth={3}
+              lineDashPattern={[10, 5]}
+            />
+          </MapView>
+
+          {/* Close Button */}
+          <Pressable style={styles.closeButton} onPress={() => setIsMapExpanded(false)}>
+            <MaterialIcons name="close" size={24} color={Colors.light.text} />
+          </Pressable>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -255,34 +305,39 @@ const styles = StyleSheet.create({
     borderRadius: Radii.lg,
     overflow: 'hidden',
     marginBottom: Spacing.lg,
+    position: 'relative',
     ...Shadows.card,
   },
-  map: {
+  expandButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: Colors.light.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Shadows.card,
+  },
+  fullscreenMapContainer: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  },
+  fullscreenMap: {
     flex: 1,
   },
-  markerStore: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.light.text,
+  closeButton: {
+    position: 'absolute',
+    top: 60,
+    right: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.light.background,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  markerDelivery: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.light.success,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  markerDriver: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#FF6B00',
-    alignItems: 'center',
-    justifyContent: 'center',
+    ...Shadows.card,
   },
   statusCard: {
     backgroundColor: Colors.light.surfaceElevated,
@@ -324,7 +379,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.success,
   },
   progressDotCurrent: {
-    backgroundColor: Colors.light.text,
+    backgroundColor: Colors.light.accent,
   },
   progressLine: {
     width: 40,
@@ -386,30 +441,8 @@ const styles = StyleSheet.create({
   },
   orderItemPrice: {
     fontSize: 14,
-    color: Colors.light.mutedText,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Spacing.xs,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    color: Colors.light.mutedText,
-  },
-  summaryValue: {
-    fontSize: 14,
-    color: Colors.light.text,
-  },
-  totalLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.light.text,
-  },
-  totalValue: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.light.text,
+    color: Colors.light.accent,
+    fontWeight: '600',
   },
   addressCard: {
     flexDirection: 'row',
@@ -418,6 +451,7 @@ const styles = StyleSheet.create({
     borderRadius: Radii.lg,
     padding: Spacing.lg,
     gap: Spacing.md,
+    marginBottom: Spacing.md,
   },
   addressDetails: {
     flex: 1,
@@ -431,5 +465,23 @@ const styles = StyleSheet.create({
   addressText: {
     fontSize: 13,
     color: Colors.light.mutedText,
+  },
+  map: {
+    flex: 1,
+  },
+  markerStore: {
+    backgroundColor: Colors.light.accent,
+    padding: 8,
+    borderRadius: 20,
+  },
+  markerDelivery: {
+    backgroundColor: Colors.light.success,
+    padding: 8,
+    borderRadius: 20,
+  },
+  markerDriver: {
+    backgroundColor: Colors.light.accent,
+    padding: 8,
+    borderRadius: 20,
   },
 });

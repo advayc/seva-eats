@@ -30,6 +30,12 @@ export type DeliveryLocation = {
   address: string;
 };
 
+export type StoreLocation = {
+  latitude: number;
+  longitude: number;
+  address: string;
+};
+
 export type DriverLocation = {
   latitude: number;
   longitude: number;
@@ -39,6 +45,7 @@ export type Order = {
   id: string;
   storeId: string;
   storeName: string;
+  storeLocation: StoreLocation;
   items: CartItem[];
   status: OrderStatus;
   subtotal: number; // cents
@@ -52,9 +59,9 @@ export type Order = {
 };
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  placed: 'Order Placed',
-  confirmed: 'Order Confirmed',
-  preparing: 'Preparing',
+  placed: 'Seva Requested',
+  confirmed: 'Request Confirmed',
+  preparing: 'Meal Box Prepared',
   ready_for_pickup: 'Ready for Pickup',
   picked_up: 'Picked Up',
   on_the_way: 'On the Way',

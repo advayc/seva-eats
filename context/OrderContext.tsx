@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
-import type { CartItem, Order, OrderStatus, ORDER_STATUS_ORDER } from './types';
+import type { CartItem, DeliveryLocation, Order, OrderStatus, StoreLocation } from './types';
 
 type OrderContextType = {
   orders: Order[];
@@ -10,26 +10,15 @@ type OrderContextType = {
     storeId: string,
     storeName: string,
     subtotal: number,
-    deliveryFee: number
+    deliveryFee: number,
+    deliveryLocation: DeliveryLocation,
+    storeLocation: StoreLocation
   ) => Order;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   getOrder: (orderId: string) => Order | undefined;
 };
 
 const OrderContext = createContext<OrderContextType | null>(null);
-
-// Mock delivery location (user's address)
-const MOCK_DELIVERY_LOCATION = {
-  latitude: 37.7849,
-  longitude: -122.4094,
-  address: '123 Main St, San Francisco, CA',
-};
-
-// Mock store location
-const MOCK_STORE_LOCATION = {
-  latitude: 37.7749,
-  longitude: -122.4194,
-};
 
 function generateOrderId() {
   return `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -44,7 +33,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       storeId: string,
       storeName: string,
       subtotal: number,
-      deliveryFee: number
+      deliveryFee: number,
+      deliveryLocation: DeliveryLocation,
+      storeLocation: StoreLocation
     ): Order => {
       const now = new Date();
       const estimatedDelivery = new Date(now.getTime() + 45 * 60 * 1000); // 45 mins
@@ -53,6 +44,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         id: generateOrderId(),
         storeId,
         storeName,
+        storeLocation,
         items: [...items],
         status: 'placed',
         subtotal,
@@ -60,10 +52,10 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         total: subtotal + deliveryFee,
         placedAt: now,
         estimatedDelivery,
-        deliveryLocation: MOCK_DELIVERY_LOCATION,
+        deliveryLocation,
         driverLocation: {
-          latitude: MOCK_STORE_LOCATION.latitude,
-          longitude: MOCK_STORE_LOCATION.longitude,
+          latitude: storeLocation.latitude,
+          longitude: storeLocation.longitude,
         },
         statusHistory: [{ status: 'placed', timestamp: now }],
       };
@@ -104,13 +96,13 @@ export function OrderProvider({ children }: { children: ReactNode }) {
               driverLocation:
                 status === 'on_the_way'
                   ? {
-                      latitude: (MOCK_STORE_LOCATION.latitude + MOCK_DELIVERY_LOCATION.latitude) / 2,
-                      longitude: (MOCK_STORE_LOCATION.longitude + MOCK_DELIVERY_LOCATION.longitude) / 2,
+                      latitude: (order.storeLocation.latitude + order.deliveryLocation.latitude) / 2,
+                      longitude: (order.storeLocation.longitude + order.deliveryLocation.longitude) / 2,
                     }
                   : status === 'delivered'
                   ? {
-                      latitude: MOCK_DELIVERY_LOCATION.latitude,
-                      longitude: MOCK_DELIVERY_LOCATION.longitude,
+                      latitude: order.deliveryLocation.latitude,
+                      longitude: order.deliveryLocation.longitude,
                     }
                   : order.driverLocation,
             };

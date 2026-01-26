@@ -1,26 +1,46 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useCart, useOrders } from '@/context';
+import { restaurants } from '@/constants/mock-data';
 import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
-
-function formatPrice(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
+import { useCart, useLocation, useOrders } from '@/context';
 
 export default function CartScreen() {
   const router = useRouter();
-  const { items, storeName, subtotal, deliveryFee, total, updateQuantity, removeItem, clearCart } =
+  const { items, storeName, subtotal, deliveryFee, updateQuantity, removeItem, clearCart } =
     useCart();
   const { placeOrder } = useOrders();
+  const { userLocation, refreshLocation, isLoading } = useLocation();
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (items.length === 0) return;
 
+    if (!userLocation) {
+      await refreshLocation();
+    }
+
     const storeId = items[0].menuItem.storeId;
-    const order = placeOrder(items, storeId, storeName ?? 'Store', subtotal, deliveryFee);
+    const store = restaurants.find((item) => item.id === storeId) ?? restaurants[0];
+    const order = placeOrder(
+      items,
+      storeId,
+      storeName ?? store?.name ?? 'Seva Kitchen',
+      subtotal,
+      deliveryFee,
+      userLocation ?? {
+        latitude: store?.location.latitude ?? 37.7749,
+        longitude: store?.location.longitude ?? -122.4194,
+        address: 'Current location',
+      },
+      {
+        latitude: store?.location.latitude ?? 37.7749,
+        longitude: store?.location.longitude ?? -122.4194,
+        address: store?.location.address ?? 'Gurdwara Seva Hub',
+      }
+    );
     clearCart();
     router.replace(`/order/${order.id}` as const);
   };
@@ -37,10 +57,10 @@ export default function CartScreen() {
         </View>
         <View style={styles.emptyState}>
           <MaterialIcons name="shopping-cart" size={64} color={Colors.light.border} />
-          <Text style={styles.emptyTitle}>Your cart is empty</Text>
-          <Text style={styles.emptyText}>Add items from a store to get started</Text>
+          <Text style={styles.emptyTitle}>No meal boxes yet</Text>
+          <Text style={styles.emptyText}>Choose a seva kitchen to begin</Text>
           <Pressable style={styles.browseButton} onPress={() => router.back()}>
-            <Text style={styles.browseButtonText}>Browse Stores</Text>
+            <Text style={styles.browseButtonText}>Explore Seva Kitchens</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -72,7 +92,7 @@ export default function CartScreen() {
               <View style={styles.itemDetails}>
                 <Text style={styles.itemName}>{cartItem.menuItem.name}</Text>
                 <Text style={styles.itemUnit}>{cartItem.menuItem.unit}</Text>
-                <Text style={styles.itemPrice}>{cartItem.menuItem.priceDisplay}</Text>
+                <Text style={styles.itemSeva}>Seva-supported</Text>
               </View>
               <View style={styles.quantityControls}>
                 <Pressable
@@ -102,37 +122,39 @@ export default function CartScreen() {
           <View style={styles.addressCard}>
             <MaterialIcons name="location-on" size={20} color={Colors.light.text} />
             <View style={styles.addressDetails}>
-              <Text style={styles.addressText}>123 Main St</Text>
-              <Text style={styles.addressSubtext}>San Francisco, CA 94102</Text>
+              <Text style={styles.addressText}>
+                {userLocation?.address ?? 'Enable location to set your drop-off'}
+              </Text>
+              <Text style={styles.addressSubtext}>Gurdwara to community partner drop-off</Text>
             </View>
-            <MaterialIcons name="chevron-right" size={20} color={Colors.light.mutedText} />
+            <Pressable onPress={refreshLocation} style={styles.locationButton}>
+              <Text style={styles.locationButtonText}>
+                {isLoading ? 'Updating...' : 'Update'}
+              </Text>
+            </Pressable>
           </View>
         </View>
 
         <View style={styles.divider} />
 
         <View style={styles.summarySection}>
-          <Text style={styles.sectionTitle}>Order Summary</Text>
+          <Text style={styles.sectionTitle}>Seva Summary</Text>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>{formatPrice(subtotal)}</Text>
+            <Text style={styles.summaryLabel}>Meal boxes</Text>
+            <Text style={styles.summaryValue}>
+              {items.reduce((sum, item) => sum + item.quantity, 0)}
+            </Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Delivery Fee</Text>
-            <Text style={styles.summaryValue}>{formatPrice(deliveryFee)}</Text>
-          </View>
-          <View style={styles.dividerSmall} />
-          <View style={styles.summaryRow}>
-            <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>{formatPrice(total)}</Text>
+            <Text style={styles.summaryLabel}>Delivery</Text>
+            <Text style={styles.summaryValue}>Community drop-off</Text>
           </View>
         </View>
       </ScrollView>
 
       <View style={styles.checkoutBar}>
         <Pressable style={styles.checkoutButton} onPress={handlePlaceOrder}>
-          <Text style={styles.checkoutButtonText}>Place Order</Text>
-          <Text style={styles.checkoutButtonPrice}>{formatPrice(total)}</Text>
+          <Text style={styles.checkoutButtonText}>Send Seva Request</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -226,10 +248,10 @@ const styles = StyleSheet.create({
     color: Colors.light.mutedText,
     marginBottom: 4,
   },
-  itemPrice: {
-    fontSize: 14,
+  itemSeva: {
+    fontSize: 12,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: Colors.light.accent,
   },
   quantityControls: {
     flexDirection: 'row',
@@ -255,11 +277,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: Colors.light.border,
     marginVertical: Spacing.lg,
-  },
-  dividerSmall: {
-    height: 1,
-    backgroundColor: Colors.light.border,
-    marginVertical: Spacing.md,
   },
   deliverySection: {
     gap: Spacing.md,
@@ -289,6 +306,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.light.mutedText,
   },
+  locationButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: Radii.pill,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    backgroundColor: Colors.light.surfaceElevated,
+  },
+  locationButtonText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.light.text,
+  },
   summarySection: {
     gap: Spacing.sm,
   },
@@ -305,16 +335,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.light.text,
   },
-  totalLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.light.text,
-  },
-  totalValue: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.light.text,
-  },
   checkoutBar: {
     position: 'absolute',
     bottom: 0,
@@ -328,8 +348,7 @@ const styles = StyleSheet.create({
   checkoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.light.text,
+    backgroundColor: Colors.light.accent,
     borderRadius: Radii.md,
     padding: Spacing.lg,
   },
@@ -337,11 +356,6 @@ const styles = StyleSheet.create({
     color: Colors.light.background,
     fontSize: 16,
     fontWeight: '600',
-  },
-  checkoutButtonPrice: {
-    color: Colors.light.background,
-    fontSize: 16,
-    fontWeight: '700',
   },
   emptyState: {
     flex: 1,
@@ -363,7 +377,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   browseButton: {
-    backgroundColor: Colors.light.text,
+    backgroundColor: Colors.light.accent,
     borderRadius: Radii.md,
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,

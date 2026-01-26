@@ -10,13 +10,20 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.advay.sewaeats"
+      "bundleIdentifier": "com.advay.sewaeats",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby sewa drop-off points and delivery updates."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#1A1F25",
         "foregroundImage": "./assets/images/logo.png"
       },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.advay.sewaeats"
@@ -28,17 +35,28 @@
     "plugins": [
       "expo-router",
       [
+        "expo-widgets",
+        {
+          "groupIdentifier": "group.com.advay.sewaeats",
+          "enablePushNotifications": false,
+          "widgets": []
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#1A1F25",
+          "backgroundColor": "#FFFFFF",
           "dark": {
             "backgroundColor": "#1A1F25"
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-image",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
