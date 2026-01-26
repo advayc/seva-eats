@@ -1,0 +1,72 @@
+// Core types for ordering system
+
+export type MenuItem = {
+  id: string;
+  name: string;
+  price: number; // in cents for precision
+  priceDisplay: string;
+  unit: string;
+  image: string;
+  storeId: string;
+};
+
+export type CartItem = {
+  menuItem: MenuItem;
+  quantity: number;
+};
+
+export type OrderStatus =
+  | 'placed'
+  | 'confirmed'
+  | 'preparing'
+  | 'ready_for_pickup'
+  | 'picked_up'
+  | 'on_the_way'
+  | 'delivered';
+
+export type DeliveryLocation = {
+  latitude: number;
+  longitude: number;
+  address: string;
+};
+
+export type DriverLocation = {
+  latitude: number;
+  longitude: number;
+};
+
+export type Order = {
+  id: string;
+  storeId: string;
+  storeName: string;
+  items: CartItem[];
+  status: OrderStatus;
+  subtotal: number; // cents
+  deliveryFee: number; // cents
+  total: number; // cents
+  placedAt: Date;
+  estimatedDelivery: Date;
+  deliveryLocation: DeliveryLocation;
+  driverLocation?: DriverLocation;
+  statusHistory: { status: OrderStatus; timestamp: Date }[];
+};
+
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  placed: 'Order Placed',
+  confirmed: 'Order Confirmed',
+  preparing: 'Preparing',
+  ready_for_pickup: 'Ready for Pickup',
+  picked_up: 'Picked Up',
+  on_the_way: 'On the Way',
+  delivered: 'Delivered',
+};
+
+export const ORDER_STATUS_ORDER: OrderStatus[] = [
+  'placed',
+  'confirmed',
+  'preparing',
+  'ready_for_pickup',
+  'picked_up',
+  'on_the_way',
+  'delivered',
+];
