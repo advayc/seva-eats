@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.advay.sewaeats",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby sewa drop-off points and delivery updates."
+        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby sewa drop-off points and delivery updates.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -38,6 +39,7 @@
         "expo-widgets",
         {
           "groupIdentifier": "group.com.advay.sewaeats",
+          "bundleIdentifier": "com.advay.sewaeats.widgets",
           "enablePushNotifications": false,
           "widgets": []
         }
@@ -61,6 +63,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bbd9039d-7e45-46cb-b75d-bd2f444fb799"
+      }
     }
   }
 }
