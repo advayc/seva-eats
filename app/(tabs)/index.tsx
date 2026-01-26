@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
     Pressable,
@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { categories, restaurants } from '@/constants/mock-data';
+import { categories, restaurants, storeSections } from '@/constants/mock-data';
+import { useOrders } from '@/context';
 import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
 
 type DeliveryMode = 'Delivery' | 'Pickup' | 'Dine-in';
@@ -20,6 +21,43 @@ type DeliveryMode = 'Delivery' | 'Pickup' | 'Dine-in';
 export default function HomeScreen() {
   const [mode, setMode] = useState<DeliveryMode>('Delivery');
   const visibleCategories = useMemo(() => categories.slice(0, 8), []);
+  const router = useRouter();
+  const { placeOrder, activeOrder } = useOrders();
+
+  const handleDemoOrder = () => {
+    const store = restaurants[0];
+    const item = storeSections[0]?.items?.[0];
+    if (!store || !item) return;
+
+    const priceCents = Math.round(parseFloat(item.price.replace('$', '')) * 100);
+    const order = placeOrder(
+      [
+        {
+          menuItem: {
+            id: item.id,
+            name: item.name,
+            price: priceCents,
+            priceDisplay: item.price,
+            unit: item.unit,
+            image: item.image,
+            storeId: store.id,
+          },
+          quantity: 1,
+        },
+      ],
+      store.id,
+      store.name,
+      priceCents,
+      299
+    );
+
+    router.push(`/order/${order.id}` as const);
+  };
+
+  const handleViewActiveOrder = () => {
+    if (!activeOrder) return;
+    router.push(`/order/${activeOrder.id}` as const);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,12 +86,22 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.orderCard}>
-          <Text style={styles.orderTitle}>Preparing your order...</Text>
-          <Text style={styles.orderSubtitle}>Arriving at 13:40</Text>
+          <Text style={styles.orderTitle}>
+            {activeOrder ? 'Order in progress' : 'Try a demo order'}
+          </Text>
+          <Text style={styles.orderSubtitle}>
+            {activeOrder ? 'Track your delivery in real time' : 'See the map tracking experience'}
+          </Text>
           <View style={styles.progressTrack}>
-            <View style={styles.progressFill} />
+            <View style={[styles.progressFill, activeOrder ? styles.progressFillActive : null]} />
           </View>
-          <Text style={styles.orderMeta}>Latest arrival by 14:05</Text>
+          <Pressable
+            style={styles.orderButton}
+            onPress={activeOrder ? handleViewActiveOrder : handleDemoOrder}>
+            <Text style={styles.orderButtonText}>
+              {activeOrder ? 'View order' : 'Start demo order'}
+            </Text>
+          </Pressable>
         </View>
 
         <View style={styles.sectionHeader}>
@@ -196,12 +244,27 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: 6,
-    width: '35%',
+    width: '20%',
+    backgroundColor: Colors.light.border,
+  },
+  progressFillActive: {
+    width: '45%',
     backgroundColor: Colors.light.success,
   },
-  orderMeta: {
+  orderButton: {
+    alignSelf: 'flex-start',
+    marginTop: Spacing.sm,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: Radii.pill,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    backgroundColor: Colors.light.surfaceElevated,
+  },
+  orderButtonText: {
     fontSize: 12,
-    color: Colors.light.mutedText,
+    fontWeight: '600',
+    color: Colors.light.text,
   },
   sectionHeader: {
     flexDirection: 'row',

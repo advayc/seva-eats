@@ -8,7 +8,7 @@ export default function SplashRoute() {
 
   return (
     <View style={{ flex: 1 }}>
-      <SplashScreen onFinish={() => router.replace('/intro')} />
+      <SplashScreen onFinish={() => router.replace('/welcome')} />
     </View>
   );
 }

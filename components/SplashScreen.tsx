@@ -1,9 +1,8 @@
-import { Colors } from '@/constants/theme';
+import { Colors, Radii, Spacing } from '@/constants/theme';
 import { Image } from 'expo-image';
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSequence,
@@ -15,42 +14,68 @@ interface SplashScreenProps {
 }
 
 export function SplashScreen({ onFinish }: SplashScreenProps) {
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.8);
+  const { width } = useWindowDimensions();
+  const isWide = width >= 600;
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.92);
+  const textOpacity = useSharedValue(0);
+  const textTranslate = useSharedValue(8);
+  const buttonOpacity = useSharedValue(0);
+  const buttonTranslate = useSharedValue(12);
 
   useEffect(() => {
-    // Fade in and scale animation
-    opacity.value = withTiming(1, { duration: 600 });
-    scale.value = withSequence(
-      withTiming(1, { duration: 600 }),
-      withTiming(1.05, { duration: 200 }),
-      withTiming(1, { duration: 200 })
+    logoOpacity.value = withTiming(1, { duration: 550 });
+    logoScale.value = withSequence(
+      withTiming(1, { duration: 550 }),
+      withTiming(1.02, { duration: 180 }),
+      withTiming(1, { duration: 180 })
     );
-
-    // Then fade out
-    const timeout = setTimeout(() => {
-      opacity.value = withTiming(0, { duration: 500 }, () => {
-        runOnJS(onFinish)();
-      });
-    }, 1800);
-    return () => clearTimeout(timeout);
+    textOpacity.value = withTiming(1, { duration: 500 });
+    textTranslate.value = withTiming(0, { duration: 500 });
+    buttonOpacity.value = withTiming(1, { duration: 600 });
+    buttonTranslate.value = withTiming(0, { duration: 600 });
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
+  const logoStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [{ scale: logoScale.value }],
+  }));
+
+  const textStyle = useAnimatedStyle(() => ({
+    opacity: textOpacity.value,
+    transform: [{ translateY: textTranslate.value }],
+  }));
+
+  const buttonStyle = useAnimatedStyle(() => ({
+    opacity: buttonOpacity.value,
+    transform: [{ translateY: buttonTranslate.value }],
   }));
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.logoWrapper, animatedStyle]}>
-        <Image
-          source={require('@/assets/images/logo.svg')}
-          style={styles.logo}
-          contentFit="contain"
-        />
-      </Animated.View>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <View style={[styles.heroRow, !isWide && styles.heroRowStacked]}>
+          <Animated.View style={[styles.logoWrapper, logoStyle]}>
+            <Image
+              source={require('@/assets/images/logo.svg')}
+              style={[styles.logo, !isWide && styles.logoStacked]}
+              contentFit="contain"
+            />
+          </Animated.View>
+
+          <Animated.View style={[styles.titleBlock, textStyle, !isWide && styles.titleBlockStacked]}>
+            <Text style={styles.title}>Sewa Eats</Text>
+            <Text style={styles.tagline}>FOOD • COMMUNITY • SERVICE</Text>
+          </Animated.View>
+        </View>
+
+        <Animated.View style={[styles.buttonWrap, buttonStyle]}>
+          <Pressable style={styles.primaryButton} onPress={onFinish}>
+            <Text style={styles.primaryText}>Get started</Text>
+          </Pressable>
+        </Animated.View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -58,15 +83,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
-    justifyContent: 'center',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: Spacing.xxl,
+    paddingVertical: Spacing.xxxl,
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  heroRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xxl,
+  },
+  heroRowStacked: {
+    flexDirection: 'column',
+    gap: Spacing.lg,
+  },
+  titleBlock: {
+    alignItems: 'flex-start',
+  },
+  titleBlockStacked: {
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: '800',
+    color: Colors.light.text,
+    letterSpacing: -0.5,
+  },
+  tagline: {
+    marginTop: Spacing.sm,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 2,
+    color: '#F97316',
   },
   logoWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
+    width: 220,
+    height: 220,
+  },
+  logoStacked: {
     width: 200,
     height: 200,
+  },
+  buttonWrap: {
+    width: '100%',
+  },
+  primaryButton: {
+    backgroundColor: Colors.light.text,
+    borderRadius: Radii.pill,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  primaryText: {
+    color: Colors.light.background,
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Colors, Radii, Spacing } from '@/constants/theme';
 
@@ -17,26 +17,28 @@ export default function IntroScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.header}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.heroRow}>
           <Image
             source={require('@/assets/images/logo.svg')}
             style={styles.logo}
             contentFit="contain"
           />
-          <Text style={styles.title}>Sewa Eats</Text>
-          <Text style={styles.subtitle}>A shared community delivery network</Text>
+          <View style={styles.heroText}>
+            <Text style={styles.title}>Sewa Eats</Text>
+            <Text style={styles.subtitle}>A shared community delivery network</Text>
+          </View>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>How it works</Text>
-          <View style={styles.row}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>How it works</Text>
+          <View style={styles.stepRow}>
             <Text style={styles.stepNumber}>1</Text>
-            <Text style={styles.rowText}>Pick up a prepared meal box at the temple.</Text>
+            <Text style={styles.stepText}>Pick up a prepared meal box at the temple.</Text>
           </View>
-          <View style={styles.row}>
+          <View style={styles.stepRow}>
             <Text style={styles.stepNumber}>2</Text>
-            <Text style={styles.rowText}>Drop it off at a nearby partner location.</Text>
+            <Text style={styles.stepText}>Drop it off at a nearby partner location.</Text>
           </View>
           <Text style={styles.helperText}>Estimated time: 1 minute to get started</Text>
         </View>
@@ -53,7 +55,7 @@ export default function IntroScreen() {
         <Text style={styles.disclaimer}>
           Locations are curated by partner programs. You can update delivery preferences later.
         </Text>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -64,59 +66,68 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   content: {
-    flex: 1,
     paddingHorizontal: Spacing.xxl,
     paddingTop: Spacing.xxxl,
+    paddingBottom: Spacing.xxxl,
   },
-  header: {
-    marginBottom: Spacing.xxl,
+  heroRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   logo: {
-    width: 80,
-    height: 80,
-    marginBottom: Spacing.md,
+    width: 96,
+    height: 96,
+  },
+  heroText: {
+    flex: 1,
   },
   title: {
     fontSize: 30,
-    fontWeight: '700',
+    fontWeight: '800',
+    letterSpacing: -0.5,
     color: Colors.light.text,
     marginBottom: 6,
   },
   subtitle: {
     fontSize: 14,
+    letterSpacing: 0.2,
     color: Colors.light.mutedText,
   },
-  card: {
-    backgroundColor: Colors.light.surfaceElevated,
-    borderRadius: Radii.lg,
-    padding: Spacing.lg,
+  section: {
     marginBottom: Spacing.xxl,
-    borderWidth: 1,
-    borderColor: Colors.light.border,
   },
-  cardTitle: {
-    fontSize: 15,
+  sectionTitle: {
+    fontSize: 14,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: '#F97316',
     marginBottom: Spacing.md,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
-  row: {
+  stepRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
     marginBottom: Spacing.md,
   },
   stepNumber: {
-    width: 20,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    textAlign: 'center',
+    textAlignVertical: 'center',
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.light.mutedText,
+    color: Colors.light.text,
+    backgroundColor: '#E5E7EB',
   },
-  rowText: {
+  stepText: {
     flex: 1,
     color: Colors.light.text,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
   },
   helperText: {
     fontSize: 12,
@@ -152,5 +163,6 @@ const styles = StyleSheet.create({
   disclaimer: {
     fontSize: 12,
     color: Colors.light.mutedText,
+    textAlign: 'center',
   },
 });
