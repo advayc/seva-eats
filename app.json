@@ -1,38 +1,36 @@
 {
   "expo": {
-    "name": "Sewa Eats",
-    "slug": "sewa-eats",
+    "name": "Seva Eats",
+    "slug": "sev-eats",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "sewaeats",
+    "icon": "./assets/images/logo.png",
+    "scheme": "seveats",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.advayc.sewaeats"
+      "bundleIdentifier": "com.advay.sewaeats"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#1A1F25",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/logo.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.advayc.sewaeats"
+      "package": "com.advay.sewaeats"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#1A1F25",

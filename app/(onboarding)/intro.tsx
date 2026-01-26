@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -18,6 +19,11 @@ export default function IntroScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
+          <Image
+            source={require('@/assets/images/logo.svg')}
+            style={styles.logo}
+            contentFit="contain"
+          />
           <Text style={styles.title}>Sewa Eats</Text>
           <Text style={styles.subtitle}>A shared community delivery network</Text>
         </View>
@@ -64,6 +70,11 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: Spacing.xxl,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginBottom: Spacing.md,
   },
   title: {
     fontSize: 30,
