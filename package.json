@@ -1,5 +1,5 @@
 {
-  "name": "sewa-eats",
+  "name": "seva-eats",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -12,7 +12,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "prebuild": "expo prebuild --clean",
-    "build": "eas build --platform all"
+    "build:ios": "npm run prebuild && xcodebuild -workspace ios/SevaEats.xcworkspace -scheme SevaEats -configuration Release -derivedDataPath ios/build",
+    "build:ios:sim": "npm run prebuild && xcodebuild -workspace ios/SevaEats.xcworkspace -scheme SevaEats -sdk iphonesimulator -configuration Debug -derivedDataPath ios/build"
   },
   "dependencies": {
     "@expo/ngrok": "^4.1.3",
