@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { GlassCard } from '@/components/glass-card';
 import { availableRequests } from '@/constants/mock-data';
 import { Colors, Radii, Spacing } from '@/constants/theme';
 import { useOrders } from '@/context';
@@ -81,41 +82,45 @@ export default function VolunteerScreen() {
         <Text style={styles.subtitle}>Find deliveries near your route home</Text>
 
         {/* Filter Tabs */}
-        <View style={styles.filterTabs}>
-          <Pressable
-            style={[styles.filterTab, activeTab === 'available' && styles.filterTabActive]}
-            onPress={() => setActiveTab('available')}
-          >
-            <Text style={[styles.filterTabText, activeTab === 'available' && styles.filterTabTextActive]}>
-              Available
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[styles.filterTab, activeTab === 'my_deliveries' && styles.filterTabActive]}
-            onPress={() => setActiveTab('my_deliveries')}
-          >
-            <Text style={[styles.filterTabText, activeTab === 'my_deliveries' && styles.filterTabTextActive]}>
-              My Deliveries
-            </Text>
-          </Pressable>
-        </View>
+        <GlassCard style={styles.filterTabsCard}>
+          <View style={styles.filterTabs}>
+            <Pressable
+              style={[styles.filterTab, activeTab === 'available' && styles.filterTabActive]}
+              onPress={() => setActiveTab('available')}
+            >
+              <Text style={[styles.filterTabText, activeTab === 'available' && styles.filterTabTextActive]}>
+                Available
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[styles.filterTab, activeTab === 'my_deliveries' && styles.filterTabActive]}
+              onPress={() => setActiveTab('my_deliveries')}
+            >
+              <Text style={[styles.filterTabText, activeTab === 'my_deliveries' && styles.filterTabTextActive]}>
+                My Deliveries
+              </Text>
+            </Pressable>
+          </View>
+        </GlassCard>
 
         {/* Active Order Banner */}
         {activeOrder && activeTab === 'available' && (
           <Pressable 
-            style={styles.activeOrderCard}
+            style={styles.activeOrderPressable}
             onPress={() => router.push(`/order/${activeOrder.id}` as const)}
           >
-            <View style={styles.activeOrderIcon}>
-              <MaterialIcons name="local-shipping" size={24} color={Colors.light.accent} />
-            </View>
-            <View style={styles.activeOrderContent}>
-              <Text style={styles.activeOrderTitle}>Delivery in Progress</Text>
-              <Text style={styles.activeOrderSubtitle}>
-                {activeOrder.storeName} - Tap to track
-              </Text>
-            </View>
-            <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+            <GlassCard style={styles.activeOrderCard} variant="accent">
+              <View style={styles.activeOrderIcon}>
+                <MaterialIcons name="local-shipping" size={24} color={Colors.light.accent} />
+              </View>
+              <View style={styles.activeOrderContent}>
+                <Text style={styles.activeOrderTitle}>Delivery in Progress</Text>
+                <Text style={styles.activeOrderSubtitle}>
+                  {activeOrder.storeName} - Tap to track
+                </Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+            </GlassCard>
           </Pressable>
         )}
 
@@ -127,7 +132,7 @@ export default function VolunteerScreen() {
             </Text>
 
             {availableRequests.map((request) => (
-              <View key={request.id} style={styles.deliveryCard}>
+              <GlassCard key={request.id} style={styles.deliveryCard} noBorder>
                 <Image 
                   source={{ uri: request.pickupLocation.image }} 
                   style={styles.deliveryImage}
@@ -192,16 +197,16 @@ export default function VolunteerScreen() {
                     <Text style={styles.claimButtonText}>Claim Delivery</Text>
                   </Pressable>
                 </View>
-              </View>
+              </GlassCard>
             ))}
 
             {/* Info Card */}
-            <View style={styles.infoCard}>
+            <GlassCard style={styles.infoCard}>
               <MaterialIcons name="info-outline" size={20} color={Colors.light.mutedText} />
               <Text style={styles.infoText}>
                 Deliveries are matched to locations near your home address. Update your address in settings to see more relevant options.
               </Text>
-            </View>
+            </GlassCard>
           </>
         )}
 
@@ -213,35 +218,37 @@ export default function VolunteerScreen() {
                 {orders.map((order) => (
                   <Pressable 
                     key={order.id}
-                    style={styles.historyCard}
+                    style={styles.historyPressable}
                     onPress={() => router.push(`/order/${order.id}` as const)}
                   >
-                    <View style={styles.historyLeft}>
-                      <View style={[
-                        styles.statusDot,
-                        order.status === 'delivered' ? styles.statusDotComplete : styles.statusDotActive
-                      ]} />
-                      <View>
-                        <Text style={styles.historyTitle}>{order.storeName}</Text>
-                        <Text style={styles.historySubtitle}>
-                          {order.status === 'delivered' ? 'Completed' : 'In Progress'} - {
-                            order.placedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                          }
-                        </Text>
+                    <GlassCard style={styles.historyCard}>
+                      <View style={styles.historyLeft}>
+                        <View style={[
+                          styles.statusDot,
+                          order.status === 'delivered' ? styles.statusDotComplete : styles.statusDotActive
+                        ]} />
+                        <View>
+                          <Text style={styles.historyTitle}>{order.storeName}</Text>
+                          <Text style={styles.historySubtitle}>
+                            {order.status === 'delivered' ? 'Completed' : 'In Progress'} - {
+                              order.placedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                            }
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                    <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+                      <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+                    </GlassCard>
                   </Pressable>
                 ))}
               </>
             ) : (
-              <View style={styles.emptyState}>
+              <GlassCard style={styles.emptyState}>
                 <MaterialIcons name="volunteer-activism" size={48} color="#E5E7EB" />
                 <Text style={styles.emptyTitle}>No deliveries yet</Text>
                 <Text style={styles.emptyText}>
                   Claim a delivery from the Available tab to start your Seva journey
                 </Text>
-              </View>
+              </GlassCard>
             )}
           </>
         )}
@@ -257,7 +264,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingBottom: 40,
+    paddingBottom: 100,
   },
   title: {
     fontSize: 24,
@@ -270,12 +277,12 @@ const styles = StyleSheet.create({
     color: Colors.light.mutedText,
     marginBottom: Spacing.lg,
   },
+  filterTabsCard: {
+    marginBottom: Spacing.lg,
+    padding: 4,
+  },
   filterTabs: {
     flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
-    borderRadius: Radii.md,
-    padding: 4,
-    marginBottom: Spacing.lg,
   },
   filterTab: {
     flex: 1,
@@ -284,7 +291,7 @@ const styles = StyleSheet.create({
     borderRadius: Radii.sm,
   },
   filterTabActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
   filterTabText: {
     fontSize: 14,
@@ -295,21 +302,19 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     fontWeight: '600',
   },
+  activeOrderPressable: {
+    marginBottom: Spacing.lg,
+  },
   activeOrderCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF7ED',
-    borderRadius: Radii.lg,
     padding: Spacing.md,
-    marginBottom: Spacing.lg,
-    borderWidth: 1,
-    borderColor: '#FDBA74',
   },
   activeOrderIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -333,17 +338,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   deliveryCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: Radii.lg,
     marginBottom: Spacing.md,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(229, 231, 235, 0.6)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
   },
   deliveryImage: {
     width: '100%',
@@ -443,8 +439,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
-    backgroundColor: '#F9FAFB',
-    borderRadius: Radii.lg,
     padding: Spacing.md,
   },
   infoText: {
@@ -453,16 +447,14 @@ const styles = StyleSheet.create({
     color: Colors.light.mutedText,
     lineHeight: 18,
   },
+  historyPressable: {
+    marginBottom: Spacing.sm,
+  },
   historyCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    borderRadius: Radii.lg,
     padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
   historyLeft: {
     flexDirection: 'row',
@@ -492,6 +484,7 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     paddingVertical: Spacing.xxxl,
+    paddingHorizontal: Spacing.lg,
   },
   emptyTitle: {
     fontSize: 17,

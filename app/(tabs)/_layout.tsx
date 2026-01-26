@@ -3,14 +3,18 @@ import { BlurView } from 'expo-blur';
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+const TAB_BAR_WIDTH = 100;
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const showGlass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
+  const { width: screenWidth } = useWindowDimensions();
+  const horizontalMargin = (screenWidth - TAB_BAR_WIDTH) / 2;
 
   return (
     <Tabs
@@ -19,6 +23,15 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colorScheme === 'dark' ? '#9CA3AF' : '#6B7280',
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarLabelPosition: 'below-icon',
+        tabBarItemStyle: {
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '500',
+        },
         tabBarBackground: () => (
           showGlass ? (
             <GlassView
@@ -39,10 +52,12 @@ export default function TabLayout() {
         tabBarStyle: Platform.select({
           ios: {
             position: 'absolute',
-            left: 20,
-            right: 20,
-            bottom: 25,
+            left: horizontalMargin,
+            right: horizontalMargin,
+            bottom: 35,
             height: 64,
+            alignItems: 'center',
+            justifyContent: 'center',
             borderTopWidth: 0,
             borderRadius: 32,
             backgroundColor: 'transparent',
@@ -54,10 +69,12 @@ export default function TabLayout() {
           },
           default: {
             position: 'absolute',
-            left: 20,
-            right: 20,
-            bottom: 25,
+            left: horizontalMargin,
+            right: horizontalMargin,
+            bottom: 35,
             height: 64,
+            alignItems: 'center',
+            justifyContent: 'center',
             borderTopWidth: 0,
             borderRadius: 32,
             backgroundColor: colorScheme === 'dark' ? '#1F2937F5' : '#FFFFFFF5',

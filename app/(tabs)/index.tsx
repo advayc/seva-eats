@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { GlassCard } from '@/components/glass-card';
 import {
   availableRequests,
   communityStats,
@@ -170,7 +171,7 @@ export default function HomeScreen() {
         )}
 
         {/* Impact Stats Card */}
-        <View style={styles.statsCard}>
+        <GlassCard style={styles.statsCard}>
           <Text style={styles.statsLabel}>Community Impact</Text>
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
@@ -188,47 +189,49 @@ export default function HomeScreen() {
               <Text style={styles.statLabel}>Volunteers</Text>
             </View>
           </View>
-        </View>
+        </GlassCard>
 
         {/* Main Action Cards */}
         <Text style={styles.sectionTitle}>What would you like to do?</Text>
 
         <Pressable 
           style={({ pressed }) => [
-            styles.actionCard,
             pressed && styles.actionCardPressed
           ]}
           onPress={() => router.push('/(tabs)/explore')}
         >
-          <View style={styles.actionIconWrap}>
-            <MaterialIcons name="volunteer-activism" size={28} color={Colors.light.accent} />
-          </View>
-          <View style={styles.actionContent}>
-            <Text style={styles.actionTitle}>Volunteer to Deliver</Text>
-            <Text style={styles.actionDesc}>
-              Pick up Langar from a Gurdwara and deliver it to someone in need on your way home
-            </Text>
-          </View>
-          <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+          <GlassCard style={styles.actionCard}>
+            <View style={styles.actionIconWrap}>
+              <MaterialIcons name="volunteer-activism" size={28} color={Colors.light.accent} />
+            </View>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>Volunteer to Deliver</Text>
+              <Text style={styles.actionDesc}>
+                Pick up Langar from a Gurdwara and deliver it to someone in need on your way home
+              </Text>
+            </View>
+            <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+          </GlassCard>
         </Pressable>
 
         <Pressable 
           style={({ pressed }) => [
-            styles.actionCard,
             pressed && styles.actionCardPressed
           ]}
           onPress={() => router.push('/request/new')}
         >
-          <View style={styles.actionIconWrap}>
-            <MaterialIcons name="restaurant" size={28} color={Colors.light.accent} />
-          </View>
-          <View style={styles.actionContent}>
-            <Text style={styles.actionTitle}>Request a Meal</Text>
-            <Text style={styles.actionDesc}>
-              Need food? Request a free Langar meal to be delivered to your home
-            </Text>
-          </View>
-          <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+          <GlassCard style={styles.actionCard}>
+            <View style={styles.actionIconWrap}>
+              <MaterialIcons name="restaurant" size={28} color={Colors.light.accent} />
+            </View>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>Request a Meal</Text>
+              <Text style={styles.actionDesc}>
+                Need food? Request a free Langar meal to be delivered to your home
+              </Text>
+            </View>
+            <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+          </GlassCard>
         </Pressable>
 
         {/* Available Deliveries Preview */}
@@ -243,46 +246,47 @@ export default function HomeScreen() {
           <Pressable 
             key={request.id} 
             style={({ pressed }) => [
-              styles.deliveryCard,
               pressed && styles.deliveryCardPressed
             ]}
             onPress={() => handleStartDelivery(request.id)}
           >
-            <Image 
-              source={{ uri: request.pickupLocation.image }} 
-              style={styles.deliveryImage}
-            />
-            <View style={styles.deliveryContent}>
-              <View style={styles.deliveryHeader}>
-                <Text style={styles.deliveryTitle}>{request.pickupLocation.name}</Text>
-                <View style={styles.distanceBadge}>
-                  <Text style={styles.distanceText}>{request.distanceFromHome}</Text>
+            <GlassCard style={styles.deliveryCard} noBorder>
+              <Image 
+                source={{ uri: request.pickupLocation.image }} 
+                style={styles.deliveryImage}
+              />
+              <View style={styles.deliveryContent}>
+                <View style={styles.deliveryHeader}>
+                  <Text style={styles.deliveryTitle}>{request.pickupLocation.name}</Text>
+                  <View style={styles.distanceBadge}>
+                    <Text style={styles.distanceText}>{request.distanceFromHome}</Text>
+                  </View>
+                </View>
+                <View style={styles.deliveryRoute}>
+                  <View style={styles.routePoint}>
+                    <MaterialIcons name="place" size={14} color={Colors.light.accent} />
+                    <Text style={styles.routeText}>Pickup: {request.pickupLocation.name}</Text>
+                  </View>
+                  <View style={styles.routeLine} />
+                  <View style={styles.routePoint}>
+                    <MaterialIcons name="home" size={14} color="#059669" />
+                    <Text style={styles.routeText}>
+                      Drop-off: {getDropOffTypeLabel(request.dropOffLocation.type)}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.deliveryMeta}>
+                  <View style={styles.metaItem}>
+                    <MaterialIcons name="schedule" size={14} color={Colors.light.mutedText} />
+                    <Text style={styles.metaText}>{request.estimatedTime}</Text>
+                  </View>
+                  <View style={styles.metaItem}>
+                    <MaterialIcons name="inventory-2" size={14} color={Colors.light.mutedText} />
+                    <Text style={styles.metaText}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
+                  </View>
                 </View>
               </View>
-              <View style={styles.deliveryRoute}>
-                <View style={styles.routePoint}>
-                  <MaterialIcons name="place" size={14} color={Colors.light.accent} />
-                  <Text style={styles.routeText}>Pickup: {request.pickupLocation.name}</Text>
-                </View>
-                <View style={styles.routeLine} />
-                <View style={styles.routePoint}>
-                  <MaterialIcons name="home" size={14} color="#059669" />
-                  <Text style={styles.routeText}>
-                    Drop-off: {getDropOffTypeLabel(request.dropOffLocation.type)}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.deliveryMeta}>
-                <View style={styles.metaItem}>
-                  <MaterialIcons name="schedule" size={14} color={Colors.light.mutedText} />
-                  <Text style={styles.metaText}>{request.estimatedTime}</Text>
-                </View>
-                <View style={styles.metaItem}>
-                  <MaterialIcons name="inventory-2" size={14} color={Colors.light.mutedText} />
-                  <Text style={styles.metaText}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
-                </View>
-              </View>
-            </View>
+            </GlassCard>
           </Pressable>
         ))}
 
@@ -298,22 +302,23 @@ export default function HomeScreen() {
             <Pressable 
               key={location.id} 
               style={({ pressed }) => [
-                styles.gurdwaraCard,
                 pressed && { opacity: 0.7, transform: [{ scale: 0.97 }] }
               ]}
             >
-              <Image source={{ uri: location.image }} style={styles.gurdwaraImage} />
-              <View style={styles.gurdwaraInfo}>
-                <Text style={styles.gurdwaraName} numberOfLines={1}>{location.name}</Text>
-                <Text style={styles.gurdwaraMeta}>{location.boxesAvailable} boxes available</Text>
-                <Text style={styles.gurdwaraDistance}>{location.distance}</Text>
-              </View>
+              <GlassCard style={styles.gurdwaraCard} noBorder>
+                <Image source={{ uri: location.image }} style={styles.gurdwaraImage} />
+                <View style={styles.gurdwaraInfo}>
+                  <Text style={styles.gurdwaraName} numberOfLines={1}>{location.name}</Text>
+                  <Text style={styles.gurdwaraMeta}>{location.boxesAvailable} boxes available</Text>
+                  <Text style={styles.gurdwaraDistance}>{location.distance}</Text>
+                </View>
+              </GlassCard>
             </Pressable>
           ))}
         </ScrollView>
 
         {/* How It Works */}
-        <View style={styles.howItWorksCard}>
+        <GlassCard style={styles.howItWorksCard}>
           <Text style={styles.howItWorksTitle}>How It Works</Text>
           
           <View style={styles.stepItem}>
@@ -345,7 +350,7 @@ export default function HomeScreen() {
               <Text style={styles.stepDesc}>Drop off the meal and complete your Seva</Text>
             </View>
           </View>
-        </View>
+        </GlassCard>
       </ScrollView>
     </SafeAreaView>
   );
@@ -358,7 +363,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingBottom: 40,
+    paddingBottom: 100,
   },
   header: {
     flexDirection: 'row',
@@ -437,17 +442,8 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.8)',
   },
   statsCard: {
-    backgroundColor: 'rgba(249, 250, 251, 0.7)',
-    borderRadius: Radii.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
   },
   statsLabel: {
     fontSize: 11,
@@ -500,22 +496,12 @@ const styles = StyleSheet.create({
   actionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: Radii.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(229, 231, 235, 0.6)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
   },
   actionCardPressed: {
     opacity: 0.6,
     transform: [{ scale: 0.97 }],
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
   },
   actionIconWrap: {
     width: 48,
@@ -541,17 +527,8 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   deliveryCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: Radii.lg,
     marginBottom: Spacing.md,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(229, 231, 235, 0.5)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
   },
   deliveryCardPressed: {
     opacity: 0.7,
@@ -625,16 +602,7 @@ const styles = StyleSheet.create({
   },
   gurdwaraCard: {
     width: 160,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: Radii.lg,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(229, 231, 235, 0.6)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
   },
   gurdwaraImage: {
     width: '100%',
@@ -660,17 +628,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   howItWorksCard: {
-    backgroundColor: 'rgba(249, 250, 251, 0.8)',
-    borderRadius: Radii.lg,
     padding: Spacing.lg,
     marginTop: Spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
   },
   howItWorksTitle: {
     fontSize: 15,
