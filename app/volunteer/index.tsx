@@ -28,7 +28,7 @@ export default function VolunteerEntryScreen() {
           </View>
           <Pressable
             style={[styles.switchButton, { borderColor: colors.border }]}
-            onPress={() => router.push('/role-switch' as any)}
+            onPress={() => router.push('/(onboarding)/choose-role' as any)}
           >
             <Text style={[styles.switchText, { color: colors.text }]}>Switch role</Text>
           </Pressable>
@@ -43,10 +43,10 @@ export default function VolunteerEntryScreen() {
               <Text style={[styles.cardTitle, { color: colors.text }]}>Delivery routes</Text>
               <Text style={[styles.cardSubtitle, { color: colors.mutedText }]}>See available deliveries and confirm drops</Text>
             </View>
-            <Pressable style={[styles.cardButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/dasher/login' as any)}>
-              <Text style={styles.cardButtonText}>Enter</Text>
-            </Pressable>
           </View>
+          <Pressable style={[styles.fullButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/dasher/login' as any)}>
+            <Text style={styles.fullButtonText}>Open delivery hub</Text>
+          </Pressable>
         </GlassCard>
 
         <GlassCard style={styles.card}>
@@ -58,10 +58,10 @@ export default function VolunteerEntryScreen() {
               <Text style={[styles.cardTitle, { color: colors.text }]}>Dispatcher desk</Text>
               <Text style={[styles.cardSubtitle, { color: colors.mutedText }]}>Match volunteers to shelter drop-offs</Text>
             </View>
-            <Pressable style={[styles.cardButton, { backgroundColor: '#059669' }]} onPress={() => router.push('/dispatcher/dashboard' as any)}>
-              <Text style={styles.cardButtonText}>Open</Text>
-            </Pressable>
           </View>
+          <Pressable style={[styles.fullButton, { backgroundColor: '#059669' }]} onPress={() => router.push('/dispatcher/dashboard' as any)}>
+            <Text style={styles.fullButtonText}>Open dispatcher</Text>
+          </Pressable>
         </GlassCard>
 
         <GlassCard style={styles.card}>
@@ -73,10 +73,10 @@ export default function VolunteerEntryScreen() {
               <Text style={[styles.cardTitle, { color: colors.text }]}>Kitchen intake</Text>
               <Text style={[styles.cardSubtitle, { color: colors.mutedText }]}>Log meal counts and dietary tags</Text>
             </View>
-            <Pressable style={[styles.cardButton, { backgroundColor: '#3B82F6' }]} onPress={() => router.push('/kitchen/login' as any)}>
-              <Text style={styles.cardButtonText}>Open</Text>
-            </Pressable>
           </View>
+          <Pressable style={[styles.fullButton, { backgroundColor: '#3B82F6' }]} onPress={() => router.push('/kitchen/login' as any)}>
+            <Text style={styles.fullButtonText}>Open kitchen</Text>
+          </Pressable>
         </GlassCard>
       </ScrollView>
     </SafeAreaView>
@@ -143,14 +143,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
-  cardButton: {
+  fullButton: {
+    marginTop: Spacing.md,
     borderRadius: Radii.pill,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
   },
-  cardButtonText: {
+  fullButtonText: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 });

@@ -46,7 +46,7 @@ export default function DasherDashboardScreen() {
           </View>
           <Pressable
             style={[styles.switchButton, { borderColor: colors.border }]}
-            onPress={() => router.push('/role-switch' as any)}
+            onPress={() => router.push('/(onboarding)/choose-role' as any)}
           >
             <Text style={[styles.switchText, { color: colors.text }]}>Switch role</Text>
           </Pressable>

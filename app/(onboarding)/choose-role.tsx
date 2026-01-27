@@ -12,39 +12,24 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 const ONBOARDING_KEY = 'onboarding-completed';
 
 type RoleOption = {
-  id: 'recipient' | 'dasher' | 'kitchen' | 'dispatcher';
+  id: 'recipient' | 'dasher';
   title: string;
   description: string;
   icon: keyof typeof MaterialIcons.glyphMap;
 };
 
-const RECIPIENT_OPTIONS: RoleOption[] = [
+const ROLE_OPTIONS: RoleOption[] = [
   {
     id: 'recipient',
-    title: 'I need a meal',
+    title: 'Recipient',
     description: 'Request a Langar meal delivered to a partner shelter or community drop-off.',
     icon: 'restaurant',
   },
-];
-
-const VOLUNTEER_OPTIONS: RoleOption[] = [
   {
     id: 'dasher',
     title: 'Volunteer',
-    description: 'Deliver meals, dispatch routes, or log kitchen intake.',
+    description: 'Deliver meals or help operate kitchen and dispatch flows.',
     icon: 'volunteer-activism',
-  },
-  {
-    id: 'kitchen',
-    title: 'Kitchen Lead',
-    description: 'Log meal counts, dietary tags, and readiness time.',
-    icon: 'storefront',
-  },
-  {
-    id: 'dispatcher',
-    title: 'Dispatcher',
-    description: 'Match volunteers to shelter drop-offs and routes.',
-    icon: 'route',
   },
 ];
 
@@ -55,9 +40,7 @@ export default function ChooseRoleScreen() {
   const shadows = colors.isDark ? Shadows.dark : Shadows.light;
 
   const handleSelectRole = async (role: RoleOption['id']) => {
-    if (role === 'recipient' || role === 'dasher') {
-      await setRole(role);
-    }
+    await setRole(role);
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
 
     if (role === 'recipient') {
@@ -65,17 +48,7 @@ export default function ChooseRoleScreen() {
       return;
     }
 
-    if (role === 'dasher') {
-      router.replace('/volunteer' as any);
-      return;
-    }
-
-    if (role === 'kitchen') {
-      router.replace('/kitchen/login' as any);
-      return;
-    }
-
-    router.replace('/dispatcher/dashboard' as any);
+    router.replace('/volunteer' as any);
   };
 
   return (
@@ -93,58 +66,28 @@ export default function ChooseRoleScreen() {
 
         <Text style={[styles.prompt, { color: colors.mutedText }]}>Choose your path</Text>
 
-        <View style={styles.sectionBlock}>
-          <Text style={[styles.sectionLabel, { color: colors.mutedText }]}>Get Meals</Text>
-          <View style={styles.cardList}>
-            {RECIPIENT_OPTIONS.map((option) => (
-              <Pressable
-                key={option.id}
-                style={({ pressed }) => [
-                  styles.roleCard,
-                  { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
-                  shadows.card,
-                  pressed && styles.roleCardPressed,
-                ]}
-                onPress={() => handleSelectRole(option.id)}
-              >
-                <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
-                  <MaterialIcons name={option.icon} size={24} color={colors.accent} />
-                </View>
-                <View style={styles.roleText}>
-                  <Text style={[styles.roleTitle, { color: colors.text }]}>{option.title}</Text>
-                  <Text style={[styles.roleDescription, { color: colors.mutedText }]}>{option.description}</Text>
-                </View>
-                <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.sectionBlock}>
-          <Text style={[styles.sectionLabel, { color: colors.mutedText }]}>Serve & Operate</Text>
-          <View style={styles.cardList}>
-            {VOLUNTEER_OPTIONS.map((option) => (
-              <Pressable
-                key={option.id}
-                style={({ pressed }) => [
-                  styles.roleCard,
-                  { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
-                  shadows.card,
-                  pressed && styles.roleCardPressed,
-                ]}
-                onPress={() => handleSelectRole(option.id)}
-              >
-                <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
-                  <MaterialIcons name={option.icon} size={24} color={colors.accent} />
-                </View>
-                <View style={styles.roleText}>
-                  <Text style={[styles.roleTitle, { color: colors.text }]}>{option.title}</Text>
-                  <Text style={[styles.roleDescription, { color: colors.mutedText }]}>{option.description}</Text>
-                </View>
-                <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
-              </Pressable>
-            ))}
-          </View>
+        <View style={styles.cardList}>
+          {ROLE_OPTIONS.map((option) => (
+            <Pressable
+              key={option.id}
+              style={({ pressed }) => [
+                styles.roleCard,
+                { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
+                shadows.card,
+                pressed && styles.roleCardPressed,
+              ]}
+              onPress={() => handleSelectRole(option.id)}
+            >
+              <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
+                <MaterialIcons name={option.icon} size={24} color={colors.accent} />
+              </View>
+              <View style={styles.roleText}>
+                <Text style={[styles.roleTitle, { color: colors.text }]}>{option.title}</Text>
+                <Text style={[styles.roleDescription, { color: colors.mutedText }]}>{option.description}</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
+            </Pressable>
+          ))}
         </View>
 
         <Text style={[styles.footerNote, { color: colors.mutedText }]}>You can change this later in your profile.</Text>
@@ -198,15 +141,6 @@ const styles = StyleSheet.create({
   },
   cardList: {
     gap: Spacing.md,
-  },
-  sectionBlock: {
-    gap: Spacing.sm,
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
   },
   roleCard: {
     flexDirection: 'row',

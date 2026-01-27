@@ -30,6 +30,19 @@ export default function HomeScreen() {
     router.push(`/request/${activeRequest.id}` as any);
   };
 
+  const getRequestMeta = () => {
+    if (!activeRequest?.driverNote) return null;
+    const lines = activeRequest.driverNote.split('\n');
+    const windowLine = lines.find((line) => line.startsWith('Window:'));
+    const deliveryLine = lines.find((line) => line.startsWith('Delivery:'));
+    return {
+      window: windowLine?.replace('Window:', '').trim(),
+      delivery: deliveryLine?.replace('Delivery:', '').trim(),
+    };
+  };
+
+  const requestMeta = getRequestMeta();
+
   const getRequestIcon = (status: string) => {
     switch (status) {
       case 'pending': return 'search';
@@ -72,18 +85,11 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <GlassCard style={styles.segmentCard}>
-          <View style={styles.segmentRow}>
-            <View style={styles.segmentLeft}>
-              <Text style={[styles.segmentTitle, { color: colors.text }]}>Recipient Mode</Text>
-              <Text style={[styles.segmentSubtitle, { color: colors.mutedText }]}>Shelter drop-offs only during beta</Text>
-            </View>
-            <Pressable
-              style={[styles.segmentButton, { borderColor: colors.border }]}
-              onPress={() => router.push('/role-switch' as any)}
-            >
-              <Text style={[styles.segmentButtonText, { color: colors.text }]}>Switch</Text>
-            </Pressable>
+        <GlassCard style={styles.sectionNotice}>
+          <MaterialIcons name="info" size={18} color={colors.accent} />
+          <View style={styles.noticeText}>
+            <Text style={[styles.noticeTitle, { color: colors.text }]}>Recipient Mode</Text>
+            <Text style={[styles.noticeSubtitle, { color: colors.mutedText }]}>Shelter drop-offs only during beta</Text>
           </View>
         </GlassCard>
 
@@ -114,6 +120,29 @@ export default function HomeScreen() {
             </View>
             <MaterialIcons name="chevron-right" size={24} color="#FFFFFF" />
           </Pressable>
+        )}
+
+        {activeRequest && (
+          <GlassCard style={styles.statusCard}>
+            <View style={styles.statusHeader}>
+              <Text style={[styles.statusTitle, { color: colors.text }]}>Delivery status</Text>
+              <Text style={[styles.statusBadge, { color: colors.accent }]}>Live</Text>
+            </View>
+            <Text style={[styles.statusValue, { color: colors.text }]}>
+              {REQUEST_STATUS_LABELS[activeRequest.status]}
+            </Text>
+            <View style={styles.statusRow}>
+              <View style={styles.statusItem}>
+                <Text style={[styles.statusLabel, { color: colors.mutedText }]}>Window</Text>
+                <Text style={[styles.statusText, { color: colors.text }]}>{requestMeta?.window ?? 'TBD'}</Text>
+              </View>
+              <View style={styles.statusDivider} />
+              <View style={styles.statusItem}>
+                <Text style={[styles.statusLabel, { color: colors.mutedText }]}>Drop-off</Text>
+                <Text style={[styles.statusText, { color: colors.text }]}>{requestMeta?.delivery ?? 'TBD'}</Text>
+              </View>
+            </View>
+          </GlassCard>
         )}
 
         {/* Impact Stats Card */}
@@ -262,35 +291,69 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     marginBottom: Spacing.xl,
   },
-  segmentCard: {
-    padding: Spacing.md,
+  statusCard: {
+    padding: Spacing.lg,
     marginBottom: Spacing.lg,
   },
-  segmentRow: {
+  statusHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
   },
-  segmentLeft: {
-    flex: 1,
-  },
-  segmentTitle: {
+  statusTitle: {
     fontSize: 14,
     fontWeight: '700',
   },
-  segmentSubtitle: {
+  statusBadge: {
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  statusValue: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: Spacing.md,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusItem: {
+    flex: 1,
+  },
+  statusLabel: {
+    fontSize: 11,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: 4,
+  },
+  statusText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  statusDivider: {
+    width: 1,
+    height: 28,
+    backgroundColor: 'rgba(0,0,0,0.08)',
+  },
+  sectionNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  noticeText: {
+    flex: 1,
+  },
+  noticeTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  noticeSubtitle: {
     fontSize: 12,
     marginTop: 2,
-  },
-  segmentButton: {
-    borderRadius: Radii.pill,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  segmentButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
   },
   statsLabel: {
     fontSize: 11,

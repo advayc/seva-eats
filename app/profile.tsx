@@ -184,7 +184,7 @@ export default function ProfileScreen() {
             <Text style={[styles.inputHint, { color: colors.mutedText }]}>Switch modes from the role chooser.</Text>
               <Pressable
                 style={[styles.kitchenButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-                onPress={() => router.push('/role-switch' as any)}
+                onPress={() => router.push('/(onboarding)/choose-role' as any)}
               >
                 <MaterialIcons name="swap-horiz" size={20} color={colors.accent} />
                 <Text style={[styles.kitchenButtonText, { color: colors.text }]}>Switch role</Text>
