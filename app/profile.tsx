@@ -30,6 +30,7 @@ export default function ProfileScreen() {
   const [servingSize, setServingSize] = useState(user?.servingSize?.toString() ?? '1');
   const [notificationsEnabled, setNotificationsEnabled] = useState(user?.notificationsEnabled ?? true);
   const [isSaving, setIsSaving] = useState(false);
+  const servingSizeValue = Math.min(3, Math.max(1, parseInt(servingSize, 10) || 1));
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -51,7 +52,7 @@ export default function ProfileScreen() {
           latitude: 43.7315, // Default coordinates (would use geocoding in production)
           longitude: -79.7624,
         } : user?.homeAddress ?? null,
-        servingSize: parseInt(servingSize, 10) || 1,
+        servingSize: servingSizeValue,
         notificationsEnabled,
       });
       Alert.alert('Saved', 'Your profile has been updated', [
@@ -80,11 +81,6 @@ export default function ProfileScreen() {
         },
       ]
     );
-  };
-
-  const roleLabels = {
-    recipient: 'Recipient',
-    dasher: 'Dasher',
   };
 
   return (
@@ -149,16 +145,16 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Home Address</Text>
+              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Address</Text>
               <TextInput
                 style={[styles.textInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
                 value={address}
                 onChangeText={setAddress}
-                placeholder="Enter your address"
+                placeholder="Enter a shelter or partner location"
                 placeholderTextColor={colors.mutedText}
               />
               <Text style={[styles.inputHint, { color: colors.mutedText }]}>
-                Used to find nearby Gurdwaras and drop-off locations
+                Used to find nearby partner shelters during the beta
               </Text>
             </View>
 
@@ -167,14 +163,14 @@ export default function ProfileScreen() {
               <View style={styles.counterRow}>
                 <Pressable 
                   style={[styles.counterButton, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}
-                  onPress={() => setServingSize(Math.max(1, parseInt(servingSize, 10) - 1).toString())}
+                  onPress={() => setServingSize(Math.max(1, servingSizeValue - 1).toString())}
                 >
                   <MaterialIcons name="remove" size={20} color={colors.accent} />
                 </Pressable>
-                <Text style={[styles.counterValue, { color: colors.text }]}>{servingSize}</Text>
+                <Text style={[styles.counterValue, { color: colors.text }]}>{servingSizeValue}</Text>
                 <Pressable 
                   style={[styles.counterButton, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}
-                  onPress={() => setServingSize((parseInt(servingSize, 10) + 1).toString())}
+                  onPress={() => setServingSize(Math.min(3, servingSizeValue + 1).toString())}
                 >
                   <MaterialIcons name="add" size={20} color={colors.accent} />
                 </Pressable>
@@ -184,33 +180,15 @@ export default function ProfileScreen() {
 
           {/* Role Selection */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Account Type</Text>
-            <View style={styles.roleOptions}>
-              {(['recipient', 'dasher'] as const).map((role) => (
-                <Pressable
-                  key={role}
-                  style={[
-                    styles.roleOption,
-                    { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
-                    user?.role === role && { backgroundColor: colors.accent, borderColor: colors.accent },
-                  ]}
-                  onPress={() => updateProfile({ role })}
-                >
-                  <MaterialIcons 
-                    name={role === 'dasher' ? 'delivery-dining' : 'restaurant'} 
-                    size={24} 
-                    color={user?.role === role ? '#FFFFFF' : colors.accent} 
-                  />
-                  <Text style={[
-                    styles.roleOptionText,
-                    { color: colors.text },
-                    user?.role === role && { color: '#FFFFFF' },
-                  ]}>
-                    {roleLabels[role]}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Roles</Text>
+            <Text style={[styles.inputHint, { color: colors.mutedText }]}>Switch modes from the role chooser.</Text>
+              <Pressable
+                style={[styles.kitchenButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
+                onPress={() => router.push('/role-switch' as any)}
+              >
+                <MaterialIcons name="swap-horiz" size={20} color={colors.accent} />
+                <Text style={[styles.kitchenButtonText, { color: colors.text }]}>Switch role</Text>
+              </Pressable>
           </View>
 
           {/* Notifications */}
@@ -375,24 +353,6 @@ const styles = StyleSheet.create({
     minWidth: 30,
     textAlign: 'center',
   },
-  roleOptions: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  roleOption: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Radii.md,
-    borderWidth: 1,
-  },
-  roleOptionText: {
-    fontSize: 11,
-    fontWeight: '500',
-    marginTop: Spacing.xs,
-    textAlign: 'center',
-  },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -455,6 +415,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#DC2626',
+  },
+  kitchenButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    borderRadius: Radii.md,
+    borderWidth: 1,
+    paddingVertical: Spacing.md,
+    marginTop: Spacing.sm,
+  },
+  kitchenButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   appInfo: {
     alignItems: 'center',

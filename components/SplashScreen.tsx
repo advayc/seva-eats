@@ -4,10 +4,10 @@ import { Image } from 'expo-image';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withTiming,
+    useAnimatedStyle,
+    useSharedValue,
+    withSequence,
+    withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -66,14 +66,14 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         <View style={[styles.heroRow, !isWide && styles.heroRowStacked]}>
           <Animated.View style={[styles.logoWrapper, logoStyle]}>
             <Image
-              source={require('@/assets/images/logo.svg')}
+              source={require('@/assets/images/logo.png')}
               style={[styles.logo, !isWide && styles.logoStacked]}
               contentFit="contain"
             />
           </Animated.View>
 
           <Animated.View style={[styles.titleBlock, textStyle, !isWide && styles.titleBlockStacked]}>
-            <Text style={[styles.title, { color: colors.text }]}>Sewa Eats</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
             <Text style={[styles.tagline, { color: colors.accent }]}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
           </Animated.View>
         </View>

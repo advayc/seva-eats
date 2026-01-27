@@ -1,32 +1,39 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
 import { availableRequests } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
-import { useOrders, useUser } from '@/context';
+import { useOrders, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function DasherDashboardScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { orders, activeOrder } = useOrders();
-  const { user, isLoading, setRole } = useUser();
+  const { user } = useUser();
+  const { setVolunteerNameVisibility, activeRequest } = useRequests();
+  const [showNameToRecipients, setShowNameToRecipients] = useState(false);
 
-  if (!isLoading && user?.role !== 'dasher') {
-    return <Redirect href={'/(onboarding)/choose-role' as any} />;
+  if (user?.role !== 'dasher') {
+    router.replace('/volunteer' as any);
+    return null;
   }
 
   const handleViewDelivery = (requestId: string) => {
     router.push(`/dasher/delivery/${requestId}` as any);
   };
 
-  const handleSwitchToRecipient = async () => {
-    await setRole('recipient');
-    router.replace('/(tabs)');
+  const handleToggleNameVisibility = () => {
+    const nextValue = !showNameToRecipients;
+    setShowNameToRecipients(nextValue);
+    if (activeRequest) {
+      setVolunteerNameVisibility(activeRequest.id, nextValue);
+    }
   };
 
   return (
@@ -39,9 +46,9 @@ export default function DasherDashboardScreen() {
           </View>
           <Pressable
             style={[styles.switchButton, { borderColor: colors.border }]}
-            onPress={handleSwitchToRecipient}
+            onPress={() => router.push('/role-switch' as any)}
           >
-            <Text style={[styles.switchText, { color: colors.text }]}>Recipient mode</Text>
+            <Text style={[styles.switchText, { color: colors.text }]}>Switch role</Text>
           </Pressable>
         </View>
 
@@ -65,7 +72,16 @@ export default function DasherDashboardScreen() {
           </Pressable>
         )}
 
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Available Deliveries</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Available Deliveries</Text>
+          <Pressable
+            style={[styles.nameToggle, { borderColor: colors.border, backgroundColor: colors.surface }]}
+            onPress={handleToggleNameVisibility}
+          >
+            <MaterialIcons name={showNameToRecipients ? 'visibility' : 'visibility-off'} size={16} color={colors.accent} />
+            <Text style={[styles.nameToggleText, { color: colors.text }]}>Show name</Text>
+          </Pressable>
+        </View>
 
         {availableRequests.map((request) => (
           <Pressable
@@ -103,6 +119,35 @@ export default function DasherDashboardScreen() {
         {!orders.length && (
           <Text style={[styles.emptyText, { color: colors.mutedText }]}>No deliveries claimed yet. Tap a delivery to begin.</Text>
         )}
+
+        {/* Impact & Seva */}
+        <GlassCard style={styles.impactCard}>
+          <View style={styles.impactHeader}>
+            <View style={[styles.impactIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
+              <MaterialIcons name="workspace-premium" size={22} color={colors.accent} />
+            </View>
+            <View>
+              <Text style={[styles.impactTitle, { color: colors.text }]}>Seva Impact</Text>
+              <Text style={[styles.impactSubtitle, { color: colors.mutedText }]}>Quiet milestones, real service</Text>
+            </View>
+          </View>
+          <View style={styles.impactRow}>
+            <View style={styles.impactItem}>
+              <Text style={[styles.impactValue, { color: colors.text }]}>3 weeks</Text>
+              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Seva Streak</Text>
+            </View>
+            <View style={[styles.impactDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.impactItem}>
+              <Text style={[styles.impactValue, { color: colors.text }]}>50 meals</Text>
+              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Impact Milestone</Text>
+            </View>
+            <View style={[styles.impactDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.impactItem}>
+              <Text style={[styles.impactValue, { color: colors.text }]}>1,000 meals</Text>
+              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Team Goal</Text>
+            </View>
+          </View>
+        </GlassCard>
       </ScrollView>
     </SafeAreaView>
   );
@@ -174,6 +219,25 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: Spacing.md,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.md,
+  },
+  nameToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: Radii.pill,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  nameToggleText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
   deliveryCard: {
     marginBottom: Spacing.md,
     overflow: 'hidden',
@@ -228,5 +292,52 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: Spacing.lg,
     fontSize: 12,
+  },
+  impactCard: {
+    marginTop: Spacing.xl,
+    padding: Spacing.lg,
+  },
+  impactHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
+  },
+  impactIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  impactTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  impactSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  impactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  impactItem: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+  },
+  impactDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: 'rgba(0,0,0,0.08)',
+  },
+  impactValue: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  impactLabel: {
+    fontSize: 11,
+    textAlign: 'center',
   },
 });

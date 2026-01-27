@@ -225,7 +225,7 @@ export default function MealSelectionScreen() {
           <View style={styles.infoBannerText}>
             <Text style={[styles.infoBannerTitle, { color: colors.isDark ? colors.accent : '#92400E' }]}>Langar is free for everyone</Text>
             <Text style={[styles.infoBannerDesc, { color: colors.isDark ? colors.mutedText : '#B45309' }]}> 
-              A driver will pick up your meal from a nearby Gurdwara and deliver it to you
+              A volunteer will deliver your meal to a partner shelter or community drop-off
             </Text>
           </View>
         </Animated.View>

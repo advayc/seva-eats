@@ -30,7 +30,7 @@ export function AnimationTransition({ onComplete }: AnimationTransitionProps) {
       >
         <img
           src={require('@/assets/images/logo.png')}
-          alt="Seva Eats Logo"
+          alt="Seva Eats logo"
           className="w-64 h-64"
         />
       </motion.div>

@@ -1,5 +1,4 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import {
   Pressable,
@@ -12,45 +11,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
 import { LiquidGlassButton } from '@/components/liquid-glass-button';
-import {
-  availableRequests,
-  communityStats,
-  pickupLocations,
-} from '@/constants/mock-data';
+import { communityStats } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
-import { useLocation, useOrders, useRequests, useUser } from '@/context';
+import { useLocation, useRequests } from '@/context';
 import { REQUEST_STATUS_LABELS } from '@/context/RequestContext';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function HomeScreen() {
   const router = useRouter();
   const colors = useThemeColors();
-  const { activeOrder } = useOrders();
   const { userLocation, refreshLocation, isLoading } = useLocation();
   const { activeRequest } = useRequests();
-  const { user } = useUser();
-  const isDasher = user?.role === 'dasher';
 
   const locationLabel = userLocation?.address?.split(',')[0] ?? 'Set location';
-
-  const handleStartDelivery = (requestId: string) => {
-    router.push(`/dasher/delivery/${requestId}` as any);
-  };
-
-  const handleViewActiveOrder = () => {
-    if (!activeOrder) return;
-    router.push(`/order/${activeOrder.id}` as const);
-  };
-
-  const getDropOffTypeLabel = (type: string) => {
-    switch (type) {
-      case 'shelter': return 'Shelter';
-      case 'food_bank': return 'Food Bank';
-      case 'community_center': return 'Community Center';
-      case 'family': return 'Family';
-      default: return type;
-    }
-  };
 
   const handleViewActiveRequest = () => {
     if (!activeRequest) return;
@@ -63,6 +36,8 @@ export default function HomeScreen() {
       case 'matched': return 'person';
       case 'picked_up': return 'restaurant';
       case 'on_the_way': return 'directions-car';
+      case 'delivered': return 'check-circle';
+      case 'cancelled': return 'cancel';
       default: return 'restaurant';
     }
   };
@@ -88,11 +63,6 @@ export default function HomeScreen() {
             </Pressable>
           </View>
           <View style={styles.headerActions}>
-            {!isDasher && (
-              <Pressable onPress={() => router.push('/dasher/login' as any)} style={styles.dasherLink}>
-                <Text style={[styles.dasherLinkText, { color: colors.accent }]}>Dasher login</Text>
-              </Pressable>
-            )}
             <Pressable 
               style={[styles.iconButton, { backgroundColor: colors.surface }]} 
               onPress={() => router.push('/profile')}
@@ -102,26 +72,20 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Active Delivery Banner */}
-        {activeOrder && isDasher && (
-          <Pressable 
-            style={({ pressed }) => [
-              styles.activeOrderBanner,
-              { backgroundColor: colors.accent },
-              pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] }
-            ]} 
-            onPress={handleViewActiveOrder}
-          >
-            <View style={styles.activeOrderLeft}>
-              <MaterialIcons name="local-shipping" size={20} color="#FFFFFF" />
-              <View style={styles.activeOrderText}>
-                <Text style={styles.activeOrderTitle}>Delivery in Progress</Text>
-                <Text style={styles.activeOrderSubtitle}>Tap to track your route</Text>
-              </View>
+        <GlassCard style={styles.segmentCard}>
+          <View style={styles.segmentRow}>
+            <View style={styles.segmentLeft}>
+              <Text style={[styles.segmentTitle, { color: colors.text }]}>Recipient Mode</Text>
+              <Text style={[styles.segmentSubtitle, { color: colors.mutedText }]}>Shelter drop-offs only during beta</Text>
             </View>
-            <MaterialIcons name="chevron-right" size={24} color="#FFFFFF" />
-          </Pressable>
-        )}
+            <Pressable
+              style={[styles.segmentButton, { borderColor: colors.border }]}
+              onPress={() => router.push('/role-switch' as any)}
+            >
+              <Text style={[styles.segmentButtonText, { color: colors.text }]}>Switch</Text>
+            </Pressable>
+          </View>
+        </GlassCard>
 
         {/* Active Meal Request Banner */}
         {activeRequest && (
@@ -139,9 +103,9 @@ export default function HomeScreen() {
                   {REQUEST_STATUS_LABELS[activeRequest.status]}
                 </Text>
                 <Text style={styles.activeOrderSubtitle}>
-                    {activeRequest.status === 'pending' 
-                    ? 'Looking for a driver nearby...'
-                    : activeRequest.volunteerName 
+                  {activeRequest.status === 'pending'
+                    ? 'Matching a volunteer...'
+                    : activeRequest.showVolunteerName && activeRequest.volunteerName
                       ? `${activeRequest.volunteerName} is on it`
                       : 'Tap to view details'
                   }
@@ -163,160 +127,60 @@ export default function HomeScreen() {
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.familiesServed.toLocaleString()}</Text>
-              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Families</Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Shelters</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.activeVolunteers}</Text>
-              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Dashers</Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Volunteers</Text>
             </View>
           </View>
         </GlassCard>
 
         {/* Main Action Cards */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>What would you like to do?</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Request a meal</Text>
 
-        {!isDasher && (
-          <LiquidGlassButton
-            title="Request a Meal"
-            description="Need food? Request a free Langar meal to be delivered to your home"
-            icon="restaurant"
-            onPress={() => router.push('/request/new')}
-            variant="default"
-          />
-        )}
+        <LiquidGlassButton
+          title="Request Shelter Drop-off"
+          description="Request a free Langar meal for a partner shelter or community drop-off"
+          icon="restaurant"
+          onPress={() => router.push('/request/new')}
+          variant="default"
+        />
 
-        {isDasher && (
-          <LiquidGlassButton
-            title="Go to Dasher Hub"
-            description="View available deliveries and your current routes"
-            icon="delivery-dining"
-            onPress={() => router.push('/dasher/dashboard' as any)}
-            variant="default"
-          />
-        )}
+        <GlassCard style={styles.howItWorksCard}>
+          <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How It Works</Text>
 
-        {isDasher && (
-          <>
-            {/* Available Deliveries Preview */}
-            <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Available Deliveries</Text>
-              <Pressable onPress={() => router.push('/dasher/dashboard' as any)}>
-                <Text style={[styles.seeAllLink, { color: colors.accent }]}>See all</Text>
-              </Pressable>
+          <View style={styles.stepItem}>
+            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
+              <Text style={styles.stepNumber}>1</Text>
             </View>
+            <View style={styles.stepContent}>
+              <Text style={[styles.stepTitle, { color: colors.text }]}>Request</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Choose meals and a shelter drop-off window</Text>
+            </View>
+          </View>
 
-            {availableRequests.slice(0, 2).map((request) => (
-              <Pressable 
-                key={request.id} 
-                style={({ pressed }) => [
-                  pressed && styles.deliveryCardPressed
-                ]}
-                onPress={() => handleStartDelivery(request.id)}
-              >
-                <GlassCard style={styles.deliveryCard} noBorder>
-                  <Image 
-                    source={{ uri: request.pickupLocation.image }} 
-                    style={styles.deliveryImage}
-                  />
-                  <View style={styles.deliveryContent}>
-                    <View style={styles.deliveryHeader}>
-                      <Text style={[styles.deliveryTitle, { color: colors.text }]}>{request.pickupLocation.name}</Text>
-                      <View style={[styles.distanceBadge, { backgroundColor: colors.isDark ? '#064E3B' : '#ECFDF5' }]}>
-                        <Text style={[styles.distanceText, { color: '#059669' }]}>{request.distanceFromHome}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.deliveryRoute}>
-                      <View style={styles.routePoint}>
-                        <MaterialIcons name="place" size={14} color={colors.accent} />
-                        <Text style={[styles.routeText, { color: colors.mutedText }]}>Pickup: {request.pickupLocation.name}</Text>
-                      </View>
-                      <View style={[styles.routeLine, { backgroundColor: colors.border }]} />
-                      <View style={styles.routePoint}>
-                        <MaterialIcons name="home" size={14} color="#059669" />
-                        <Text style={[styles.routeText, { color: colors.mutedText }]}>
-                          Drop-off: {getDropOffTypeLabel(request.dropOffLocation.type)}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.deliveryMeta}>
-                      <View style={styles.metaItem}>
-                        <MaterialIcons name="schedule" size={14} color={colors.mutedText} />
-                        <Text style={[styles.metaText, { color: colors.mutedText }]}>{request.estimatedTime}</Text>
-                      </View>
-                      <View style={styles.metaItem}>
-                        <MaterialIcons name="inventory-2" size={14} color={colors.mutedText} />
-                        <Text style={[styles.metaText, { color: colors.mutedText }]}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
-                      </View>
-                    </View>
-                  </View>
-                </GlassCard>
-              </Pressable>
-            ))}
+          <View style={styles.stepItem}>
+            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
+              <Text style={styles.stepNumber}>2</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={[styles.stepTitle, { color: colors.text }]}>Pickup</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>A volunteer collects langar from a nearby gurdwara</Text>
+            </View>
+          </View>
 
-            {/* Nearby Gurdwaras */}
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Nearby Pickup Locations</Text>
-
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.gurdwaraScroll}
-            >
-              {pickupLocations.map((location) => (
-                <Pressable 
-                  key={location.id} 
-                  style={({ pressed }) => [
-                    pressed && { opacity: 0.7, transform: [{ scale: 0.97 }] }
-                  ]}
-                >
-                  <GlassCard style={styles.gurdwaraCard} noBorder>
-                    <Image source={{ uri: location.image }} style={styles.gurdwaraImage} />
-                    <View style={styles.gurdwaraInfo}>
-                      <Text style={[styles.gurdwaraName, { color: colors.text }]} numberOfLines={1}>{location.name}</Text>
-                      <Text style={[styles.gurdwaraMeta, { color: colors.accent }]}>{location.boxesAvailable} boxes available</Text>
-                      <Text style={[styles.gurdwaraDistance, { color: colors.mutedText }]}>{location.distance}</Text>
-                    </View>
-                  </GlassCard>
-                </Pressable>
-              ))}
-            </ScrollView>
-
-            {/* How It Works */}
-            <GlassCard style={styles.howItWorksCard}>
-              <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How It Works</Text>
-              
-              <View style={styles.stepItem}>
-                <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
-                  <Text style={styles.stepNumber}>1</Text>
-                </View>
-                <View style={styles.stepContent}>
-                  <Text style={[styles.stepTitle, { color: colors.text }]}>Pick Up</Text>
-                  <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Collect a meal box at your local Gurdwara</Text>
-                </View>
-              </View>
-
-              <View style={styles.stepItem}>
-                <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
-                  <Text style={styles.stepNumber}>2</Text>
-                </View>
-                <View style={styles.stepContent}>
-                  <Text style={[styles.stepTitle, { color: colors.text }]}>Get Matched</Text>
-                  <Text style={[styles.stepDesc, { color: colors.mutedText }]}>We find a recipient 1-2 km from your route home</Text>
-                </View>
-              </View>
-
-              <View style={styles.stepItem}>
-                <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
-                  <Text style={styles.stepNumber}>3</Text>
-                </View>
-                <View style={styles.stepContent}>
-                  <Text style={[styles.stepTitle, { color: colors.text }]}>Deliver</Text>
-                  <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Drop off the meal and complete your Seva</Text>
-                </View>
-              </View>
-            </GlassCard>
-          </>
-        )}
+          <View style={styles.stepItem}>
+            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
+              <Text style={styles.stepNumber}>3</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={[styles.stepTitle, { color: colors.text }]}>Confirm</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Confirm delivery window at the shelter</Text>
+            </View>
+          </View>
+        </GlassCard>
       </ScrollView>
     </SafeAreaView>
   );
@@ -342,15 +206,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  dasherLink: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-  },
-  dasherLinkText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
   appTitle: {
     fontSize: 24,
     fontWeight: '700',
@@ -370,19 +225,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  activeOrderBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: Radii.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.lg,
-    shadowColor: '#F97316',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
   },
   activeRequestBanner: {
     flexDirection: 'row',
@@ -419,6 +261,36 @@ const styles = StyleSheet.create({
   statsCard: {
     padding: Spacing.lg,
     marginBottom: Spacing.xl,
+  },
+  segmentCard: {
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  segmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  segmentLeft: {
+    flex: 1,
+  },
+  segmentTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  segmentSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  segmentButton: {
+    borderRadius: Radii.pill,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  segmentButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   statsLabel: {
     fontSize: 11,
@@ -461,98 +333,6 @@ const styles = StyleSheet.create({
   seeAllLink: {
     fontSize: 13,
     fontWeight: '600',
-  },
-  deliveryCard: {
-    marginBottom: Spacing.md,
-    overflow: 'hidden',
-  },
-  deliveryCardPressed: {
-    opacity: 0.7,
-    transform: [{ scale: 0.98 }],
-  },
-  deliveryImage: {
-    width: '100%',
-    height: 120,
-  },
-  deliveryContent: {
-    padding: Spacing.md,
-  },
-  deliveryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  deliveryTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    flex: 1,
-  },
-  distanceBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  distanceText: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  deliveryRoute: {
-    marginBottom: Spacing.sm,
-  },
-  routePoint: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  routeLine: {
-    width: 1,
-    height: 12,
-    marginLeft: 7,
-    marginVertical: 2,
-  },
-  routeText: {
-    fontSize: 12,
-  },
-  deliveryMeta: {
-    flexDirection: 'row',
-    gap: Spacing.lg,
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  metaText: {
-    fontSize: 12,
-  },
-  gurdwaraScroll: {
-    gap: Spacing.md,
-    paddingBottom: Spacing.md,
-  },
-  gurdwaraCard: {
-    width: 160,
-    overflow: 'hidden',
-  },
-  gurdwaraImage: {
-    width: '100%',
-    height: 90,
-  },
-  gurdwaraInfo: {
-    padding: Spacing.sm,
-  },
-  gurdwaraName: {
-    fontSize: 13,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  gurdwaraMeta: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  gurdwaraDistance: {
-    fontSize: 11,
-    marginTop: 2,
   },
   howItWorksCard: {
     padding: Spacing.lg,

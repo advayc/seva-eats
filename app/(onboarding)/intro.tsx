@@ -19,12 +19,12 @@ export default function IntroScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.heroRow}>
           <Image
-            source={require('@/assets/images/logo.svg')}
+            source={require('@/assets/images/logo.png')}
             style={styles.logo}
             contentFit="contain"
           />
           <View style={styles.heroText}>
-            <Text style={[styles.title, { color: colors.text }]}>Sewa Eats</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
             <Text style={[styles.subtitle, { color: colors.mutedText }]}>A shared community delivery network</Text>
           </View>
         </View>

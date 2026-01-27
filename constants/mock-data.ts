@@ -74,7 +74,7 @@ export const sevaActions: SevaAction[] = [
   {
     id: 'view-routes',
     name: 'View Drop-off Routes',
-    description: 'See delivery locations near your home address',
+    description: 'See delivery locations near partner sites',
     icon: 'route',
   },
   {
@@ -166,7 +166,7 @@ export const dropOffLocations: DropOffLocation[] = [
     name: 'Hope Community Shelter',
     type: 'shelter',
     address: '456 Main St, Brampton, ON',
-    distance: '0.8 km from your home',
+    distance: '0.8 km from you',
     boxesNeeded: 12,
     partnerProgram: 'Peel Region Housing Support',
     location: {
@@ -180,7 +180,7 @@ export const dropOffLocations: DropOffLocation[] = [
     name: 'Mississauga Food Bank',
     type: 'food_bank',
     address: '3121 Universal Dr, Mississauga, ON',
-    distance: '1.2 km from your home',
+    distance: '1.2 km from you',
     boxesNeeded: 25,
     partnerProgram: 'Feed Ontario Network',
     location: {
@@ -194,7 +194,7 @@ export const dropOffLocations: DropOffLocation[] = [
     name: 'Family in Need',
     type: 'family',
     address: 'Near Hurontario & Dundas',
-    distance: '1.5 km from your home',
+    distance: '1.5 km from you',
     boxesNeeded: 1,
     partnerProgram: 'Seva Family Support',
     location: {

@@ -15,15 +15,15 @@ export default function WelcomeScreen() {
       <View style={styles.content}>
         <View style={styles.heroRow}>
           <View style={styles.logoWrap}>
-            <Image source={require('@/assets/images/logo.svg')} style={styles.logo} />
+            <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
           </View>
           <View style={styles.titleBlock}>
-            <Text style={[styles.title, { color: colors.text }]}>Sewa Eats</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
             <Text style={[styles.tagline, { color: colors.accent }]}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
           </View>
         </View>
 
-        <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/intro')}>
+        <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/(onboarding)/intro')}>
           <Text style={styles.primaryText}>Continue</Text>
         </Pressable>
       </View>

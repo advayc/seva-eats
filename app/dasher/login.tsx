@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -32,9 +32,9 @@ export default function DasherLoginScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
       <View style={styles.content}>
         <View style={styles.heroRow}>
-          <Image source={require('@/assets/images/logo.svg')} style={styles.logo} contentFit="contain" />
+          <Image source={require('@/assets/images/logo.png')} style={styles.logo} contentFit="contain" />
           <View style={styles.heroText}>
-            <Text style={[styles.title, { color: colors.text }]}>Sewa Eats</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
             <Text style={[styles.tagline, { color: colors.accent }]}>FOOD • COMMUNITY • SERVICE</Text>
           </View>
         </View>
@@ -56,8 +56,11 @@ export default function DasherLoginScreen() {
           <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={handleEnterDasher}>
             <Text style={styles.primaryText}>Enter Dasher Hub</Text>
           </Pressable>
-          <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={handleBackToRecipient}>
-            <Text style={[styles.secondaryText, { color: colors.text }]}>Back to recipient app</Text>
+          <Pressable
+            style={[styles.secondaryButton, { borderColor: colors.border }]}
+            onPress={() => router.replace('/volunteer' as any)}
+          >
+            <Text style={[styles.secondaryText, { color: colors.text }]}>Back to volunteer hub</Text>
           </Pressable>
         </View>
       </View>

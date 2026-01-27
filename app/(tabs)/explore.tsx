@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,11 +17,27 @@ export default function DasherScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { orders, activeOrder } = useOrders();
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<FilterTab>('available');
 
-  if (!isLoading && user?.role !== 'dasher') {
-    return <Redirect href={'/(onboarding)/choose-role' as any} />;
+  if (user?.role !== 'dasher') {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.emptyState}>
+          <MaterialIcons name="lock" size={48} color={colors.border} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Dasher access only</Text>
+          <Text style={[styles.emptyText, { color: colors.mutedText }]}>
+            Volunteer access is separate. Switch roles to see delivery routes.
+          </Text>
+          <Pressable
+            style={[styles.claimButton, { backgroundColor: colors.accent }]}
+            onPress={() => router.push('/profile')}
+          >
+            <Text style={styles.claimButtonText}>Go to profile</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   const handleViewDelivery = (requestId: string) => {
@@ -52,7 +68,7 @@ export default function DasherScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={[styles.title, { color: colors.text }]}>Dasher</Text>
-        <Text style={[styles.subtitle, { color: colors.mutedText }]}>Find deliveries near your route home</Text>
+        <Text style={[styles.subtitle, { color: colors.mutedText }]}>Pick up langar and deliver to nearby partners</Text>
 
         {/* Filter Tabs */}
         <GlassCard style={styles.filterTabsCard}>
@@ -201,7 +217,7 @@ export default function DasherScreen() {
             <GlassCard style={styles.infoCard}>
               <MaterialIcons name="info-outline" size={20} color={colors.mutedText} />
               <Text style={[styles.infoText, { color: colors.mutedText }]}>
-                Deliveries are matched to locations near your home address. Update your address in settings to see more relevant options.
+                  Deliveries are matched to nearby partner locations. Update your address in settings to see more relevant options.
               </Text>
             </GlassCard>
           </>
@@ -456,6 +472,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.xxxl,
     paddingHorizontal: Spacing.lg,
+    gap: Spacing.sm,
   },
   emptyTitle: {
     fontSize: 17,

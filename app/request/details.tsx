@@ -20,7 +20,8 @@ import { getMealById } from '@/constants/meals';
 import { useLocation, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
-const SERVING_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
+const SERVING_SIZES = [1, 2, 3];
+const DELIVERY_WINDOWS = ['12–2 PM', '2–4 PM', '6–8 PM'];
 const MAX_NOTE_LENGTH = 200;
 
 export default function DeliveryDetailsScreen() {
@@ -43,11 +44,14 @@ export default function DeliveryDetailsScreen() {
 
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
-  const [address, setAddress] = useState(userLocation?.address ?? '');
+  const [address, setAddress] = useState('');
   const [servingSize, setServingSize] = useState(user?.servingSize ?? 2);
-  const [driverNote, setDriverNote] = useState('');
+  const [thankYouNote, setThankYouNote] = useState('');
+  const [deliveryPreference, setDeliveryPreference] = useState<'leave_at_door' | 'hand_to_me'>('leave_at_door');
+  const [deliveryWindow, setDeliveryWindow] = useState(DELIVERY_WINDOWS[0]);
+  const [donationAmount, setDonationAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const driverNoteCount = driverNote.length;
+  const thankYouNoteCount = thankYouNote.length;
 
   const handleSubmit = () => {
     // Validate
@@ -56,7 +60,7 @@ export default function DeliveryDetailsScreen() {
       return;
     }
     if (!phone.trim()) {
-      Alert.alert('Phone Required', 'Please enter your phone number so the driver can contact you.');
+      Alert.alert('Phone Required', 'Please enter your phone number so the driver can contact if there are any issues.');
       return;
     }
     if (!address.trim()) {
@@ -94,7 +98,13 @@ export default function DeliveryDetailsScreen() {
       },
       servingSize,
       dietaryRestrictions: [],
-      driverNote: `Meals: ${mealDescription}${driverNote ? `\n${driverNote.trim()}` : ''}`,
+      driverNote: [
+        `Meals: ${mealDescription}`,
+        `Delivery: ${deliveryPreference === 'leave_at_door' ? 'Leave at door' : 'Hand to me'}`,
+        `Window: ${deliveryWindow}`,
+        thankYouNote.trim() ? `Thank you: ${thankYouNote.trim()}` : null,
+        donationAmount.trim() ? `Donation: $${donationAmount.trim()}` : null,
+      ].filter(Boolean).join('\n'),
     });
 
     setIsSubmitting(false);
@@ -164,23 +174,24 @@ export default function DeliveryDetailsScreen() {
               keyboardType="phone-pad"
               placeholderTextColor={colors.mutedText}
             />
-            <Text style={[styles.helper, { color: colors.mutedText }]}>The driver will call/text when they arrive</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>So the driver can contact if there are any issues</Text>
           </Animated.View>
 
-          {/* Address Input */}
+          {/* Shelter / Partner Location */}
           <Animated.View entering={FadeInDown.delay(250)} style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Delivery Address</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Shelter or partner location</Text>
             <View style={[styles.addressInputRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <MaterialIcons name="location-on" size={20} color={colors.accent} />
               <TextInput
                 style={[styles.addressInput, { color: colors.text }]}
-                placeholder="Enter your delivery address"
+                placeholder="Enter a nearby shelter or partner address"
                 value={address}
                 onChangeText={setAddress}
                 multiline
                 placeholderTextColor={colors.mutedText}
               />
             </View>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>Beta: deliveries go to partner shelters and community drop-offs.</Text>
             {userLocation?.address && address !== userLocation.address && (
               <Pressable
                 style={styles.useCurrentButton}
@@ -221,15 +232,107 @@ export default function DeliveryDetailsScreen() {
             </View>
           </Animated.View>
 
-          {/* Add Note to Driver */}
+          {/* Delivery Window */}
           <Animated.View entering={FadeInDown.delay(350)} style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Add Note to Driver</Text>
-            <Text style={[styles.helper, { color: colors.mutedText }]}>Notes for your driver (optional)</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Delivery window</Text>
+            <View style={styles.deliveryOptions}>
+              {DELIVERY_WINDOWS.map((window) => (
+                <Pressable
+                  key={window}
+                  style={[
+                    styles.deliveryOption,
+                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    deliveryWindow === window && { backgroundColor: colors.accent, borderColor: colors.accent },
+                  ]}
+                  onPress={() => setDeliveryWindow(window)}
+                >
+                  <Text
+                    style={[
+                      styles.deliveryOptionText,
+                      { color: colors.text },
+                      deliveryWindow === window && { color: '#FFFFFF' },
+                    ]}
+                  >
+                    {window}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </Animated.View>
+
+          {/* Delivery Preference */}
+          <Animated.View entering={FadeInDown.delay(400)} style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.text }]}>Delivery preference</Text>
+            <View style={styles.deliveryOptions}>
+              <Pressable
+                style={[
+                  styles.deliveryOption,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  deliveryPreference === 'leave_at_door' && { backgroundColor: colors.accent, borderColor: colors.accent },
+                ]}
+                onPress={() => setDeliveryPreference('leave_at_door')}
+              >
+                <MaterialIcons name="door-front" size={18} color={deliveryPreference === 'leave_at_door' ? '#FFFFFF' : colors.text} />
+                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'leave_at_door' && { color: '#FFFFFF' }]}>
+                  Leave at door
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.deliveryOption,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  deliveryPreference === 'hand_to_me' && { backgroundColor: colors.accent, borderColor: colors.accent },
+                ]}
+                onPress={() => setDeliveryPreference('hand_to_me')}
+              >
+                <MaterialIcons name="person" size={18} color={deliveryPreference === 'hand_to_me' ? '#FFFFFF' : colors.text} />
+                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'hand_to_me' && { color: '#FFFFFF' }]}>
+                  Hand to me
+                </Text>
+              </Pressable>
+            </View>
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(350)} style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.text }]}>Delivery preference</Text>
+            <View style={styles.deliveryOptions}>
+              <Pressable
+                style={[
+                  styles.deliveryOption,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  deliveryPreference === 'leave_at_door' && { backgroundColor: colors.accent, borderColor: colors.accent },
+                ]}
+                onPress={() => setDeliveryPreference('leave_at_door')}
+              >
+                <MaterialIcons name="door-front" size={18} color={deliveryPreference === 'leave_at_door' ? '#FFFFFF' : colors.text} />
+                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'leave_at_door' && { color: '#FFFFFF' }]}>
+                  Leave at door
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.deliveryOption,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  deliveryPreference === 'hand_to_me' && { backgroundColor: colors.accent, borderColor: colors.accent },
+                ]}
+                onPress={() => setDeliveryPreference('hand_to_me')}
+              >
+                <MaterialIcons name="person" size={18} color={deliveryPreference === 'hand_to_me' ? '#FFFFFF' : colors.text} />
+                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'hand_to_me' && { color: '#FFFFFF' }]}>
+                  Hand to me
+                </Text>
+              </Pressable>
+            </View>
+          </Animated.View>
+
+          {/* Thank You Note */}
+          <Animated.View entering={FadeInDown.delay(450)} style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.text }]}>Give a ty to your driver ❤️</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>Optional message that stays private</Text>
             <TextInput
               style={[styles.input, styles.textArea, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
-              placeholder="e.g., leave at door, call on arrival"
-              value={driverNote}
-              onChangeText={(text) => setDriverNote(text.slice(0, MAX_NOTE_LENGTH))}
+              placeholder="Write a short thank-you"
+              value={thankYouNote}
+              onChangeText={(text) => setThankYouNote(text.slice(0, MAX_NOTE_LENGTH))}
               multiline
               numberOfLines={3}
               maxLength={MAX_NOTE_LENGTH}
@@ -237,8 +340,25 @@ export default function DeliveryDetailsScreen() {
             />
             <View style={styles.noteFooter}>
               <Text style={[styles.noteHint, { color: colors.mutedText }]}>Be respectful. Notes are visible to drivers.</Text>
-              <Text style={[styles.noteCount, { color: colors.mutedText }]}>{driverNoteCount}/{MAX_NOTE_LENGTH}</Text>
+              <Text style={[styles.noteCount, { color: colors.mutedText }]}>{thankYouNoteCount}/{MAX_NOTE_LENGTH}</Text>
             </View>
+          </Animated.View>
+
+          {/* Donation */}
+          <Animated.View entering={FadeInDown.delay(500)} style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.text }]}>Donate (optional)</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>Help support packaging and delivery costs</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
+              placeholder="$5"
+              value={donationAmount}
+              onChangeText={(value) => {
+                const digitsOnly = value.replace(/[^0-9]/g, '');
+                setDonationAmount(digitsOnly.slice(0, 3));
+              }}
+              keyboardType="numeric"
+              placeholderTextColor={colors.mutedText}
+            />
           </Animated.View>
 
           {/* Spacer for bottom button */}
@@ -254,7 +374,7 @@ export default function DeliveryDetailsScreen() {
           >
             <MaterialIcons name="restaurant" size={20} color="#FFFFFF" />
             <Text style={styles.submitButtonText}>
-              {isSubmitting ? 'Submitting...' : 'Request Meal'}
+              {isSubmitting ? 'Submitting...' : 'Request Drop-off'}
             </Text>
           </Pressable>
         </View>
@@ -401,6 +521,25 @@ const styles = StyleSheet.create({
   },
   familySizeText: {
     fontSize: 14,
+    fontWeight: '600',
+  },
+  deliveryOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  deliveryOption: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.md,
+    borderRadius: Radii.md,
+    borderWidth: 1,
+  },
+  deliveryOptionText: {
+    fontSize: 13,
     fontWeight: '600',
   },
   footer: {

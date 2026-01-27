@@ -80,7 +80,7 @@ export function buildMealActivityData(request: MealRequest): MealActivityData {
 
   const subtitle = request.status === 'pending'
     ? 'Finding a volunteer near you'
-    : request.volunteerName
+    : request.showVolunteerName && request.volunteerName
       ? `${request.volunteerName} is handling your request`
       : 'Tracking your meal request';
 
@@ -94,7 +94,7 @@ export function buildMealActivityData(request: MealRequest): MealActivityData {
     etaValue: etaMinutes ? `${etaMinutes}` : '--',
     etaUnit: etaMinutes ? 'min' : 'eta',
     icon: STATUS_ICONS[request.status],
-    volunteerName: request.volunteerName,
+    volunteerName: request.showVolunteerName ? request.volunteerName : undefined,
     gurdwaraName: request.gurdwaraName,
   };
 

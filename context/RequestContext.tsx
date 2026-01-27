@@ -43,6 +43,7 @@ export type MealRequest = {
   estimatedDelivery?: Date;
   volunteerId?: string;
   volunteerName?: string;
+  showVolunteerName?: boolean;
   gurdwaraId?: string;
   gurdwaraName?: string;
   gurdwaraLocation?: {
@@ -73,6 +74,7 @@ type RequestContextType = {
   cancelRequest: (requestId: string) => void;
   getRequest: (requestId: string) => MealRequest | undefined;
   updateRequestStatus: (requestId: string, status: MealRequestStatus, updates?: Partial<MealRequest>) => void;
+  setVolunteerNameVisibility: (requestId: string, showVolunteerName: boolean) => void;
 };
 
 const RequestContext = createContext<RequestContextType | null>(null);
@@ -107,6 +109,7 @@ export function RequestProvider({ children }: { children: ReactNode }) {
             ...h,
             timestamp: new Date(h.timestamp),
           })),
+          showVolunteerName: r.showVolunteerName ?? false,
         }));
         setRequests(restored);
       }
@@ -146,6 +149,7 @@ export function RequestProvider({ children }: { children: ReactNode }) {
       status: 'pending',
       createdAt: now,
       liveActivityId: null,
+      showVolunteerName: false,
       statusHistory: [{ status: 'pending', timestamp: now }],
     };
 
@@ -178,11 +182,12 @@ export function RequestProvider({ children }: { children: ReactNode }) {
           const now = new Date();
           const estimatedDelivery = new Date(now.getTime() + 45 * 60 * 1000);
           
-          const nextRequest = {
-            ...req,
-            status: 'matched' as MealRequestStatus,
-            volunteerId: 'vol-123',
-            volunteerName: 'Gurpreet Singh',
+            const nextRequest = {
+              ...req,
+              status: 'matched' as MealRequestStatus,
+              volunteerId: 'vol-123',
+              volunteerName: 'Gurpreet Singh',
+              showVolunteerName: false,
             gurdwaraId: 'gurdwara-sahib-brampton',
             gurdwaraName: 'Gurdwara Sahib Brampton',
             gurdwaraLocation: {
@@ -306,6 +311,19 @@ export function RequestProvider({ children }: { children: ReactNode }) {
     [saveRequests]
   );
 
+  const setVolunteerNameVisibility = useCallback(
+    (requestId: string, showVolunteerName: boolean) => {
+      setRequests((prev) => {
+        const updated = prev.map((req) =>
+          req.id === requestId ? { ...req, showVolunteerName } : req
+        );
+        saveRequests(updated);
+        return updated;
+      });
+    },
+    [saveRequests]
+  );
+
   const activeRequest = useMemo(
     () => requests.find((r) => !['delivered', 'cancelled'].includes(r.status)) ?? null,
     [requests]
@@ -320,8 +338,9 @@ export function RequestProvider({ children }: { children: ReactNode }) {
       cancelRequest,
       getRequest,
       updateRequestStatus,
+      setVolunteerNameVisibility,
     }),
-    [requests, activeRequest, isLoading, submitRequest, cancelRequest, getRequest, updateRequestStatus]
+    [requests, activeRequest, isLoading, submitRequest, cancelRequest, getRequest, updateRequestStatus, setVolunteerNameVisibility]
   );
 
   return <RequestContext.Provider value={value}>{children}</RequestContext.Provider>;

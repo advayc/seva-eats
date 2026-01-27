@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -12,24 +12,39 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 const ONBOARDING_KEY = 'onboarding-completed';
 
 type RoleOption = {
-  id: 'recipient' | 'dasher';
+  id: 'recipient' | 'dasher' | 'kitchen' | 'dispatcher';
   title: string;
   description: string;
   icon: keyof typeof MaterialIcons.glyphMap;
 };
 
-const ROLE_OPTIONS: RoleOption[] = [
+const RECIPIENT_OPTIONS: RoleOption[] = [
   {
     id: 'recipient',
-    title: 'I need food',
-    description: 'Request free Langar meals delivered to your home.',
+    title: 'I need a meal',
+    description: 'Request a Langar meal delivered to a partner shelter or community drop-off.',
     icon: 'restaurant',
   },
+];
+
+const VOLUNTEER_OPTIONS: RoleOption[] = [
   {
     id: 'dasher',
-    title: 'Dasher / Volunteer',
-    description: 'Pick up and deliver meals to families in need nearby.',
-    icon: 'delivery-dining',
+    title: 'Volunteer',
+    description: 'Deliver meals, dispatch routes, or log kitchen intake.',
+    icon: 'volunteer-activism',
+  },
+  {
+    id: 'kitchen',
+    title: 'Kitchen Lead',
+    description: 'Log meal counts, dietary tags, and readiness time.',
+    icon: 'storefront',
+  },
+  {
+    id: 'dispatcher',
+    title: 'Dispatcher',
+    description: 'Match volunteers to shelter drop-offs and routes.',
+    icon: 'route',
   },
 ];
 
@@ -40,7 +55,9 @@ export default function ChooseRoleScreen() {
   const shadows = colors.isDark ? Shadows.dark : Shadows.light;
 
   const handleSelectRole = async (role: RoleOption['id']) => {
-    await setRole(role);
+    if (role === 'recipient' || role === 'dasher') {
+      await setRole(role);
+    }
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
 
     if (role === 'recipient') {
@@ -48,7 +65,17 @@ export default function ChooseRoleScreen() {
       return;
     }
 
-    router.replace('/dasher/login' as any);
+    if (role === 'dasher') {
+      router.replace('/volunteer' as any);
+      return;
+    }
+
+    if (role === 'kitchen') {
+      router.replace('/kitchen/login' as any);
+      return;
+    }
+
+    router.replace('/dispatcher/dashboard' as any);
   };
 
   return (
@@ -56,38 +83,68 @@ export default function ChooseRoleScreen() {
       <View style={styles.content}>
         <View style={styles.heroRow}>
           <View style={styles.logoWrap}>
-            <Image source={require('@/assets/images/logo.svg')} style={styles.logo} contentFit="contain" />
+            <Image source={require('@/assets/images/logo.png')} style={styles.logo} contentFit="contain" />
           </View>
           <View style={styles.titleBlock}>
-            <Text style={[styles.title, { color: colors.text }]}>Sewa Eats</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
             <Text style={[styles.tagline, { color: colors.accent }]}>FOOD • COMMUNITY • SERVICE</Text>
           </View>
         </View>
 
-        <Text style={[styles.prompt, { color: colors.mutedText }]}>How would you like to use Sewa Eats?</Text>
+        <Text style={[styles.prompt, { color: colors.mutedText }]}>Choose your path</Text>
 
-        <View style={styles.cardList}>
-          {ROLE_OPTIONS.map((option) => (
-            <Pressable
-              key={option.id}
-              style={({ pressed }) => [
-                styles.roleCard,
-                { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
-                shadows.card,
-                pressed && styles.roleCardPressed,
-              ]}
-              onPress={() => handleSelectRole(option.id)}
-            >
-              <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
-                <MaterialIcons name={option.icon} size={24} color={colors.accent} />
-              </View>
-              <View style={styles.roleText}>
-                <Text style={[styles.roleTitle, { color: colors.text }]}>{option.title}</Text>
-                <Text style={[styles.roleDescription, { color: colors.mutedText }]}>{option.description}</Text>
-              </View>
-              <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
-            </Pressable>
-          ))}
+        <View style={styles.sectionBlock}>
+          <Text style={[styles.sectionLabel, { color: colors.mutedText }]}>Get Meals</Text>
+          <View style={styles.cardList}>
+            {RECIPIENT_OPTIONS.map((option) => (
+              <Pressable
+                key={option.id}
+                style={({ pressed }) => [
+                  styles.roleCard,
+                  { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
+                  shadows.card,
+                  pressed && styles.roleCardPressed,
+                ]}
+                onPress={() => handleSelectRole(option.id)}
+              >
+                <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
+                  <MaterialIcons name={option.icon} size={24} color={colors.accent} />
+                </View>
+                <View style={styles.roleText}>
+                  <Text style={[styles.roleTitle, { color: colors.text }]}>{option.title}</Text>
+                  <Text style={[styles.roleDescription, { color: colors.mutedText }]}>{option.description}</Text>
+                </View>
+                <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.sectionBlock}>
+          <Text style={[styles.sectionLabel, { color: colors.mutedText }]}>Serve & Operate</Text>
+          <View style={styles.cardList}>
+            {VOLUNTEER_OPTIONS.map((option) => (
+              <Pressable
+                key={option.id}
+                style={({ pressed }) => [
+                  styles.roleCard,
+                  { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
+                  shadows.card,
+                  pressed && styles.roleCardPressed,
+                ]}
+                onPress={() => handleSelectRole(option.id)}
+              >
+                <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
+                  <MaterialIcons name={option.icon} size={24} color={colors.accent} />
+                </View>
+                <View style={styles.roleText}>
+                  <Text style={[styles.roleTitle, { color: colors.text }]}>{option.title}</Text>
+                  <Text style={[styles.roleDescription, { color: colors.mutedText }]}>{option.description}</Text>
+                </View>
+                <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
+              </Pressable>
+            ))}
+          </View>
         </View>
 
         <Text style={[styles.footerNote, { color: colors.mutedText }]}>You can change this later in your profile.</Text>
@@ -141,6 +198,15 @@ const styles = StyleSheet.create({
   },
   cardList: {
     gap: Spacing.md,
+  },
+  sectionBlock: {
+    gap: Spacing.sm,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
   roleCard: {
     flexDirection: 'row',

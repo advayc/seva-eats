@@ -55,8 +55,11 @@ export default function RootLayout() {
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                  <Stack.Screen name="dasher" options={{ headerShown: false }} />
+                   <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                   <Stack.Screen name="dasher" options={{ headerShown: false }} />
+                   <Stack.Screen name="kitchen" options={{ headerShown: false }} />
+                   <Stack.Screen name="dispatcher" options={{ headerShown: false }} />
+                   <Stack.Screen name="volunteer" options={{ headerShown: false }} />
                   <Stack.Screen name="modal" options={{ headerShown: true, presentation: 'modal', title: 'Categories' }} />
                   <Stack.Screen name="store/[id]" options={{ headerShown: false }} />
                   <Stack.Screen name="cart" options={{ headerShown: true, presentation: 'modal', title: 'Cart' }} />

@@ -1,18 +1,18 @@
 {
   "expo": {
     "name": "Seva Eats",
-    "slug": "sev-eats",
+    "slug": "seva-eats",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
-    "scheme": "seveats",
+    "scheme": "sevaeats",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.advay.sewaeats",
+      "bundleIdentifier": "com.advay.sevaeats",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby sewa drop-off points and delivery updates.",
+        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby Seva Eats drop-off points and delivery updates.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -27,7 +27,7 @@
       ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.advay.sewaeats"
+      "package": "com.advay.sevaeats"
     },
     "web": {
       "output": "static",

@@ -29,7 +29,7 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 // Progress steps configuration
 const PROGRESS_STEPS: { status: MealRequestStatus; icon: string; label: string }[] = [
   { status: 'pending', icon: 'search', label: 'Finding Driver' },
-  { status: 'matched', icon: 'person-pin', label: 'Driver Matched' },
+  { status: 'matched', icon: 'verified', label: 'Driver Matched' },
   { status: 'picked_up', icon: 'takeout-dining', label: 'Meal Picked Up' },
   { status: 'on_the_way', icon: 'directions-car', label: 'On the Way' },
   { status: 'delivered', icon: 'check-circle', label: 'Delivered' },
@@ -420,8 +420,8 @@ export default function RequestTrackingScreen() {
           </Animated.View>
         )}
 
-        {/* Driver Info (when matched) */}
-        {request.volunteerName && !isDelivered && !isCancelled && (
+        {/* Support / Driver Info (privacy-first) */}
+        {!isDelivered && !isCancelled && (
           <Animated.View
             entering={FadeInDown.delay(400)}
             style={[
@@ -433,15 +433,22 @@ export default function RequestTrackingScreen() {
               },
             ]}
           >
-            <View style={[styles.volunteerAvatar, { backgroundColor: colors.isDark ? '#3D2A1A' : '#FFF7ED' }]}>
-              <MaterialIcons name="person" size={24} color={colors.accent} />
+            <View style={[styles.volunteerAvatar, { backgroundColor: colors.isDark ? '#1F2937' : '#EEF2FF' }]}>
+              <MaterialIcons name={request.showVolunteerName ? 'person' : 'support-agent'} size={24} color={colors.accent} />
             </View>
             <View style={styles.volunteerInfo}>
-              <Text style={[styles.volunteerLabel, { color: colors.mutedText }]}>Your Driver</Text>
-              <Text style={[styles.volunteerName, { color: colors.text }]}>{request.volunteerName}</Text>
+              <Text style={[styles.volunteerLabel, { color: colors.mutedText }]}>
+                {request.showVolunteerName ? 'Your Driver' : 'Need help?'}
+              </Text>
+              <Text style={[styles.volunteerName, { color: colors.text }]}>
+                {request.showVolunteerName && request.volunteerName ? request.volunteerName : 'Contact support'}
+              </Text>
             </View>
-            <Pressable style={[styles.callButton, { backgroundColor: colors.accent }]}>
-              <MaterialIcons name="phone" size={20} color="#FFFFFF" />
+            <Pressable
+              style={[styles.callButton, { backgroundColor: colors.accent }]}
+              onPress={() => Alert.alert('Support', 'A support specialist will reach out shortly.')}
+            >
+              <MaterialIcons name="message" size={20} color="#FFFFFF" />
             </Pressable>
           </Animated.View>
         )}

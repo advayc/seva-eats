@@ -43,11 +43,11 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           className="mb-12 flex-1 flex items-center justify-center"
         >
           <div className="bg-yellow-100 rounded-3xl p-8 md:p-12 flex items-center justify-center">
-            <img
-              src={require('@/assets/images/logo.png')}
-              alt="Seva Eats Logo"
-              className="w-48 h-48 md:w-64 md:h-64 object-contain"
-            />
+              <img
+                src={require('@/assets/images/logo.png')}
+                alt="Seva Eats logo"
+                className="w-48 h-48 md:w-64 md:h-64 object-contain"
+              />
           </div>
         </motion.div>
 

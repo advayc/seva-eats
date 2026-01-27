@@ -17,10 +17,9 @@ export default function TabLayout() {
   const { width: screenWidth } = useWindowDimensions();
   const horizontalMargin = (screenWidth - TAB_BAR_WIDTH) / 2;
   const { user, isLoading } = useUser();
-  const showDasherTab = user?.role === 'dasher';
 
   if (!isLoading && user?.role === 'dasher') {
-    return <Redirect href={'/dasher/dashboard' as any} />;
+    return <Redirect href={'/volunteer' as any} />;
   }
 
   return (
@@ -103,21 +102,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      {showDasherTab && (
-        <Tabs.Screen
-          name="explore"
-          options={{
-            title: 'Dasher',
-            tabBarIcon: ({ color, size, focused }) => (
-              <MaterialIcons 
-                name="delivery-dining" 
-                size={focused ? 26 : 24} 
-                color={color} 
-              />
-            ),
-          }}
-        />
-      )}
+      {/* Volunteer access is routed separately via Dasher Hub */}
     </Tabs>
   );
 }
