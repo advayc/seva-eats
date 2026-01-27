@@ -221,11 +221,11 @@ export default function MealSelectionScreen() {
       >
         {/* Info Banner */}
         <Animated.View entering={FadeIn.delay(100)} style={[styles.infoBanner, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.15)' : '#FFF7ED' }]}>
-          <MaterialIcons name="volunteer-activism" size={24} color={colors.accent} />
+          <MaterialIcons name="delivery-dining" size={24} color={colors.accent} />
           <View style={styles.infoBannerText}>
             <Text style={[styles.infoBannerTitle, { color: colors.isDark ? colors.accent : '#92400E' }]}>Langar is free for everyone</Text>
-            <Text style={[styles.infoBannerDesc, { color: colors.isDark ? colors.mutedText : '#B45309' }]}>
-              A volunteer will pick up your meal from a nearby Gurdwara and deliver it to you
+            <Text style={[styles.infoBannerDesc, { color: colors.isDark ? colors.mutedText : '#B45309' }]}> 
+              A driver will pick up your meal from a nearby Gurdwara and deliver it to you
             </Text>
           </View>
         </Animated.View>

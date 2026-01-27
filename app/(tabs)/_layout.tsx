@@ -1,10 +1,11 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { LiquidGlassTabBar } from '@/components/liquid-glass-tab-bar';
+import { useUser } from '@/context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 
@@ -15,6 +16,12 @@ export default function TabLayout() {
   const showGlass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
   const { width: screenWidth } = useWindowDimensions();
   const horizontalMargin = (screenWidth - TAB_BAR_WIDTH) / 2;
+  const { user, isLoading } = useUser();
+  const showDasherTab = user?.role === 'dasher';
+
+  if (!isLoading && user?.role === 'dasher') {
+    return <Redirect href={'/dasher/dashboard' as any} />;
+  }
 
   return (
     <Tabs
@@ -96,19 +103,21 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Volunteer',
-          tabBarIcon: ({ color, size, focused }) => (
-            <MaterialIcons 
-              name="volunteer-activism" 
-              size={focused ? 26 : 24} 
-              color={color} 
-            />
-          ),
-        }}
-      />
+      {showDasherTab && (
+        <Tabs.Screen
+          name="explore"
+          options={{
+            title: 'Dasher',
+            tabBarIcon: ({ color, size, focused }) => (
+              <MaterialIcons 
+                name="delivery-dining" 
+                size={focused ? 26 : 24} 
+                color={color} 
+              />
+            ),
+          }}
+        />
+      )}
     </Tabs>
   );
 }

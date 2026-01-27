@@ -20,7 +20,8 @@ import { getMealById } from '@/constants/meals';
 import { useLocation, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
-const FAMILY_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
+const SERVING_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
+const MAX_NOTE_LENGTH = 200;
 
 export default function DeliveryDetailsScreen() {
   const router = useRouter();
@@ -43,9 +44,10 @@ export default function DeliveryDetailsScreen() {
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [address, setAddress] = useState(userLocation?.address ?? '');
-  const [familySize, setFamilySize] = useState(user?.familySize ?? 2);
-  const [specialInstructions, setSpecialInstructions] = useState('');
+  const [servingSize, setServingSize] = useState(user?.servingSize ?? 2);
+  const [driverNote, setDriverNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const driverNoteCount = driverNote.length;
 
   const handleSubmit = () => {
     // Validate
@@ -54,7 +56,7 @@ export default function DeliveryDetailsScreen() {
       return;
     }
     if (!phone.trim()) {
-      Alert.alert('Phone Required', 'Please enter your phone number so the volunteer can contact you.');
+      Alert.alert('Phone Required', 'Please enter your phone number so the driver can contact you.');
       return;
     }
     if (!address.trim()) {
@@ -90,9 +92,9 @@ export default function DeliveryDetailsScreen() {
         latitude: userLocation?.latitude ?? 43.7315,
         longitude: userLocation?.longitude ?? -79.7624,
       },
-      familySize,
+      servingSize,
       dietaryRestrictions: [],
-      specialInstructions: `Meals: ${mealDescription}${specialInstructions ? `\n${specialInstructions.trim()}` : ''}`,
+      driverNote: `Meals: ${mealDescription}${driverNote ? `\n${driverNote.trim()}` : ''}`,
     });
 
     setIsSubmitting(false);
@@ -162,7 +164,7 @@ export default function DeliveryDetailsScreen() {
               keyboardType="phone-pad"
               placeholderTextColor={colors.mutedText}
             />
-            <Text style={[styles.helper, { color: colors.mutedText }]}>The volunteer will call/text when they arrive</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>The driver will call/text when they arrive</Text>
           </Animated.View>
 
           {/* Address Input */}
@@ -190,26 +192,26 @@ export default function DeliveryDetailsScreen() {
             )}
           </Animated.View>
 
-          {/* Family Size */}
+          {/* Serving Size */}
           <Animated.View entering={FadeInDown.delay(300)} style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Family Size</Text>
-            <Text style={[styles.helper, { color: colors.mutedText }]}>How many people need to be fed?</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Serving Size</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>How many servings should we prepare?</Text>
             <View style={styles.familySizeRow}>
-              {FAMILY_SIZES.map((size) => (
+              {SERVING_SIZES.map((size) => (
                 <Pressable
                   key={size}
                   style={[
                     styles.familySizeButton,
                     { backgroundColor: colors.surface, borderColor: colors.border },
-                    familySize === size && { backgroundColor: colors.accent, borderColor: colors.accent },
+                    servingSize === size && { backgroundColor: colors.accent, borderColor: colors.accent },
                   ]}
-                  onPress={() => setFamilySize(size)}
+                  onPress={() => setServingSize(size)}
                 >
                   <Text
                     style={[
                       styles.familySizeText,
                       { color: colors.text },
-                      familySize === size && { color: '#FFFFFF' },
+                      servingSize === size && { color: '#FFFFFF' },
                     ]}
                   >
                     {size}{size === 8 ? '+' : ''}
@@ -219,19 +221,24 @@ export default function DeliveryDetailsScreen() {
             </View>
           </Animated.View>
 
-          {/* Special Instructions */}
+          {/* Add Note to Driver */}
           <Animated.View entering={FadeInDown.delay(350)} style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Special Instructions</Text>
-            <Text style={[styles.helper, { color: colors.mutedText }]}>Delivery notes, buzzer code, etc. (optional)</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Add Note to Driver</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>Notes for your driver (optional)</Text>
             <TextInput
               style={[styles.input, styles.textArea, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
-              placeholder="e.g., Buzz #123, leave at door"
-              value={specialInstructions}
-              onChangeText={setSpecialInstructions}
+              placeholder="e.g., leave at door, call on arrival"
+              value={driverNote}
+              onChangeText={(text) => setDriverNote(text.slice(0, MAX_NOTE_LENGTH))}
               multiline
               numberOfLines={3}
+              maxLength={MAX_NOTE_LENGTH}
               placeholderTextColor={colors.mutedText}
             />
+            <View style={styles.noteFooter}>
+              <Text style={[styles.noteHint, { color: colors.mutedText }]}>Be respectful. Notes are visible to drivers.</Text>
+              <Text style={[styles.noteCount, { color: colors.mutedText }]}>{driverNoteCount}/{MAX_NOTE_LENGTH}</Text>
+            </View>
           </Animated.View>
 
           {/* Spacer for bottom button */}
@@ -342,6 +349,18 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 80,
     textAlignVertical: 'top',
+  },
+  noteFooter: {
+    marginTop: Spacing.sm,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  noteHint: {
+    fontSize: 11,
+  },
+  noteCount: {
+    fontSize: 11,
   },
   addressInputRow: {
     flexDirection: 'row',

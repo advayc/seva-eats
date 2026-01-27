@@ -28,8 +28,8 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 
 // Progress steps configuration
 const PROGRESS_STEPS: { status: MealRequestStatus; icon: string; label: string }[] = [
-  { status: 'pending', icon: 'search', label: 'Finding Volunteer' },
-  { status: 'matched', icon: 'person-pin', label: 'Volunteer Matched' },
+  { status: 'pending', icon: 'search', label: 'Finding Driver' },
+  { status: 'matched', icon: 'person-pin', label: 'Driver Matched' },
   { status: 'picked_up', icon: 'takeout-dining', label: 'Meal Picked Up' },
   { status: 'on_the_way', icon: 'directions-car', label: 'On the Way' },
   { status: 'delivered', icon: 'check-circle', label: 'Delivered' },
@@ -215,11 +215,11 @@ function RouteMapView({
           </View>
         </Marker>
 
-        {/* Volunteer Marker (when on the way) */}
+        {/* Driver Marker (when on the way) */}
         {volunteerLocation && (status === 'on_the_way' || status === 'picked_up') && (
           <Marker
             coordinate={volunteerLocation}
-            title="Volunteer"
+            title="Driver"
           >
             <View style={[styles.markerVolunteer, { backgroundColor: colors.accent }]}>
               <MaterialIcons name="directions-car" size={16} color="#FFFFFF" />
@@ -420,7 +420,7 @@ export default function RequestTrackingScreen() {
           </Animated.View>
         )}
 
-        {/* Volunteer Info (when matched) */}
+        {/* Driver Info (when matched) */}
         {request.volunteerName && !isDelivered && !isCancelled && (
           <Animated.View
             entering={FadeInDown.delay(400)}
@@ -437,7 +437,7 @@ export default function RequestTrackingScreen() {
               <MaterialIcons name="person" size={24} color={colors.accent} />
             </View>
             <View style={styles.volunteerInfo}>
-              <Text style={[styles.volunteerLabel, { color: colors.mutedText }]}>Your Volunteer</Text>
+              <Text style={[styles.volunteerLabel, { color: colors.mutedText }]}>Your Driver</Text>
               <Text style={[styles.volunteerName, { color: colors.text }]}>{request.volunteerName}</Text>
             </View>
             <Pressable style={[styles.callButton, { backgroundColor: colors.accent }]}>
@@ -475,8 +475,8 @@ export default function RequestTrackingScreen() {
 
           <View style={styles.detailRow}>
             <MaterialIcons name="group" size={18} color={colors.mutedText} />
-            <Text style={[styles.detailLabel, { color: colors.mutedText }]}>Family size</Text>
-            <Text style={[styles.detailValue, { color: colors.text }]}>{request.familySize} people</Text>
+            <Text style={[styles.detailLabel, { color: colors.mutedText }]}>Serving size</Text>
+            <Text style={[styles.detailValue, { color: colors.text }]}>{request.servingSize} servings</Text>
           </View>
         </Animated.View>
 
@@ -538,9 +538,9 @@ export default function RequestTrackingScreen() {
               </View>
             </Marker>
 
-            {/* Volunteer Marker */}
+            {/* Driver Marker */}
             {request.volunteerLocation && request.status === 'on_the_way' && (
-              <Marker coordinate={request.volunteerLocation} title="Volunteer">
+              <Marker coordinate={request.volunteerLocation} title="Driver">
                 <View style={[styles.markerVolunteer, { backgroundColor: colors.accent }]}>
                   <MaterialIcons name="directions-car" size={16} color="#FFFFFF" />
                 </View>

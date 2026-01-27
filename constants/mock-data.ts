@@ -38,7 +38,7 @@ export type DropOffLocation = {
   };
 };
 
-// Active delivery/volunteer request
+// Active delivery/dasher request
 export type SevaRequest = {
   id: string;
   pickupLocation: PickupLocation;
@@ -60,10 +60,10 @@ export type CommunityStats = {
 // Main Seva actions available in the app
 export const sevaActions: SevaAction[] = [
   {
-    id: 'volunteer',
-    name: 'Volunteer to Deliver',
-    description: 'Pick up Langar and deliver to a family on your way home',
-    icon: 'volunteer-activism',
+    id: 'dasher',
+    name: 'Dasher Deliveries',
+    description: 'Pick up Langar and deliver to a nearby household',
+    icon: 'delivery-dining',
   },
   {
     id: 'find-gurdwara',
@@ -271,7 +271,7 @@ export type StoreSection = {
 
 // Map old categories to Seva-appropriate ones
 export const categories: Category[] = [
-  { id: 'volunteer', name: 'Volunteer', icon: 'volunteer-activism' },
+  { id: 'dasher', name: 'Dashers', icon: 'delivery-dining' },
   { id: 'gurdwaras', name: 'Gurdwaras', icon: 'location-on' },
   { id: 'routes', name: 'Routes', icon: 'route' },
   { id: 'schedule', name: 'Schedule', icon: 'event' },
@@ -302,14 +302,14 @@ export const storeSections: StoreSection[] = [
         id: 'roti-dal',
         name: 'Roti & Dal Box',
         price: 'Free',
-        unit: 'Serves 1 family',
+        unit: 'Serves 1 person',
         image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=900&auto=format&fit=crop',
       },
       {
         id: 'sabzi-rice',
         name: 'Sabzi & Rice Box',
         price: 'Free',
-        unit: 'Serves 1 family',
+        unit: 'Serves 1 person',
         image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=900&auto=format&fit=crop',
       },
       {

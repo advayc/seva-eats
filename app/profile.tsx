@@ -27,7 +27,7 @@ export default function ProfileScreen() {
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [address, setAddress] = useState(user?.homeAddress?.address ?? '');
-  const [familySize, setFamilySize] = useState(user?.familySize?.toString() ?? '1');
+  const [servingSize, setServingSize] = useState(user?.servingSize?.toString() ?? '1');
   const [notificationsEnabled, setNotificationsEnabled] = useState(user?.notificationsEnabled ?? true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -51,7 +51,7 @@ export default function ProfileScreen() {
           latitude: 43.7315, // Default coordinates (would use geocoding in production)
           longitude: -79.7624,
         } : user?.homeAddress ?? null,
-        familySize: parseInt(familySize, 10) || 1,
+        servingSize: parseInt(servingSize, 10) || 1,
         notificationsEnabled,
       });
       Alert.alert('Saved', 'Your profile has been updated', [
@@ -83,9 +83,8 @@ export default function ProfileScreen() {
   };
 
   const roleLabels = {
-    volunteer: 'Volunteer Only',
-    recipient: 'Recipient Only',
-    both: 'Both',
+    recipient: 'Recipient',
+    dasher: 'Dasher',
   };
 
   return (
@@ -164,18 +163,18 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Family Size</Text>
+              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Serving Size</Text>
               <View style={styles.counterRow}>
                 <Pressable 
                   style={[styles.counterButton, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}
-                  onPress={() => setFamilySize(Math.max(1, parseInt(familySize, 10) - 1).toString())}
+                  onPress={() => setServingSize(Math.max(1, parseInt(servingSize, 10) - 1).toString())}
                 >
                   <MaterialIcons name="remove" size={20} color={colors.accent} />
                 </Pressable>
-                <Text style={[styles.counterValue, { color: colors.text }]}>{familySize}</Text>
+                <Text style={[styles.counterValue, { color: colors.text }]}>{servingSize}</Text>
                 <Pressable 
                   style={[styles.counterButton, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}
-                  onPress={() => setFamilySize((parseInt(familySize, 10) + 1).toString())}
+                  onPress={() => setServingSize((parseInt(servingSize, 10) + 1).toString())}
                 >
                   <MaterialIcons name="add" size={20} color={colors.accent} />
                 </Pressable>
@@ -185,9 +184,9 @@ export default function ProfileScreen() {
 
           {/* Role Selection */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>I want to...</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Account Type</Text>
             <View style={styles.roleOptions}>
-              {(['volunteer', 'recipient', 'both'] as const).map((role) => (
+              {(['recipient', 'dasher'] as const).map((role) => (
                 <Pressable
                   key={role}
                   style={[
@@ -198,7 +197,7 @@ export default function ProfileScreen() {
                   onPress={() => updateProfile({ role })}
                 >
                   <MaterialIcons 
-                    name={role === 'volunteer' ? 'volunteer-activism' : role === 'recipient' ? 'restaurant' : 'swap-horiz'} 
+                    name={role === 'dasher' ? 'delivery-dining' : 'restaurant'} 
                     size={24} 
                     color={user?.role === role ? '#FFFFFF' : colors.accent} 
                   />

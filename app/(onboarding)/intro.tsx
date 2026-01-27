@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -7,15 +6,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Radii, Spacing } from '@/constants/theme';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
-const ONBOARDING_KEY = 'onboarding-completed';
-
 export default function IntroScreen() {
   const router = useRouter();
   const colors = useThemeColors();
 
-  const completeOnboarding = async () => {
-    await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
-    router.replace('/(tabs)');
+  const goToRoleSelection = () => {
+    router.replace('/(onboarding)/choose-role' as any);
   };
 
   return (
@@ -47,10 +43,10 @@ export default function IntroScreen() {
         </View>
 
         <View style={styles.actions}>
-          <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={completeOnboarding}>
+          <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={goToRoleSelection}>
             <Text style={styles.primaryText}>Continue to app</Text>
           </Pressable>
-          <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={completeOnboarding}>
+          <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={goToRoleSelection}>
             <Text style={[styles.secondaryText, { color: colors.text }]}>Skip for now</Text>
           </Pressable>
         </View>

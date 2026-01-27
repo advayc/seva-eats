@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,53 +8,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlassCard } from '@/components/glass-card';
 import { availableRequests } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
-import { useOrders } from '@/context';
+import { useOrders, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 type FilterTab = 'available' | 'my_deliveries';
 
-export default function VolunteerScreen() {
+export default function DasherScreen() {
   const router = useRouter();
   const colors = useThemeColors();
-  const { orders, activeOrder, placeOrder } = useOrders();
+  const { orders, activeOrder } = useOrders();
+  const { user, isLoading } = useUser();
   const [activeTab, setActiveTab] = useState<FilterTab>('available');
 
-  const handleClaimDelivery = (requestId: string) => {
-    const request = availableRequests.find(r => r.id === requestId);
-    if (!request) return;
+  if (!isLoading && user?.role !== 'dasher') {
+    return <Redirect href={'/(onboarding)/choose-role' as any} />;
+  }
 
-    const order = placeOrder(
-      [
-        {
-          menuItem: {
-            id: 'langar-box',
-            name: 'Langar Meal Box',
-            price: 0,
-            priceDisplay: 'Free',
-            unit: 'Serves 1 family',
-            image: request.pickupLocation.image,
-            storeId: request.pickupLocation.id,
-          },
-          quantity: request.boxCount,
-        },
-      ],
-      request.pickupLocation.id,
-      request.pickupLocation.name,
-      0,
-      0,
-      {
-        latitude: request.pickupLocation.location.latitude,
-        longitude: request.pickupLocation.location.longitude,
-        address: request.pickupLocation.location.address,
-      },
-      {
-        latitude: request.dropOffLocation.location.latitude,
-        longitude: request.dropOffLocation.location.longitude,
-        address: request.dropOffLocation.address,
-      }
-    );
-
-    router.push(`/order/${order.id}` as const);
+  const handleViewDelivery = (requestId: string) => {
+    router.push(`/dasher/delivery/${requestId}` as any);
   };
 
   const getDropOffTypeIcon = (type: string) => {
@@ -80,7 +51,7 @@ export default function VolunteerScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.title, { color: colors.text }]}>Volunteer</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Dasher</Text>
         <Text style={[styles.subtitle, { color: colors.mutedText }]}>Find deliveries near your route home</Text>
 
         {/* Filter Tabs */}
@@ -218,7 +189,7 @@ export default function VolunteerScreen() {
                       { backgroundColor: colors.accent },
                       pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] }
                     ]}
-                    onPress={() => handleClaimDelivery(request.id)}
+                onPress={() => handleViewDelivery(request.id)}
                   >
                     <Text style={styles.claimButtonText}>Claim Delivery</Text>
                   </Pressable>
@@ -272,7 +243,7 @@ export default function VolunteerScreen() {
               </>
             ) : (
               <GlassCard style={styles.emptyState}>
-                <MaterialIcons name="volunteer-activism" size={48} color={colors.border} />
+                <MaterialIcons name="delivery-dining" size={48} color={colors.border} />
                 <Text style={[styles.emptyTitle, { color: colors.text }]}>No deliveries yet</Text>
                 <Text style={[styles.emptyText, { color: colors.mutedText }]}>
                   Claim a delivery from the Available tab to start your Seva journey

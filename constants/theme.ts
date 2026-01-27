@@ -12,7 +12,7 @@ const tintColorDark = '#FFFFFF';
 export const SewaColors = {
   primary: '#F97316',
   primaryDark: '#EA580C',
-  background: '#FFFFFF',
+  background: '#FFEFCF',
   text: '#111827',
   textSecondary: '#F97316',
 };
@@ -20,14 +20,14 @@ export const SewaColors = {
 export const Colors = {
   light: {
     text: '#111827',
-    background: '#FFFFFF',
+    background: '#FFEFCF',
     tint: tintColorLight,
     icon: '#6B7280',
     tabIconDefault: '#6B7280',
     tabIconSelected: tintColorLight,
-    surface: '#F5F5F5',
-    surfaceElevated: '#FFFFFF',
-    border: '#E5E7EB',
+    surface: '#FFF4DD',
+    surfaceElevated: '#FFF8EA',
+    border: '#EAD6B8',
     mutedText: '#6B7280',
     success: '#F97316',
     warning: '#F59E0B',

@@ -3,6 +3,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 const USER_STORAGE_KEY = 'user-profile';
 
+export type UserRole = 'recipient' | 'dasher';
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -13,9 +15,9 @@ export type UserProfile = {
     longitude: number;
   } | null;
   dietaryRestrictions: string[];
-  familySize: number;
+  servingSize: number;
   notificationsEnabled: boolean;
-  role: 'volunteer' | 'recipient' | 'both';
+  role: UserRole;
 };
 
 type UserContextType = {
@@ -23,6 +25,7 @@ type UserContextType = {
   isLoading: boolean;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
   setHomeAddress: (address: { address: string; latitude: number; longitude: number }) => Promise<void>;
+  setRole: (role: UserRole) => Promise<void>;
   clearProfile: () => Promise<void>;
   hasCompletedProfile: boolean;
 };
@@ -33,9 +36,28 @@ const defaultUser: UserProfile = {
   phone: '',
   homeAddress: null,
   dietaryRestrictions: [],
-  familySize: 1,
+  servingSize: 1,
   notificationsEnabled: true,
-  role: 'both',
+  role: 'recipient',
+};
+
+const roleMap: Record<string, UserRole> = {
+  recipient: 'recipient',
+  volunteer: 'dasher',
+  dasher: 'dasher',
+  both: 'recipient',
+};
+
+const normalizeUser = (stored: Partial<UserProfile> & { familySize?: number; role?: string }): UserProfile => {
+  const role = roleMap[stored.role ?? 'recipient'] ?? 'recipient';
+  const servingSize = stored.servingSize ?? stored.familySize ?? defaultUser.servingSize;
+
+  return {
+    ...defaultUser,
+    ...stored,
+    role,
+    servingSize,
+  };
 };
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -53,7 +75,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       const stored = await AsyncStorage.getItem(USER_STORAGE_KEY);
       if (stored) {
-        setUser(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        const normalized = normalizeUser(parsed);
+        setUser(normalized);
+        await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalized));
       } else {
         // Create default user
         setUser(defaultUser);
@@ -69,8 +94,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     setUser((prev) => {
-      if (!prev) return prev;
-      const updated = { ...prev, ...updates };
+      const base = prev ?? defaultUser;
+      const updated = { ...base, ...updates };
       AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updated)).catch(console.error);
       return updated;
     });
@@ -78,6 +103,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const setHomeAddress = useCallback(async (address: { address: string; latitude: number; longitude: number }) => {
     await updateProfile({ homeAddress: address });
+  }, [updateProfile]);
+
+  const setRole = useCallback(async (role: UserRole) => {
+    await updateProfile({ role });
   }, [updateProfile]);
 
   const clearProfile = useCallback(async () => {
@@ -96,10 +125,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       isLoading,
       updateProfile,
       setHomeAddress,
+      setRole,
       clearProfile,
       hasCompletedProfile,
     }),
-    [user, isLoading, updateProfile, setHomeAddress, clearProfile, hasCompletedProfile]
+    [user, isLoading, updateProfile, setHomeAddress, setRole, clearProfile, hasCompletedProfile]
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

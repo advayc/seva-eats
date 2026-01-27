@@ -1280,7 +1280,7 @@
   resolved "https://registry.npmjs.org/@expo/sudo-prompt/-/sudo-prompt-9.3.2.tgz"
   integrity sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw==
 
-"@expo/ui@~55.0.0-beta.2", "@expo/ui@55.0.0-beta.2":
+"@expo/ui@~55.0.0-beta.2":
   version "55.0.0-beta.2"
   resolved "https://registry.npmjs.org/@expo/ui/-/ui-55.0.0-beta.2.tgz"
   integrity sha512-8qDXnuPWShfP+VN4/Q7yjImg9pl3Fcn9YRRI9PSpqc6RVwnueRxCFvKDpG6jFCpLPV/r1drk6UOKvDd7dZAHHQ==
@@ -4155,14 +4155,6 @@ expo-web-browser@~55.0.2:
   version "55.0.2"
   resolved "https://registry.npmjs.org/expo-web-browser/-/expo-web-browser-55.0.2.tgz"
   integrity sha512-LmJ3IgvFCVtYDJ5YIwpPnljYEzohckynHM7Swa5vaJ/Oj5WK1YQarJ5HiGlcrvZhS7O/j3ehEKCBfFpWEZdeYw==
-
-expo-widgets@55.0.0-alpha.3:
-  version "55.0.0-alpha.3"
-  resolved "https://registry.npmjs.org/expo-widgets/-/expo-widgets-55.0.0-alpha.3.tgz"
-  integrity sha512-f2OmpTiNRW73snrQi5/m0T0P1LGn8lVnoMeQjQryy4cy/c0btd5c2FBsVxkGZ0g0FiwfjNmVZNvNNOB9PILLuA==
-  dependencies:
-    "@expo/plist" "^0.5.2"
-    "@expo/ui" "55.0.0-beta.2"
 
 expo@*, expo@55.0.0-preview.6:
   version "55.0.0-preview.6"

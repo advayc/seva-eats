@@ -35,9 +35,9 @@ export type MealRequest = {
     latitude: number;
     longitude: number;
   };
-  familySize: number;
+  servingSize: number;
   dietaryRestrictions: string[];
-  specialInstructions: string;
+  driverNote: string;
   status: MealRequestStatus;
   createdAt: Date;
   estimatedDelivery?: Date;
@@ -66,9 +66,9 @@ type RequestContextType = {
     recipientName: string;
     recipientPhone: string;
     deliveryAddress: { address: string; latitude: number; longitude: number };
-    familySize: number;
+    servingSize: number;
     dietaryRestrictions: string[];
-    specialInstructions: string;
+    driverNote: string;
   }) => MealRequest;
   cancelRequest: (requestId: string) => void;
   getRequest: (requestId: string) => MealRequest | undefined;
@@ -98,6 +98,8 @@ export function RequestProvider({ children }: { children: ReactNode }) {
         // Restore Date objects
         const restored = parsed.map((r: any) => ({
           ...r,
+          servingSize: r.servingSize ?? r.familySize ?? 1,
+          driverNote: r.driverNote ?? r.specialInstructions ?? '',
           createdAt: new Date(r.createdAt),
           estimatedDelivery: r.estimatedDelivery ? new Date(r.estimatedDelivery) : undefined,
           liveActivityId: r.liveActivityId ?? null,
@@ -127,9 +129,9 @@ export function RequestProvider({ children }: { children: ReactNode }) {
     recipientName: string;
     recipientPhone: string;
     deliveryAddress: { address: string; latitude: number; longitude: number };
-    familySize: number;
+    servingSize: number;
     dietaryRestrictions: string[];
-    specialInstructions: string;
+    driverNote: string;
   }): MealRequest => {
     const now = new Date();
     const newRequest: MealRequest = {
@@ -138,9 +140,9 @@ export function RequestProvider({ children }: { children: ReactNode }) {
       recipientName: request.recipientName,
       recipientPhone: request.recipientPhone,
       deliveryAddress: request.deliveryAddress,
-      familySize: request.familySize,
+      servingSize: request.servingSize,
       dietaryRestrictions: request.dietaryRestrictions,
-      specialInstructions: request.specialInstructions,
+      driverNote: request.driverNote,
       status: 'pending',
       createdAt: now,
       liveActivityId: null,
@@ -335,8 +337,8 @@ export function useRequests() {
 
 // Status labels for display
 export const REQUEST_STATUS_LABELS: Record<MealRequestStatus, string> = {
-  pending: 'Finding a Volunteer',
-  matched: 'Volunteer Assigned',
+  pending: 'Finding a Driver',
+  matched: 'Driver Assigned',
   picked_up: 'Meal Picked Up',
   on_the_way: 'On the Way',
   delivered: 'Delivered',

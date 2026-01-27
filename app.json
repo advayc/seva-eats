@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#1A1F25",
+        "backgroundColor": "#FFEFCF",
         "foregroundImage": "./assets/images/logo.png"
       },
       "permissions": [
@@ -36,23 +36,12 @@
     "plugins": [
       "expo-router",
       [
-        "expo-widgets",
-        {
-          "groupIdentifier": "group.com.advay.sewaeats",
-          "bundleIdentifier": "com.advay.sewaeats.widgets",
-          "enablePushNotifications": true,
-          "widgets": []
-        }
-      ],
-      "./plugins/with-widget-entry-point.js",
-      "./plugins/with-widget-team-id.js",
-      [
         "expo-splash-screen",
         {
           "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#FFFFFF",
+          "backgroundColor": "#FFEFCF",
           "dark": {
             "backgroundColor": "#1A1F25"
           }
