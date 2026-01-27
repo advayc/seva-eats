@@ -1,23 +1,23 @@
 import { BlurView } from 'expo-blur';
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
+import { useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-  Easing,
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withRepeat,
+    withSequence,
+    withTiming,
 } from 'react-native-reanimated';
-import { useEffect } from 'react';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 const showGlass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
 
 export function LiquidGlassTabBar() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const colors = useThemeColors();
+  const isDark = colors.isDark;
   
   // Subtle breathing animation for the glass effect
   const glassOpacity = useSharedValue(1);
@@ -44,15 +44,15 @@ export function LiquidGlassTabBar() {
           <GlassView
             style={StyleSheet.absoluteFill}
             glassEffectStyle="clear"
-            tintColor={isDark ? '#1F293795' : '#FFFFFFA0'}
+            tintColor={isDark ? 'rgba(31, 41, 55, 0.75)' : 'rgba(255, 255, 255, 0.85)'}
             isInteractive
           />
         </Animated.View>
         {/* Subtle gradient overlay for depth */}
         <View style={[styles.gradientOverlay, {
           backgroundColor: isDark 
-            ? 'rgba(31, 41, 55, 0.05)' 
-            : 'rgba(255, 255, 255, 0.1)',
+            ? 'rgba(15, 23, 42, 0.08)' 
+            : 'rgba(255, 255, 255, 0.12)',
         }]} />
       </View>
     );
@@ -60,7 +60,7 @@ export function LiquidGlassTabBar() {
 
   return (
     <BlurView
-      intensity={90}
+      intensity={80}
       tint={isDark ? 'dark' : 'light'}
       style={styles.container}
     />

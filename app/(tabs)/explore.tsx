@@ -25,9 +25,9 @@ export default function DasherScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.emptyState}>
           <MaterialIcons name="lock" size={48} color={colors.border} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>Dasher access only</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Volunteer access only</Text>
           <Text style={[styles.emptyText, { color: colors.mutedText }]}>
-            Volunteer access is separate. Switch roles to see delivery routes.
+            Switch to the volunteer role to view delivery routes.
           </Text>
           <Pressable
             style={[styles.claimButton, { backgroundColor: colors.accent }]}
@@ -67,8 +67,8 @@ export default function DasherScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.title, { color: colors.text }]}>Dasher</Text>
-        <Text style={[styles.subtitle, { color: colors.mutedText }]}>Pick up langar and deliver to nearby partners</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Volunteer deliveries</Text>
+        <Text style={[styles.subtitle, { color: colors.mutedText }]}>Pick up langar and deliver to partner shelters</Text>
 
         {/* Filter Tabs */}
         <GlassCard style={styles.filterTabsCard}>
@@ -194,7 +194,7 @@ export default function DasherScreen() {
                       <Text style={[styles.metaText, { color: colors.mutedText }]}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
                     </View>
                     <View style={[styles.distanceBadge, { backgroundColor: colors.isDark ? '#064E3B' : '#ECFDF5' }]}>
-                      <Text style={styles.distanceText}>{request.distanceFromHome} from home</Text>
+                      <Text style={[styles.distanceText, { color: colors.success }]}>{request.distanceFromHome} from home</Text>
                     </View>
                   </View>
 
@@ -241,7 +241,7 @@ export default function DasherScreen() {
                       <View style={styles.historyLeft}>
                         <View style={[
                           styles.statusDot,
-                          order.status === 'delivered' ? styles.statusDotComplete : { backgroundColor: colors.accent }
+                          { backgroundColor: order.status === 'delivered' ? colors.success : colors.accent }
                         ]} />
                         <View>
                           <Text style={[styles.historyTitle, { color: colors.text }]}>{order.storeName}</Text>
@@ -262,7 +262,7 @@ export default function DasherScreen() {
                 <MaterialIcons name="delivery-dining" size={48} color={colors.border} />
                 <Text style={[styles.emptyTitle, { color: colors.text }]}>No deliveries yet</Text>
                 <Text style={[styles.emptyText, { color: colors.mutedText }]}>
-                  Claim a delivery from the Available tab to start your Seva journey
+                  Claim a delivery from the Available tab to get started
                 </Text>
               </GlassCard>
             )}
@@ -416,7 +416,6 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#059669',
   },
   claimButton: {
     borderRadius: Radii.md,
@@ -457,9 +456,6 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-  },
-  statusDotComplete: {
-    backgroundColor: '#059669',
   },
   historyTitle: {
     fontSize: 15,

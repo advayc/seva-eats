@@ -1,12 +1,12 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { BlurView } from 'expo-blur';
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
 } from 'react-native-reanimated';
 
 import { Radii, Spacing } from '@/constants/theme';
@@ -40,11 +40,11 @@ export function LiquidGlassButton({
   const getTintColor = () => {
     switch (variant) {
       case 'accent':
-        return isDark ? '#F9731640' : '#F9731630';
+        return isDark ? 'rgba(249, 115, 22, 0.35)' : 'rgba(249, 115, 22, 0.22)';
       case 'success':
-        return isDark ? '#05966940' : '#05966930';
+        return isDark ? 'rgba(34, 197, 94, 0.35)' : 'rgba(22, 163, 74, 0.22)';
       default:
-        return isDark ? '#1F293790' : '#FFFFFF90';
+        return isDark ? 'rgba(31, 41, 55, 0.75)' : 'rgba(255, 255, 255, 0.85)';
     }
   };
 
@@ -55,22 +55,32 @@ export function LiquidGlassButton({
   const getFallbackBackground = () => {
     switch (variant) {
       case 'accent':
-        return isDark ? 'rgba(249, 115, 22, 0.15)' : 'rgba(255, 247, 237, 0.98)';
+        return isDark ? 'rgba(249, 115, 22, 0.14)' : 'rgba(255, 247, 237, 0.98)';
       case 'success':
-        return isDark ? 'rgba(5, 150, 105, 0.15)' : 'rgba(236, 253, 245, 0.98)';
+        return isDark ? 'rgba(34, 197, 94, 0.14)' : 'rgba(236, 253, 245, 0.98)';
       default:
-        return isDark ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+        return isDark ? colors.surfaceElevated : '#FFFFFF';
     }
   };
 
   const getIconBackgroundColor = () => {
     switch (variant) {
       case 'accent':
-        return isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED';
+        return isDark ? 'rgba(249, 115, 22, 0.18)' : '#FFF7ED';
       case 'success':
-        return isDark ? 'rgba(5, 150, 105, 0.2)' : '#ECFDF5';
+        return isDark ? 'rgba(34, 197, 94, 0.18)' : '#ECFDF5';
       default:
-        return isDark ? 'rgba(255, 255, 255, 0.1)' : '#FFF7ED';
+        return isDark ? 'rgba(255, 255, 255, 0.08)' : '#FFF7ED';
+    }
+  };
+
+  const getAccentColor = () => {
+    switch (variant) {
+      case 'success':
+        return colors.success;
+      case 'accent':
+      default:
+        return colors.accent;
     }
   };
 
@@ -100,7 +110,7 @@ export function LiquidGlassButton({
 
   const borderStyle = {
     borderWidth: 1,
-    borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.06)',
+    borderColor: colors.border,
   };
 
   return (
@@ -132,7 +142,7 @@ export function LiquidGlassButton({
         
         <View style={styles.content}>
           <View style={[styles.iconWrap, { backgroundColor: getIconBackgroundColor() }]}>
-            <MaterialIcons name={icon} size={28} color={colors.accent} />
+            <MaterialIcons name={icon} size={28} color={getAccentColor()} />
           </View>
           <View style={styles.textContent}>
             <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
@@ -143,7 +153,7 @@ export function LiquidGlassButton({
           <MaterialIcons 
             name="chevron-right" 
             size={24} 
-            color={isDark ? 'rgba(255, 255, 255, 0.4)' : colors.mutedText} 
+            color={isDark ? 'rgba(255, 255, 255, 0.5)' : colors.mutedText} 
           />
         </View>
       </View>

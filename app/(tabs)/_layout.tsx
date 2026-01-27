@@ -6,13 +6,14 @@ import { Platform, useWindowDimensions } from 'react-native';
 import { HapticTab } from '@/components/haptic-tab';
 import { LiquidGlassTabBar } from '@/components/liquid-glass-tab-bar';
 import { useUser } from '@/context';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 import { isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 
 const TAB_BAR_WIDTH = 100;
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colors = useThemeColors();
+  const isDark = colors.isDark;
   const showGlass = Platform.OS === 'ios' && isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
   const { width: screenWidth } = useWindowDimensions();
   const horizontalMargin = (screenWidth - TAB_BAR_WIDTH) / 2;
@@ -25,8 +26,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#F97316',
-        tabBarInactiveTintColor: colorScheme === 'dark' ? '#9CA3AF' : '#6B7280',
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.mutedText,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarLabelPosition: 'below-icon',
@@ -57,10 +58,10 @@ export default function TabLayout() {
             borderRadius: 34,
             backgroundColor: 'transparent',
             borderWidth: showGlass ? 0.5 : 0,
-            borderColor: colorScheme === 'dark' 
-              ? 'rgba(255, 255, 255, 0.15)' 
+            borderColor: isDark
+              ? 'rgba(255, 255, 255, 0.12)'
               : 'rgba(0, 0, 0, 0.06)',
-            shadowColor: colorScheme === 'dark' ? '#000000' : '#F97316',
+            shadowColor: isDark ? '#000000' : colors.accent,
             shadowOffset: { width: 0, height: 12 },
             shadowOpacity: showGlass ? 0.25 : 0.15,
             shadowRadius: 32,
@@ -76,10 +77,10 @@ export default function TabLayout() {
             justifyContent: 'center',
             borderTopWidth: 0,
             borderRadius: 34,
-            backgroundColor: colorScheme === 'dark' ? '#1F2937F8' : '#FFFFFFF8',
+            backgroundColor: isDark ? 'rgba(31, 41, 55, 0.96)' : 'rgba(255, 255, 255, 0.96)',
             borderWidth: 1,
-            borderColor: colorScheme === 'dark' 
-              ? 'rgba(255, 255, 255, 0.1)' 
+            borderColor: isDark 
+              ? 'rgba(255, 255, 255, 0.12)' 
               : 'rgba(0, 0, 0, 0.08)',
             shadowColor: '#000000',
             shadowOffset: { width: 0, height: 12 },

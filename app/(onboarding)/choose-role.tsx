@@ -22,13 +22,13 @@ const ROLE_OPTIONS: RoleOption[] = [
   {
     id: 'recipient',
     title: 'Recipient',
-    description: 'Request a Langar meal delivered to a partner shelter or community drop-off.',
+    description: 'Request a free meal delivered to a partner shelter or community drop-off.',
     icon: 'restaurant',
   },
   {
     id: 'dasher',
     title: 'Volunteer',
-    description: 'Deliver meals or help operate kitchen and dispatch flows.',
+    description: 'Deliver meals or support kitchen and dispatch teams.',
     icon: 'volunteer-activism',
   },
 ];
@@ -64,7 +64,7 @@ export default function ChooseRoleScreen() {
           </View>
         </View>
 
-        <Text style={[styles.prompt, { color: colors.mutedText }]}>Choose your path</Text>
+        <Text style={[styles.prompt, { color: colors.mutedText }]}>Choose how you want to serve</Text>
 
         <View style={styles.cardList}>
           {ROLE_OPTIONS.map((option) => (

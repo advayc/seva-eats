@@ -33,21 +33,21 @@ export default function IntroScreen() {
           <Text style={[styles.sectionTitle, { color: colors.accent }]}>How it works</Text>
           <View style={styles.stepRow}>
             <Text style={[styles.stepNumber, { color: colors.text, backgroundColor: colors.isDark ? colors.surface : '#E5E7EB' }]}>1</Text>
-            <Text style={[styles.stepText, { color: colors.text }]}>Pick up a prepared meal box at the temple.</Text>
+            <Text style={[styles.stepText, { color: colors.text }]}>Pick up a prepared meal box at a nearby partner kitchen.</Text>
           </View>
           <View style={styles.stepRow}>
             <Text style={[styles.stepNumber, { color: colors.text, backgroundColor: colors.isDark ? colors.surface : '#E5E7EB' }]}>2</Text>
-            <Text style={[styles.stepText, { color: colors.text }]}>Drop it off at a nearby partner location.</Text>
+            <Text style={[styles.stepText, { color: colors.text }]}>Drop it off at a nearby shelter or community location.</Text>
           </View>
-          <Text style={[styles.helperText, { color: colors.mutedText }]}>Estimated time: 1 minute to get started</Text>
+          <Text style={[styles.helperText, { color: colors.mutedText }]}>Takes about 1 minute to get started</Text>
         </View>
 
         <View style={styles.actions}>
           <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={goToRoleSelection}>
-            <Text style={styles.primaryText}>Continue to app</Text>
+            <Text style={styles.primaryText}>Continue</Text>
           </Pressable>
           <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={goToRoleSelection}>
-            <Text style={[styles.secondaryText, { color: colors.text }]}>Skip for now</Text>
+            <Text style={[styles.secondaryText, { color: colors.text }]}>Skip</Text>
           </Pressable>
         </View>
 

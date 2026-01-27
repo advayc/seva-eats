@@ -1,11 +1,11 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -71,7 +71,7 @@ export default function HomeScreen() {
             >
               <MaterialIcons name="location-on" size={14} color={colors.mutedText} />
               <Text style={[styles.locationText, { color: colors.mutedText }]}>
-                {isLoading ? 'Finding...' : locationLabel}
+                {isLoading ? 'Getting location...' : locationLabel}
               </Text>
             </Pressable>
           </View>
@@ -88,14 +88,14 @@ export default function HomeScreen() {
         <GlassCard style={styles.sectionNotice}>
           <MaterialIcons name="info" size={18} color={colors.accent} />
           <View style={styles.noticeText}>
-            <Text style={[styles.noticeTitle, { color: colors.text }]}>Recipient Mode</Text>
-            <Text style={[styles.noticeSubtitle, { color: colors.mutedText }]}>Shelter drop-offs only during beta</Text>
+            <Text style={[styles.noticeTitle, { color: colors.text }]}>Recipient access</Text>
+            <Text style={[styles.noticeSubtitle, { color: colors.mutedText }]}>Beta: shelter drop-offs only</Text>
           </View>
         </GlassCard>
 
         {/* Active Meal Request Banner */}
         {activeRequest && (
-          <Pressable style={styles.activeRequestBanner} onPress={handleViewActiveRequest}>
+          <Pressable style={[styles.activeRequestBanner, { backgroundColor: colors.success }]} onPress={handleViewActiveRequest}>
             <View style={styles.activeOrderLeft}>
               <View style={styles.requestIconPulse}>
                 <MaterialIcons 
@@ -136,7 +136,7 @@ export default function HomeScreen() {
                 <Text style={[styles.statusLabel, { color: colors.mutedText }]}>Window</Text>
                 <Text style={[styles.statusText, { color: colors.text }]}>{requestMeta?.window ?? 'TBD'}</Text>
               </View>
-              <View style={styles.statusDivider} />
+                <View style={[styles.statusDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statusItem}>
                 <Text style={[styles.statusLabel, { color: colors.mutedText }]}>Drop-off</Text>
                 <Text style={[styles.statusText, { color: colors.text }]}>{requestMeta?.delivery ?? 'TBD'}</Text>
@@ -167,18 +167,18 @@ export default function HomeScreen() {
         </GlassCard>
 
         {/* Main Action Cards */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Request a meal</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Start a request</Text>
 
         <LiquidGlassButton
-          title="Request Shelter Drop-off"
-          description="Request a free Langar meal for a partner shelter or community drop-off"
+          title="Request a shelter drop-off"
+          description="Request a free langar meal for a partner shelter or community drop-off"
           icon="restaurant"
           onPress={() => router.push('/request/new')}
           variant="default"
         />
 
         <GlassCard style={styles.howItWorksCard}>
-          <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How It Works</Text>
+          <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How it works</Text>
 
           <View style={styles.stepItem}>
             <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
@@ -205,8 +205,8 @@ export default function HomeScreen() {
               <Text style={styles.stepNumber}>3</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={[styles.stepTitle, { color: colors.text }]}>Confirm</Text>
-              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Confirm delivery window at the shelter</Text>
+              <Text style={[styles.stepTitle, { color: colors.text }]}>Drop-off</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Confirm delivery at the shelter</Text>
             </View>
           </View>
         </GlassCard>
@@ -259,7 +259,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#059669',
     borderRadius: Radii.lg,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
@@ -335,7 +334,6 @@ const styles = StyleSheet.create({
   statusDivider: {
     width: 1,
     height: 28,
-    backgroundColor: 'rgba(0,0,0,0.08)',
   },
   sectionNotice: {
     flexDirection: 'row',

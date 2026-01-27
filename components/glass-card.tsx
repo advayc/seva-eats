@@ -1,8 +1,9 @@
 import { BlurView } from 'expo-blur';
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
-import { Platform, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, ViewProps } from 'react-native';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Shadows } from '@/constants/theme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 type GlassCardProps = ViewProps & {
   children: React.ReactNode;
@@ -21,17 +22,18 @@ export function GlassCard({
   noBorder = false,
   ...props 
 }: GlassCardProps) {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const colors = useThemeColors();
+  const isDark = colors.isDark;
+  const shadows = isDark ? Shadows.dark : Shadows.light;
 
   const getTintColor = () => {
     switch (variant) {
       case 'accent':
-        return isDark ? '#F9731620' : '#F9731615';
+        return isDark ? 'rgba(249, 115, 22, 0.22)' : 'rgba(249, 115, 22, 0.12)';
       case 'success':
-        return isDark ? '#05966920' : '#05966915';
+        return isDark ? 'rgba(34, 197, 94, 0.22)' : 'rgba(22, 163, 74, 0.12)';
       default:
-        return isDark ? '#1F293780' : '#FFFFFF80';
+        return isDark ? 'rgba(31, 41, 55, 0.65)' : 'rgba(255, 255, 255, 0.7)';
     }
   };
 
@@ -46,17 +48,17 @@ export function GlassCard({
   const getFallbackBackground = () => {
     switch (variant) {
       case 'accent':
-        return isDark ? 'rgba(249, 115, 22, 0.1)' : 'rgba(255, 247, 237, 0.95)';
+        return isDark ? 'rgba(249, 115, 22, 0.12)' : 'rgba(255, 247, 237, 0.95)';
       case 'success':
-        return isDark ? 'rgba(5, 150, 105, 0.1)' : 'rgba(236, 253, 245, 0.95)';
+        return isDark ? 'rgba(34, 197, 94, 0.12)' : 'rgba(236, 253, 245, 0.95)';
       default:
-        return isDark ? 'rgba(31, 41, 55, 0.85)' : 'rgba(255, 255, 255, 0.85)';
+        return isDark ? colors.surface : colors.surfaceElevated;
     }
   };
 
   const borderStyle = noBorder ? {} : {
     borderWidth: 1,
-    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+    borderColor: colors.border,
   };
 
   if (showGlass) {
@@ -65,6 +67,7 @@ export function GlassCard({
         style={[
           styles.container, 
           borderStyle,
+          shadows.card,
           style
         ]} 
         {...props}
@@ -89,6 +92,7 @@ export function GlassCard({
         style={[
           styles.container, 
           borderStyle,
+          shadows.card,
           style
         ]} 
         {...props}
@@ -112,6 +116,7 @@ export function GlassCard({
         styles.container,
         { backgroundColor: getFallbackBackground() },
         borderStyle,
+        shadows.card,
         style
       ]} 
       {...props}

@@ -5,8 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
 import { Radii, Spacing } from '@/constants/theme';
-import { useThemeColors } from '@/hooks/use-theme-colors';
 import { useUser } from '@/context';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function VolunteerEntryScreen() {
   const router = useRouter();
@@ -23,14 +23,14 @@ export default function VolunteerEntryScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.title, { color: colors.text }]}>Volunteer</Text>
-            <Text style={[styles.subtitle, { color: colors.mutedText }]}>Choose how you want to serve today</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Volunteer hub</Text>
+            <Text style={[styles.subtitle, { color: colors.mutedText }]}>Choose how you want to help today</Text>
           </View>
           <Pressable
             style={[styles.switchButton, { borderColor: colors.border }]}
             onPress={() => router.push('/(onboarding)/choose-role' as any)}
           >
-            <Text style={[styles.switchText, { color: colors.text }]}>Switch role</Text>
+            <Text style={[styles.switchText, { color: colors.text }]}>Change role</Text>
           </Pressable>
         </View>
 
@@ -41,7 +41,7 @@ export default function VolunteerEntryScreen() {
             </View>
             <View style={styles.cardText}>
               <Text style={[styles.cardTitle, { color: colors.text }]}>Delivery routes</Text>
-              <Text style={[styles.cardSubtitle, { color: colors.mutedText }]}>See available deliveries and confirm drops</Text>
+              <Text style={[styles.cardSubtitle, { color: colors.mutedText }]}>See available deliveries and confirm drop-offs</Text>
             </View>
           </View>
           <Pressable style={[styles.fullButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/dasher/login' as any)}>
