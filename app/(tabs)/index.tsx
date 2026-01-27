@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
+import { LiquidGlassButton } from '@/components/liquid-glass-button';
 import {
   availableRequests,
   communityStats,
@@ -194,45 +195,21 @@ export default function HomeScreen() {
         {/* Main Action Cards */}
         <Text style={styles.sectionTitle}>What would you like to do?</Text>
 
-        <Pressable 
-          style={({ pressed }) => [
-            pressed && styles.actionCardPressed
-          ]}
+        <LiquidGlassButton
+          title="Volunteer to Deliver"
+          description="Pick up Langar from a Gurdwara and deliver it to someone in need on your way home"
+          icon="volunteer-activism"
           onPress={() => router.push('/(tabs)/explore')}
-        >
-          <GlassCard style={styles.actionCard}>
-            <View style={styles.actionIconWrap}>
-              <MaterialIcons name="volunteer-activism" size={28} color={Colors.light.accent} />
-            </View>
-            <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Volunteer to Deliver</Text>
-              <Text style={styles.actionDesc}>
-                Pick up Langar from a Gurdwara and deliver it to someone in need on your way home
-              </Text>
-            </View>
-            <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
-          </GlassCard>
-        </Pressable>
+          variant="default"
+        />
 
-        <Pressable 
-          style={({ pressed }) => [
-            pressed && styles.actionCardPressed
-          ]}
+        <LiquidGlassButton
+          title="Request a Meal"
+          description="Need food? Request a free Langar meal to be delivered to your home"
+          icon="restaurant"
           onPress={() => router.push('/request/new')}
-        >
-          <GlassCard style={styles.actionCard}>
-            <View style={styles.actionIconWrap}>
-              <MaterialIcons name="restaurant" size={28} color={Colors.light.accent} />
-            </View>
-            <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Request a Meal</Text>
-              <Text style={styles.actionDesc}>
-                Need food? Request a free Langar meal to be delivered to your home
-              </Text>
-            </View>
-            <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
-          </GlassCard>
-        </Pressable>
+          variant="default"
+        />
 
         {/* Available Deliveries Preview */}
         <View style={styles.sectionHeader}>
@@ -492,39 +469,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: Colors.light.accent,
-  },
-  actionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Spacing.lg,
-    marginBottom: Spacing.md,
-  },
-  actionCardPressed: {
-    opacity: 0.6,
-    transform: [{ scale: 0.97 }],
-  },
-  actionIconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#FFF7ED',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
-  },
-  actionContent: {
-    flex: 1,
-  },
-  actionTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  actionDesc: {
-    fontSize: 13,
-    color: Colors.light.mutedText,
-    lineHeight: 18,
   },
   deliveryCard: {
     marginBottom: Spacing.md,

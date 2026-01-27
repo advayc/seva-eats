@@ -1,12 +1,12 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { BlurView } from 'expo-blur';
-import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
+import { LiquidGlassTabBar } from '@/components/liquid-glass-tab-bar';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 
 const TAB_BAR_WIDTH = 100;
 
@@ -27,44 +27,37 @@ export default function TabLayout() {
         tabBarItemStyle: {
           justifyContent: 'center',
           alignItems: 'center',
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '500',
+          fontWeight: '600',
+          marginTop: 4,
         },
-        tabBarBackground: () => (
-          showGlass ? (
-            <GlassView
-              key="tab-glass"
-              style={styles.glassBackground}
-              glassEffectStyle="clear"
-              tintColor={colorScheme === 'dark' ? '#0B122080' : '#FFFFFF80'}
-              isInteractive
-            />
-          ) : (
-            <BlurView
-              intensity={70}
-              tint={colorScheme === 'dark' ? 'dark' : 'light'}
-              style={styles.blurBackground}
-            />
-          )
-        ),
+        tabBarIconStyle: {
+          marginBottom: -2,
+        },
+        tabBarBackground: () => <LiquidGlassTabBar />,
         tabBarStyle: Platform.select({
           ios: {
             position: 'absolute',
             left: horizontalMargin,
             right: horizontalMargin,
             bottom: 35,
-            height: 64,
+            height: 68,
             alignItems: 'center',
             justifyContent: 'center',
             borderTopWidth: 0,
-            borderRadius: 32,
+            borderRadius: 34,
             backgroundColor: 'transparent',
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.15,
-            shadowRadius: 24,
+            borderWidth: showGlass ? 0.5 : 0,
+            borderColor: colorScheme === 'dark' 
+              ? 'rgba(255, 255, 255, 0.15)' 
+              : 'rgba(0, 0, 0, 0.06)',
+            shadowColor: colorScheme === 'dark' ? '#000000' : '#F97316',
+            shadowOffset: { width: 0, height: 12 },
+            shadowOpacity: showGlass ? 0.25 : 0.15,
+            shadowRadius: 32,
             overflow: 'hidden',
           },
           default: {
@@ -72,19 +65,21 @@ export default function TabLayout() {
             left: horizontalMargin,
             right: horizontalMargin,
             bottom: 35,
-            height: 64,
+            height: 68,
             alignItems: 'center',
             justifyContent: 'center',
             borderTopWidth: 0,
-            borderRadius: 32,
-            backgroundColor: colorScheme === 'dark' ? '#1F2937F5' : '#FFFFFFF5',
-            borderWidth: 0.5,
-            borderColor: 'rgba(0, 0, 0, 0.08)',
+            borderRadius: 34,
+            backgroundColor: colorScheme === 'dark' ? '#1F2937F8' : '#FFFFFFF8',
+            borderWidth: 1,
+            borderColor: colorScheme === 'dark' 
+              ? 'rgba(255, 255, 255, 0.1)' 
+              : 'rgba(0, 0, 0, 0.08)',
             shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.15,
-            shadowRadius: 24,
-            elevation: 12,
+            shadowOffset: { width: 0, height: 12 },
+            shadowOpacity: 0.2,
+            shadowRadius: 32,
+            elevation: 16,
           },
         }),
       }}>
@@ -92,8 +87,12 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="home" size={size ?? 24} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialIcons 
+              name="home" 
+              size={focused ? 26 : 24} 
+              color={color} 
+            />
           ),
         }}
       />
@@ -101,20 +100,15 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: 'Volunteer',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="volunteer-activism" size={size ?? 24} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialIcons 
+              name="volunteer-activism" 
+              size={focused ? 26 : 24} 
+              color={color} 
+            />
           ),
         }}
       />
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  glassBackground: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  blurBackground: {
-    ...StyleSheet.absoluteFillObject,
-  },
-});
