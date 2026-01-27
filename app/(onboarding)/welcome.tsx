@@ -3,25 +3,27 @@ import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         <View style={styles.heroRow}>
           <View style={styles.logoWrap}>
             <Image source={require('@/assets/images/logo.svg')} style={styles.logo} />
           </View>
           <View style={styles.titleBlock}>
-            <Text style={styles.title}>Sewa Eats</Text>
-            <Text style={styles.tagline}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Sewa Eats</Text>
+            <Text style={[styles.tagline, { color: colors.accent }]}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
           </View>
         </View>
 
-        <Pressable style={styles.primaryButton} onPress={() => router.push('/intro')}>
+        <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/intro')}>
           <Text style={styles.primaryText}>Continue</Text>
         </Pressable>
       </View>
@@ -32,7 +34,6 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   content: {
     flex: 1,
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: '800',
-    color: Colors.light.text,
     letterSpacing: -0.5,
   },
   tagline: {
@@ -71,16 +71,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 2,
-    color: '#F97316',
   },
   primaryButton: {
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.pill,
     paddingVertical: 14,
     alignItems: 'center',
   },
   primaryText: {
-    color: Colors.light.background,
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
   },

@@ -40,10 +40,12 @@
         {
           "groupIdentifier": "group.com.advay.sewaeats",
           "bundleIdentifier": "com.advay.sewaeats.widgets",
-          "enablePushNotifications": false,
+          "enablePushNotifications": true,
           "widgets": []
         }
       ],
+      "./plugins/with-widget-entry-point.js",
+      "./plugins/with-widget-team-id.js",
       [
         "expo-splash-screen",
         {

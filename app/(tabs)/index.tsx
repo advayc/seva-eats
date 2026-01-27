@@ -17,12 +17,14 @@ import {
   communityStats,
   pickupLocations,
 } from '@/constants/mock-data';
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
 import { useLocation, useOrders, useRequests } from '@/context';
 import { REQUEST_STATUS_LABELS } from '@/context/RequestContext';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
   const { placeOrder, activeOrder } = useOrders();
   const { userLocation, refreshLocation, isLoading } = useLocation();
   const { activeRequest } = useRequests();
@@ -98,12 +100,12 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.appTitle}>Seva Eats</Text>
+            <Text style={[styles.appTitle, { color: colors.text }]}>Seva Eats</Text>
             <Pressable 
               style={({ pressed }) => [
                 styles.locationRow,
@@ -111,14 +113,17 @@ export default function HomeScreen() {
               ]} 
               onPress={refreshLocation}
             >
-              <MaterialIcons name="location-on" size={14} color={Colors.light.mutedText} />
-              <Text style={styles.locationText}>
+              <MaterialIcons name="location-on" size={14} color={colors.mutedText} />
+              <Text style={[styles.locationText, { color: colors.mutedText }]}>
                 {isLoading ? 'Finding...' : locationLabel}
               </Text>
             </Pressable>
           </View>
-          <Pressable style={styles.iconButton} onPress={() => router.push('/profile')}>
-            <MaterialIcons name="person-outline" size={22} color={Colors.light.text} />
+          <Pressable 
+            style={[styles.iconButton, { backgroundColor: colors.surface }]} 
+            onPress={() => router.push('/profile')}
+          >
+            <MaterialIcons name="person-outline" size={22} color={colors.text} />
           </Pressable>
         </View>
 
@@ -127,6 +132,7 @@ export default function HomeScreen() {
           <Pressable 
             style={({ pressed }) => [
               styles.activeOrderBanner,
+              { backgroundColor: colors.accent },
               pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] }
             ]} 
             onPress={handleViewActiveOrder}
@@ -173,27 +179,27 @@ export default function HomeScreen() {
 
         {/* Impact Stats Card */}
         <GlassCard style={styles.statsCard}>
-          <Text style={styles.statsLabel}>Community Impact</Text>
+          <Text style={[styles.statsLabel, { color: colors.mutedText }]}>Community Impact</Text>
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{communityStats.mealsDelivered.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>Meals</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.mealsDelivered.toLocaleString()}</Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Meals</Text>
             </View>
-            <View style={styles.statDivider} />
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{communityStats.familiesServed.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>Families</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.familiesServed.toLocaleString()}</Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Families</Text>
             </View>
-            <View style={styles.statDivider} />
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{communityStats.activeVolunteers}</Text>
-              <Text style={styles.statLabel}>Volunteers</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.activeVolunteers}</Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Volunteers</Text>
             </View>
           </View>
         </GlassCard>
 
         {/* Main Action Cards */}
-        <Text style={styles.sectionTitle}>What would you like to do?</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>What would you like to do?</Text>
 
         <LiquidGlassButton
           title="Volunteer to Deliver"
@@ -213,9 +219,9 @@ export default function HomeScreen() {
 
         {/* Available Deliveries Preview */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Available Deliveries</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Available Deliveries</Text>
           <Pressable onPress={() => router.push('/(tabs)/explore')}>
-            <Text style={styles.seeAllLink}>See all</Text>
+            <Text style={[styles.seeAllLink, { color: colors.accent }]}>See all</Text>
           </Pressable>
         </View>
 
@@ -234,32 +240,32 @@ export default function HomeScreen() {
               />
               <View style={styles.deliveryContent}>
                 <View style={styles.deliveryHeader}>
-                  <Text style={styles.deliveryTitle}>{request.pickupLocation.name}</Text>
-                  <View style={styles.distanceBadge}>
-                    <Text style={styles.distanceText}>{request.distanceFromHome}</Text>
+                  <Text style={[styles.deliveryTitle, { color: colors.text }]}>{request.pickupLocation.name}</Text>
+                  <View style={[styles.distanceBadge, { backgroundColor: colors.isDark ? '#064E3B' : '#ECFDF5' }]}>
+                    <Text style={[styles.distanceText, { color: '#059669' }]}>{request.distanceFromHome}</Text>
                   </View>
                 </View>
                 <View style={styles.deliveryRoute}>
                   <View style={styles.routePoint}>
-                    <MaterialIcons name="place" size={14} color={Colors.light.accent} />
-                    <Text style={styles.routeText}>Pickup: {request.pickupLocation.name}</Text>
+                    <MaterialIcons name="place" size={14} color={colors.accent} />
+                    <Text style={[styles.routeText, { color: colors.mutedText }]}>Pickup: {request.pickupLocation.name}</Text>
                   </View>
-                  <View style={styles.routeLine} />
+                  <View style={[styles.routeLine, { backgroundColor: colors.border }]} />
                   <View style={styles.routePoint}>
                     <MaterialIcons name="home" size={14} color="#059669" />
-                    <Text style={styles.routeText}>
+                    <Text style={[styles.routeText, { color: colors.mutedText }]}>
                       Drop-off: {getDropOffTypeLabel(request.dropOffLocation.type)}
                     </Text>
                   </View>
                 </View>
                 <View style={styles.deliveryMeta}>
                   <View style={styles.metaItem}>
-                    <MaterialIcons name="schedule" size={14} color={Colors.light.mutedText} />
-                    <Text style={styles.metaText}>{request.estimatedTime}</Text>
+                    <MaterialIcons name="schedule" size={14} color={colors.mutedText} />
+                    <Text style={[styles.metaText, { color: colors.mutedText }]}>{request.estimatedTime}</Text>
                   </View>
                   <View style={styles.metaItem}>
-                    <MaterialIcons name="inventory-2" size={14} color={Colors.light.mutedText} />
-                    <Text style={styles.metaText}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
+                    <MaterialIcons name="inventory-2" size={14} color={colors.mutedText} />
+                    <Text style={[styles.metaText, { color: colors.mutedText }]}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
                   </View>
                 </View>
               </View>
@@ -268,7 +274,7 @@ export default function HomeScreen() {
         ))}
 
         {/* Nearby Gurdwaras */}
-        <Text style={styles.sectionTitle}>Nearby Pickup Locations</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Nearby Pickup Locations</Text>
 
         <ScrollView 
           horizontal 
@@ -285,9 +291,9 @@ export default function HomeScreen() {
               <GlassCard style={styles.gurdwaraCard} noBorder>
                 <Image source={{ uri: location.image }} style={styles.gurdwaraImage} />
                 <View style={styles.gurdwaraInfo}>
-                  <Text style={styles.gurdwaraName} numberOfLines={1}>{location.name}</Text>
-                  <Text style={styles.gurdwaraMeta}>{location.boxesAvailable} boxes available</Text>
-                  <Text style={styles.gurdwaraDistance}>{location.distance}</Text>
+                  <Text style={[styles.gurdwaraName, { color: colors.text }]} numberOfLines={1}>{location.name}</Text>
+                  <Text style={[styles.gurdwaraMeta, { color: colors.accent }]}>{location.boxesAvailable} boxes available</Text>
+                  <Text style={[styles.gurdwaraDistance, { color: colors.mutedText }]}>{location.distance}</Text>
                 </View>
               </GlassCard>
             </Pressable>
@@ -296,35 +302,35 @@ export default function HomeScreen() {
 
         {/* How It Works */}
         <GlassCard style={styles.howItWorksCard}>
-          <Text style={styles.howItWorksTitle}>How It Works</Text>
+          <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How It Works</Text>
           
           <View style={styles.stepItem}>
-            <View style={styles.stepNumberWrap}>
+            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
               <Text style={styles.stepNumber}>1</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Pick Up</Text>
-              <Text style={styles.stepDesc}>Collect a meal box at your local Gurdwara</Text>
+              <Text style={[styles.stepTitle, { color: colors.text }]}>Pick Up</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Collect a meal box at your local Gurdwara</Text>
             </View>
           </View>
 
           <View style={styles.stepItem}>
-            <View style={styles.stepNumberWrap}>
+            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
               <Text style={styles.stepNumber}>2</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Get Matched</Text>
-              <Text style={styles.stepDesc}>We find a recipient 1-2 km from your route home</Text>
+              <Text style={[styles.stepTitle, { color: colors.text }]}>Get Matched</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>We find a recipient 1-2 km from your route home</Text>
             </View>
           </View>
 
           <View style={styles.stepItem}>
-            <View style={styles.stepNumberWrap}>
+            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
               <Text style={styles.stepNumber}>3</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Deliver</Text>
-              <Text style={styles.stepDesc}>Drop off the meal and complete your Seva</Text>
+              <Text style={[styles.stepTitle, { color: colors.text }]}>Deliver</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Drop off the meal and complete your Seva</Text>
             </View>
           </View>
         </GlassCard>
@@ -336,7 +342,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   content: {
     paddingHorizontal: 20,
@@ -352,7 +357,6 @@ const styles = StyleSheet.create({
   appTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
   },
   locationRow: {
     flexDirection: 'row',
@@ -362,13 +366,11 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 13,
-    color: Colors.light.mutedText,
   },
   iconButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -376,11 +378,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.lg,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
-    shadowColor: Colors.light.accent,
+    shadowColor: '#F97316',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -425,7 +426,6 @@ const styles = StyleSheet.create({
   statsLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: Colors.light.mutedText,
     letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: Spacing.md,
@@ -441,17 +441,14 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#1F2937',
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginTop: 2,
   },
   statDivider: {
     width: 1,
     height: 32,
-    backgroundColor: '#E5E7EB',
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -462,13 +459,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: Spacing.md,
   },
   seeAllLink: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.light.accent,
   },
   deliveryCard: {
     marginBottom: Spacing.md,
@@ -494,11 +489,9 @@ const styles = StyleSheet.create({
   deliveryTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2937',
     flex: 1,
   },
   distanceBadge: {
-    backgroundColor: '#ECFDF5',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -506,7 +499,6 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#059669',
   },
   deliveryRoute: {
     marginBottom: Spacing.sm,
@@ -519,13 +511,11 @@ const styles = StyleSheet.create({
   routeLine: {
     width: 1,
     height: 12,
-    backgroundColor: '#E5E7EB',
     marginLeft: 7,
     marginVertical: 2,
   },
   routeText: {
     fontSize: 12,
-    color: Colors.light.mutedText,
   },
   deliveryMeta: {
     flexDirection: 'row',
@@ -538,7 +528,6 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 12,
-    color: Colors.light.mutedText,
   },
   gurdwaraScroll: {
     gap: Spacing.md,
@@ -558,17 +547,14 @@ const styles = StyleSheet.create({
   gurdwaraName: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: 2,
   },
   gurdwaraMeta: {
     fontSize: 11,
-    color: Colors.light.accent,
     fontWeight: '500',
   },
   gurdwaraDistance: {
     fontSize: 11,
-    color: Colors.light.mutedText,
     marginTop: 2,
   },
   howItWorksCard: {
@@ -578,7 +564,6 @@ const styles = StyleSheet.create({
   howItWorksTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: Spacing.lg,
   },
   stepItem: {
@@ -589,7 +574,6 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.light.accent,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -605,11 +589,9 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
   },
   stepDesc: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginTop: 2,
   },
 });

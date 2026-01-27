@@ -9,8 +9,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Colors, Radii, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Radii, Spacing } from '@/constants/theme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 type LiquidGlassButtonProps = {
   title: string;
@@ -31,8 +31,8 @@ export function LiquidGlassButton({
   onPress,
   variant = 'default',
 }: LiquidGlassButtonProps) {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const colors = useThemeColors();
+  const isDark = colors.isDark;
   
   const scale = useSharedValue(1);
   const glassScale = useSharedValue(1);
@@ -132,18 +132,18 @@ export function LiquidGlassButton({
         
         <View style={styles.content}>
           <View style={[styles.iconWrap, { backgroundColor: getIconBackgroundColor() }]}>
-            <MaterialIcons name={icon} size={28} color={Colors.light.accent} />
+            <MaterialIcons name={icon} size={28} color={colors.accent} />
           </View>
           <View style={styles.textContent}>
-            <Text style={[styles.title, isDark && styles.titleDark]}>{title}</Text>
-            <Text style={[styles.description, isDark && styles.descriptionDark]}>
+            <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+            <Text style={[styles.description, { color: colors.mutedText }]}>
               {description}
             </Text>
           </View>
           <MaterialIcons 
             name="chevron-right" 
             size={24} 
-            color={isDark ? 'rgba(255, 255, 255, 0.4)' : Colors.light.mutedText} 
+            color={isDark ? 'rgba(255, 255, 255, 0.4)' : colors.mutedText} 
           />
         </View>
       </View>
@@ -193,19 +193,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 4,
     letterSpacing: -0.2,
   },
-  titleDark: {
-    color: '#FFFFFF',
-  },
   description: {
     fontSize: 13,
-    color: Colors.light.mutedText,
     lineHeight: 18,
-  },
-  descriptionDark: {
-    color: 'rgba(255, 255, 255, 0.7)',
   },
 });

@@ -13,13 +13,13 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
   FadeIn,
   FadeInDown,
 } from 'react-native-reanimated';
 
-import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
+import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { mealOptions, type MealOption } from '@/constants/meals';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -36,6 +36,8 @@ function MealCard({
   onIncrement,
   onDecrement,
   index,
+  colors,
+  shadows,
 }: {
   meal: MealOption;
   selected: boolean;
@@ -44,6 +46,8 @@ function MealCard({
   onIncrement: () => void;
   onDecrement: () => void;
   index: number;
+  colors: ReturnType<typeof useThemeColors>;
+  shadows: typeof Shadows.light;
 }) {
   const scale = useSharedValue(1);
 
@@ -67,7 +71,15 @@ function MealCard({
       <AnimatedPressable
         style={[
           styles.mealCard,
-          selected && styles.mealCardSelected,
+          { 
+            backgroundColor: colors.surfaceElevated,
+            borderColor: colors.border,
+          },
+          selected && { 
+            borderColor: colors.accent,
+            backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.15)' : '#FFFBEB',
+          },
+          shadows.card,
           animatedStyle,
         ]}
         onPress={onPress}
@@ -84,15 +96,15 @@ function MealCard({
         </View>
 
         {/* Meal Info */}
-        <Text style={styles.mealName}>{meal.name}</Text>
-        <Text style={styles.mealDescription} numberOfLines={2}>
+        <Text style={[styles.mealName, { color: colors.text }]}>{meal.name}</Text>
+        <Text style={[styles.mealDescription, { color: colors.mutedText }]} numberOfLines={2}>
           {meal.description}
         </Text>
-        <Text style={styles.mealServings}>{meal.servings}</Text>
+        <Text style={[styles.mealServings, { color: colors.accent }]}>{meal.servings}</Text>
 
         {/* Selection Badge / Quantity Controls */}
         {selected ? (
-          <View style={styles.quantityRow}>
+          <View style={[styles.quantityRow, { backgroundColor: colors.accent }]}>
             <Pressable
               style={styles.quantityButton}
               onPress={onDecrement}
@@ -114,8 +126,8 @@ function MealCard({
             </Pressable>
           </View>
         ) : (
-          <View style={styles.addBadge}>
-            <MaterialIcons name="add" size={18} color={Colors.light.accent} />
+          <View style={[styles.addBadge, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED', borderColor: colors.accent }]}>
+            <MaterialIcons name="add" size={18} color={colors.accent} />
           </View>
         )}
       </AnimatedPressable>
@@ -125,6 +137,8 @@ function MealCard({
 
 export default function MealSelectionScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
+  const shadows = colors.isDark ? Shadows.dark : Shadows.light;
   const [selectedMeals, setSelectedMeals] = useState<Map<string, SelectedMeal>>(
     new Map()
   );
@@ -187,15 +201,15 @@ export default function MealSelectionScreen() {
   const desserts = mealOptions.filter((m) => m.category === 'dessert');
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={Colors.light.text} />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Choose Your Meals</Text>
-          <Text style={styles.headerSubtitle}>All meals are 100% free</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Choose Your Meals</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.mutedText }]}>All meals are 100% free</Text>
         </View>
         <View style={styles.headerSpacer} />
       </View>
@@ -206,18 +220,18 @@ export default function MealSelectionScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Info Banner */}
-        <Animated.View entering={FadeIn.delay(100)} style={styles.infoBanner}>
-          <MaterialIcons name="volunteer-activism" size={24} color={Colors.light.accent} />
+        <Animated.View entering={FadeIn.delay(100)} style={[styles.infoBanner, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.15)' : '#FFF7ED' }]}>
+          <MaterialIcons name="volunteer-activism" size={24} color={colors.accent} />
           <View style={styles.infoBannerText}>
-            <Text style={styles.infoBannerTitle}>Langar is free for everyone</Text>
-            <Text style={styles.infoBannerDesc}>
+            <Text style={[styles.infoBannerTitle, { color: colors.isDark ? colors.accent : '#92400E' }]}>Langar is free for everyone</Text>
+            <Text style={[styles.infoBannerDesc, { color: colors.isDark ? colors.mutedText : '#B45309' }]}>
               A volunteer will pick up your meal from a nearby Gurdwara and deliver it to you
             </Text>
           </View>
         </Animated.View>
 
         {/* Main Courses */}
-        <Text style={styles.sectionTitle}>Main Courses</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Main Courses</Text>
         <View style={styles.mealsGrid}>
           {mainMeals.map((meal, index) => (
             <MealCard
@@ -229,12 +243,14 @@ export default function MealSelectionScreen() {
               onIncrement={() => handleIncrement(meal.id)}
               onDecrement={() => handleDecrement(meal.id)}
               index={index}
+              colors={colors}
+              shadows={shadows}
             />
           ))}
         </View>
 
         {/* Desserts */}
-        <Text style={styles.sectionTitle}>Desserts</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Desserts</Text>
         <View style={styles.mealsGrid}>
           {desserts.map((meal, index) => (
             <MealCard
@@ -246,6 +262,8 @@ export default function MealSelectionScreen() {
               onIncrement={() => handleIncrement(meal.id)}
               onDecrement={() => handleDecrement(meal.id)}
               index={mainMeals.length + index}
+              colors={colors}
+              shadows={shadows}
             />
           ))}
         </View>
@@ -258,18 +276,18 @@ export default function MealSelectionScreen() {
       {totalMeals > 0 && (
         <Animated.View
           entering={FadeInDown.springify()}
-          style={styles.bottomBar}
+          style={[styles.bottomBar, { backgroundColor: colors.background, borderTopColor: colors.border }, shadows.floating]}
         >
           <View style={styles.bottomBarContent}>
             <View style={styles.mealsSummary}>
-              <View style={styles.mealsBadge}>
+              <View style={[styles.mealsBadge, { backgroundColor: colors.accent }]}>
                 <Text style={styles.mealsBadgeText}>{totalMeals}</Text>
               </View>
-              <Text style={styles.mealsLabel}>
+              <Text style={[styles.mealsLabel, { color: colors.mutedText }]}>
                 {totalMeals === 1 ? 'meal' : 'meals'} selected
               </Text>
             </View>
-            <Pressable style={styles.continueButton} onPress={handleContinue}>
+            <Pressable style={[styles.continueButton, { backgroundColor: colors.accent }]} onPress={handleContinue}>
               <Text style={styles.continueButtonText}>Continue</Text>
               <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
             </Pressable>
@@ -283,7 +301,6 @@ export default function MealSelectionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -292,7 +309,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   backButton: {
     width: 40,
@@ -306,11 +322,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1F2937',
   },
   headerSubtitle: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginTop: 2,
   },
   headerSpacer: {
@@ -324,7 +338,6 @@ const styles = StyleSheet.create({
   },
   infoBanner: {
     flexDirection: 'row',
-    backgroundColor: '#FFF7ED',
     borderRadius: Radii.lg,
     padding: Spacing.md,
     gap: Spacing.md,
@@ -336,18 +349,15 @@ const styles = StyleSheet.create({
   infoBannerTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#92400E',
     marginBottom: 2,
   },
   infoBannerDesc: {
     fontSize: 13,
-    color: '#B45309',
     lineHeight: 18,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: Spacing.md,
   },
   mealsGrid: {
@@ -360,18 +370,11 @@ const styles = StyleSheet.create({
     width: '47%',
   },
   mealCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: Radii.lg,
     padding: Spacing.md,
     borderWidth: 2,
-    borderColor: '#F3F4F6',
     alignItems: 'center',
     minHeight: 180,
-    ...Shadows.card,
-  },
-  mealCardSelected: {
-    borderColor: Colors.light.accent,
-    backgroundColor: '#FFFBEB',
   },
   iconCircle: {
     width: 64,
@@ -384,20 +387,17 @@ const styles = StyleSheet.create({
   mealName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
     textAlign: 'center',
     marginBottom: 4,
   },
   mealDescription: {
     fontSize: 11,
-    color: Colors.light.mutedText,
     textAlign: 'center',
     lineHeight: 14,
     marginBottom: 4,
   },
   mealServings: {
     fontSize: 10,
-    color: Colors.light.accent,
     fontWeight: '600',
   },
   addBadge: {
@@ -407,11 +407,9 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#FFF7ED',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.light.accent,
   },
   quantityRow: {
     position: 'absolute',
@@ -419,7 +417,6 @@ const styles = StyleSheet.create({
     right: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.accent,
     borderRadius: 16,
     paddingHorizontal: 4,
     paddingVertical: 2,
@@ -444,13 +441,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     paddingBottom: Spacing.xl,
-    ...Shadows.floating,
   },
   bottomBarContent: {
     flexDirection: 'row',
@@ -466,7 +460,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: Colors.light.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -477,12 +470,10 @@ const styles = StyleSheet.create({
   },
   mealsLabel: {
     fontSize: 14,
-    color: Colors.light.mutedText,
   },
   continueButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.lg,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.xl,

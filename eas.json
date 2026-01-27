@@ -14,13 +14,15 @@
     "preview": {
       "distribution": "internal",
       "ios": {
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "prebuildCommand": "npm run fix-widget"
       }
     },
     "production": {
       "autoIncrement": true,
       "ios": {
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "prebuildCommand": "npm run fix-widget"
       }
     }
   },

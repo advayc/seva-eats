@@ -1,4 +1,5 @@
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 import { Image } from 'expo-image';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -17,6 +18,8 @@ interface SplashScreenProps {
 export function SplashScreen({ onFinish }: SplashScreenProps) {
   const { width, height } = useWindowDimensions();
   const isWide = width >= 600;
+  const colors = useThemeColors();
+  
   const logoOpacity = useSharedValue(0);
   const logoScale = useSharedValue(0.3); // Start small
   const textOpacity = useSharedValue(0);
@@ -58,7 +61,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
   }));
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         <View style={[styles.heroRow, !isWide && styles.heroRowStacked]}>
           <Animated.View style={[styles.logoWrapper, logoStyle]}>
@@ -70,8 +73,8 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
           </Animated.View>
 
           <Animated.View style={[styles.titleBlock, textStyle, !isWide && styles.titleBlockStacked]}>
-            <Text style={styles.title}>Sewa Eats</Text>
-            <Text style={styles.tagline}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Sewa Eats</Text>
+            <Text style={[styles.tagline, { color: colors.accent }]}>{"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}</Text>
           </Animated.View>
         </View>
 
@@ -79,6 +82,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
           <Pressable 
             style={({ pressed }) => [
               styles.primaryButton,
+              { backgroundColor: colors.accent },
               pressed && styles.primaryButtonPressed
             ]} 
             onPress={onFinish}
@@ -94,7 +98,6 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   content: {
     flex: 1,
@@ -123,7 +126,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontWeight: '800',
-    color: Colors.light.text,
     letterSpacing: -0.5,
   },
   tagline: {
@@ -131,7 +133,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 2,
-    color: '#F97316',
   },
   logoWrapper: {
     alignItems: 'center',
@@ -149,7 +150,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   primaryButton: {
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.pill,
     paddingVertical: 14,
     alignItems: 'center',
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   primaryText: {
-    color: Colors.light.background,
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
   },

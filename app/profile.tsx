@@ -15,12 +15,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
 import { useUser } from '@/context';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, updateProfile, clearProfile, hasCompletedProfile } = useUser();
+  const colors = useThemeColors();
   
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
@@ -87,17 +89,17 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <Pressable style={styles.backButton} onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={24} color={Colors.light.text} />
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </Pressable>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
           <View style={styles.backButton} />
         </View>
 
@@ -109,73 +111,73 @@ export default function ProfileScreen() {
         >
           {/* Avatar Section */}
           <View style={styles.avatarSection}>
-            <View style={styles.avatar}>
-              <MaterialIcons name="person" size={48} color={Colors.light.accent} />
+            <View style={[styles.avatar, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}>
+              <MaterialIcons name="person" size={48} color={colors.accent} />
             </View>
             {hasCompletedProfile && (
-              <View style={styles.completedBadge}>
-                <MaterialIcons name="check-circle" size={16} color="#059669" />
-                <Text style={styles.completedText}>Profile Complete</Text>
+              <View style={[styles.completedBadge, { backgroundColor: colors.isDark ? 'rgba(5, 150, 105, 0.2)' : '#ECFDF5' }]}>
+                <MaterialIcons name="check-circle" size={16} color={colors.isDark ? '#34D399' : '#059669'} />
+                <Text style={[styles.completedText, { color: colors.isDark ? '#34D399' : '#059669' }]}>Profile Complete</Text>
               </View>
             )}
           </View>
 
           {/* Personal Information */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Personal Information</Text>
             
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Full Name</Text>
+              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Full Name</Text>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
                 value={name}
                 onChangeText={setName}
                 placeholder="Enter your name"
-                placeholderTextColor={Colors.light.mutedText}
+                placeholderTextColor={colors.mutedText}
               />
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Phone Number</Text>
+              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Phone Number</Text>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
                 value={phone}
                 onChangeText={setPhone}
                 placeholder="(555) 123-4567"
-                placeholderTextColor={Colors.light.mutedText}
+                placeholderTextColor={colors.mutedText}
                 keyboardType="phone-pad"
               />
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Home Address</Text>
+              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Home Address</Text>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
                 value={address}
                 onChangeText={setAddress}
                 placeholder="Enter your address"
-                placeholderTextColor={Colors.light.mutedText}
+                placeholderTextColor={colors.mutedText}
               />
-              <Text style={styles.inputHint}>
+              <Text style={[styles.inputHint, { color: colors.mutedText }]}>
                 Used to find nearby Gurdwaras and drop-off locations
               </Text>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Family Size</Text>
+              <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Family Size</Text>
               <View style={styles.counterRow}>
                 <Pressable 
-                  style={styles.counterButton}
+                  style={[styles.counterButton, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}
                   onPress={() => setFamilySize(Math.max(1, parseInt(familySize, 10) - 1).toString())}
                 >
-                  <MaterialIcons name="remove" size={20} color={Colors.light.accent} />
+                  <MaterialIcons name="remove" size={20} color={colors.accent} />
                 </Pressable>
-                <Text style={styles.counterValue}>{familySize}</Text>
+                <Text style={[styles.counterValue, { color: colors.text }]}>{familySize}</Text>
                 <Pressable 
-                  style={styles.counterButton}
+                  style={[styles.counterButton, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}
                   onPress={() => setFamilySize((parseInt(familySize, 10) + 1).toString())}
                 >
-                  <MaterialIcons name="add" size={20} color={Colors.light.accent} />
+                  <MaterialIcons name="add" size={20} color={colors.accent} />
                 </Pressable>
               </View>
             </View>
@@ -183,25 +185,27 @@ export default function ProfileScreen() {
 
           {/* Role Selection */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>I want to...</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>I want to...</Text>
             <View style={styles.roleOptions}>
               {(['volunteer', 'recipient', 'both'] as const).map((role) => (
                 <Pressable
                   key={role}
                   style={[
                     styles.roleOption,
-                    user?.role === role && styles.roleOptionSelected,
+                    { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
+                    user?.role === role && { backgroundColor: colors.accent, borderColor: colors.accent },
                   ]}
                   onPress={() => updateProfile({ role })}
                 >
                   <MaterialIcons 
                     name={role === 'volunteer' ? 'volunteer-activism' : role === 'recipient' ? 'restaurant' : 'swap-horiz'} 
                     size={24} 
-                    color={user?.role === role ? '#FFFFFF' : Colors.light.accent} 
+                    color={user?.role === role ? '#FFFFFF' : colors.accent} 
                   />
                   <Text style={[
                     styles.roleOptionText,
-                    user?.role === role && styles.roleOptionTextSelected,
+                    { color: colors.text },
+                    user?.role === role && { color: '#FFFFFF' },
                   ]}>
                     {roleLabels[role]}
                   </Text>
@@ -212,16 +216,16 @@ export default function ProfileScreen() {
 
           {/* Notifications */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Notifications</Text>
-            <View style={styles.settingRow}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Notifications</Text>
+            <View style={[styles.settingRow, { backgroundColor: colors.surface }]}>
               <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Push Notifications</Text>
-                <Text style={styles.settingDesc}>Get updates on deliveries and requests</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Push Notifications</Text>
+                <Text style={[styles.settingDesc, { color: colors.mutedText }]}>Get updates on deliveries and requests</Text>
               </View>
               <Switch
                 value={notificationsEnabled}
                 onValueChange={setNotificationsEnabled}
-                trackColor={{ false: '#E5E7EB', true: Colors.light.accent }}
+                trackColor={{ false: colors.border, true: colors.accent }}
                 thumbColor="#FFFFFF"
               />
             </View>
@@ -229,15 +233,15 @@ export default function ProfileScreen() {
 
           {/* Stats (if user has activity) */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Your Impact</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Impact</Text>
             <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>0</Text>
-                <Text style={styles.statLabel}>Deliveries Made</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+                <Text style={[styles.statNumber, { color: colors.accent }]}>0</Text>
+                <Text style={[styles.statLabel, { color: colors.mutedText }]}>Deliveries Made</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>0</Text>
-                <Text style={styles.statLabel}>Meals Received</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+                <Text style={[styles.statNumber, { color: colors.accent }]}>0</Text>
+                <Text style={[styles.statLabel, { color: colors.mutedText }]}>Meals Received</Text>
               </View>
             </View>
           </View>
@@ -245,7 +249,7 @@ export default function ProfileScreen() {
           {/* Actions */}
           <View style={styles.section}>
             <Pressable 
-              style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
+              style={[styles.saveButton, { backgroundColor: colors.accent }, isSaving && styles.saveButtonDisabled]}
               onPress={handleSave}
               disabled={isSaving}
             >
@@ -262,8 +266,8 @@ export default function ProfileScreen() {
 
           {/* App Info */}
           <View style={styles.appInfo}>
-            <Text style={styles.appInfoText}>Seva Eats v1.0.0</Text>
-            <Text style={styles.appInfoText}>Made with love for the community</Text>
+            <Text style={[styles.appInfoText, { color: colors.mutedText }]}>Seva Eats v1.0.0</Text>
+            <Text style={[styles.appInfoText, { color: colors.mutedText }]}>Made with love for the community</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -274,7 +278,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   keyboardView: {
     flex: 1,
@@ -286,7 +289,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   backButton: {
     width: 40,
@@ -297,7 +299,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.light.text,
   },
   scrollView: {
     flex: 1,
@@ -314,7 +315,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#FFF7ED',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
@@ -323,7 +323,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#ECFDF5',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: Radii.pill,
@@ -331,7 +330,6 @@ const styles = StyleSheet.create({
   completedText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#059669',
   },
   section: {
     marginBottom: Spacing.xl,
@@ -339,7 +337,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.light.text,
     marginBottom: Spacing.md,
   },
   inputGroup: {
@@ -348,22 +345,17 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13,
     fontWeight: '500',
-    color: Colors.light.mutedText,
     marginBottom: Spacing.xs,
   },
   textInput: {
-    backgroundColor: '#F9FAFB',
     borderRadius: Radii.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     fontSize: 15,
-    color: Colors.light.text,
     borderWidth: 1,
-    borderColor: Colors.light.border,
   },
   inputHint: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginTop: Spacing.xs,
   },
   counterRow: {
@@ -375,14 +367,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FFF7ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
   counterValue: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.light.text,
     minWidth: 30,
     textAlign: 'center',
   },
@@ -397,28 +387,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     borderRadius: Radii.md,
     borderWidth: 1,
-    borderColor: Colors.light.border,
-    backgroundColor: '#FFFFFF',
-  },
-  roleOptionSelected: {
-    backgroundColor: Colors.light.accent,
-    borderColor: Colors.light.accent,
   },
   roleOptionText: {
     fontSize: 11,
     fontWeight: '500',
-    color: Colors.light.text,
     marginTop: Spacing.xs,
     textAlign: 'center',
-  },
-  roleOptionTextSelected: {
-    color: '#FFFFFF',
   },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F9FAFB',
     borderRadius: Radii.md,
     padding: Spacing.lg,
   },
@@ -429,11 +408,9 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 15,
     fontWeight: '500',
-    color: Colors.light.text,
   },
   settingDesc: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginTop: 2,
   },
   statsGrid: {
@@ -442,7 +419,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
     borderRadius: Radii.md,
     padding: Spacing.lg,
     alignItems: 'center',
@@ -450,15 +426,12 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 28,
     fontWeight: '700',
-    color: Colors.light.accent,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginTop: Spacing.xs,
   },
   saveButton: {
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.md,
     paddingVertical: Spacing.lg,
     alignItems: 'center',
@@ -490,7 +463,6 @@ const styles = StyleSheet.create({
   },
   appInfoText: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginBottom: 4,
   },
 });

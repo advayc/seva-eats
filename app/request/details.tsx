@@ -15,9 +15,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
 import { getMealById } from '@/constants/meals';
 import { useLocation, useRequests, useUser } from '@/context';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 const FAMILY_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -27,6 +28,7 @@ export default function DeliveryDetailsScreen() {
   const { userLocation } = useLocation();
   const { user } = useUser();
   const { submitRequest, activeRequest } = useRequests();
+  const colors = useThemeColors();
 
   // Parse selected meals from URL params
   const selectedMeals = useMemo(() => {
@@ -98,17 +100,17 @@ export default function DeliveryDetailsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <Pressable onPress={() => router.back()} style={styles.backButton}>
-            <MaterialIcons name="arrow-back" size={24} color={Colors.light.text} />
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </Pressable>
-          <Text style={styles.headerTitle}>Delivery Details</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Delivery Details</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -119,8 +121,8 @@ export default function DeliveryDetailsScreen() {
           keyboardShouldPersistTaps="handled"
         >
           {/* Selected Meals Summary */}
-          <Animated.View entering={FadeIn.delay(100)} style={styles.mealsSummary}>
-            <Text style={styles.summaryTitle}>Your Order</Text>
+          <Animated.View entering={FadeIn.delay(100)} style={[styles.mealsSummary, { backgroundColor: colors.surface }]}>
+            <Text style={[styles.summaryTitle, { color: colors.text }]}>Your Order</Text>
             {selectedMeals.map((item) => (
               <View key={item.meal.id} style={styles.summaryItem}>
                 <View style={[styles.summaryIcon, { backgroundColor: item.meal.backgroundColor }]}>
@@ -130,51 +132,51 @@ export default function DeliveryDetailsScreen() {
                     color={item.meal.iconColor}
                   />
                 </View>
-                <Text style={styles.summaryMealName}>{item.meal.name}</Text>
-                <Text style={styles.summaryQuantity}>x{item.quantity}</Text>
+                <Text style={[styles.summaryMealName, { color: colors.text }]}>{item.meal.name}</Text>
+                <Text style={[styles.summaryQuantity, { color: colors.accent }]}>x{item.quantity}</Text>
               </View>
             ))}
           </Animated.View>
 
           {/* Name Input */}
           <Animated.View entering={FadeInDown.delay(150)} style={styles.inputGroup}>
-            <Text style={styles.label}>Your Name</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Your Name</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
               placeholder="Enter your full name"
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
-              placeholderTextColor={Colors.light.mutedText}
+              placeholderTextColor={colors.mutedText}
             />
           </Animated.View>
 
           {/* Phone Input */}
           <Animated.View entering={FadeInDown.delay(200)} style={styles.inputGroup}>
-            <Text style={styles.label}>Phone Number</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Phone Number</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
               placeholder="Enter your phone number"
               value={phone}
               onChangeText={setPhone}
               keyboardType="phone-pad"
-              placeholderTextColor={Colors.light.mutedText}
+              placeholderTextColor={colors.mutedText}
             />
-            <Text style={styles.helper}>The volunteer will call/text when they arrive</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>The volunteer will call/text when they arrive</Text>
           </Animated.View>
 
           {/* Address Input */}
           <Animated.View entering={FadeInDown.delay(250)} style={styles.inputGroup}>
-            <Text style={styles.label}>Delivery Address</Text>
-            <View style={styles.addressInputRow}>
-              <MaterialIcons name="location-on" size={20} color={Colors.light.accent} />
+            <Text style={[styles.label, { color: colors.text }]}>Delivery Address</Text>
+            <View style={[styles.addressInputRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <MaterialIcons name="location-on" size={20} color={colors.accent} />
               <TextInput
-                style={styles.addressInput}
+                style={[styles.addressInput, { color: colors.text }]}
                 placeholder="Enter your delivery address"
                 value={address}
                 onChangeText={setAddress}
                 multiline
-                placeholderTextColor={Colors.light.mutedText}
+                placeholderTextColor={colors.mutedText}
               />
             </View>
             {userLocation?.address && address !== userLocation.address && (
@@ -182,30 +184,32 @@ export default function DeliveryDetailsScreen() {
                 style={styles.useCurrentButton}
                 onPress={() => setAddress(userLocation.address!)}
               >
-                <MaterialIcons name="my-location" size={16} color={Colors.light.accent} />
-                <Text style={styles.useCurrentText}>Use current location</Text>
+                <MaterialIcons name="my-location" size={16} color={colors.accent} />
+                <Text style={[styles.useCurrentText, { color: colors.accent }]}>Use current location</Text>
               </Pressable>
             )}
           </Animated.View>
 
           {/* Family Size */}
           <Animated.View entering={FadeInDown.delay(300)} style={styles.inputGroup}>
-            <Text style={styles.label}>Family Size</Text>
-            <Text style={styles.helper}>How many people need to be fed?</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Family Size</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>How many people need to be fed?</Text>
             <View style={styles.familySizeRow}>
               {FAMILY_SIZES.map((size) => (
                 <Pressable
                   key={size}
                   style={[
                     styles.familySizeButton,
-                    familySize === size && styles.familySizeButtonActive,
+                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    familySize === size && { backgroundColor: colors.accent, borderColor: colors.accent },
                   ]}
                   onPress={() => setFamilySize(size)}
                 >
                   <Text
                     style={[
                       styles.familySizeText,
-                      familySize === size && styles.familySizeTextActive,
+                      { color: colors.text },
+                      familySize === size && { color: '#FFFFFF' },
                     ]}
                   >
                     {size}{size === 8 ? '+' : ''}
@@ -217,16 +221,16 @@ export default function DeliveryDetailsScreen() {
 
           {/* Special Instructions */}
           <Animated.View entering={FadeInDown.delay(350)} style={styles.inputGroup}>
-            <Text style={styles.label}>Special Instructions</Text>
-            <Text style={styles.helper}>Delivery notes, buzzer code, etc. (optional)</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Special Instructions</Text>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>Delivery notes, buzzer code, etc. (optional)</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[styles.input, styles.textArea, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
               placeholder="e.g., Buzz #123, leave at door"
               value={specialInstructions}
               onChangeText={setSpecialInstructions}
               multiline
               numberOfLines={3}
-              placeholderTextColor={Colors.light.mutedText}
+              placeholderTextColor={colors.mutedText}
             />
           </Animated.View>
 
@@ -235,9 +239,9 @@ export default function DeliveryDetailsScreen() {
         </ScrollView>
 
         {/* Submit Button */}
-        <View style={styles.footer}>
+        <View style={[styles.footer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
           <Pressable
-            style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
+            style={[styles.submitButton, { backgroundColor: colors.accent }, isSubmitting && styles.submitButtonDisabled]}
             onPress={handleSubmit}
             disabled={isSubmitting}
           >
@@ -255,7 +259,6 @@ export default function DeliveryDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   keyboardView: {
     flex: 1,
@@ -267,7 +270,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   backButton: {
     width: 40,
@@ -278,7 +280,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1F2937',
   },
   headerSpacer: {
     width: 40,
@@ -290,7 +291,6 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
   mealsSummary: {
-    backgroundColor: '#F9FAFB',
     borderRadius: Radii.lg,
     padding: Spacing.md,
     marginBottom: Spacing.xl,
@@ -298,7 +298,6 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: Spacing.sm,
   },
   summaryItem: {
@@ -317,12 +316,10 @@ const styles = StyleSheet.create({
   summaryMealName: {
     flex: 1,
     fontSize: 14,
-    color: '#1F2937',
   },
   summaryQuantity: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.accent,
   },
   inputGroup: {
     marginBottom: Spacing.xl,
@@ -330,22 +327,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: 4,
   },
   helper: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginBottom: Spacing.sm,
   },
   input: {
-    backgroundColor: '#F9FAFB',
     borderRadius: Radii.md,
     padding: Spacing.md,
     fontSize: 15,
-    color: '#1F2937',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
   textArea: {
     minHeight: 80,
@@ -354,17 +346,14 @@ const styles = StyleSheet.create({
   addressInputRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#F9FAFB',
     borderRadius: Radii.md,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
     gap: Spacing.sm,
   },
   addressInput: {
     flex: 1,
     fontSize: 15,
-    color: '#1F2937',
     minHeight: 60,
     textAlignVertical: 'top',
   },
@@ -377,7 +366,6 @@ const styles = StyleSheet.create({
   useCurrentText: {
     fontSize: 13,
     fontWeight: '500',
-    color: Colors.light.accent,
   },
   familySizeRow: {
     flexDirection: 'row',
@@ -388,35 +376,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F9FAFB',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  familySizeButtonActive: {
-    backgroundColor: Colors.light.accent,
-    borderColor: Colors.light.accent,
   },
   familySizeText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
-  },
-  familySizeTextActive: {
-    color: '#FFFFFF',
   },
   footer: {
     padding: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    backgroundColor: '#FFFFFF',
   },
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.lg,
     paddingVertical: Spacing.md,
     gap: Spacing.sm,

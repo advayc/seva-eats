@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 
-import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
+import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { ORDER_STATUS_LABELS, ORDER_STATUS_ORDER, useOrders } from '@/context';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
@@ -17,6 +18,8 @@ export default function OrderTrackingScreen() {
   const { getOrder, orders } = useOrders();
   const [order, setOrder] = useState(getOrder(id ?? ''));
   const [isMapExpanded, setIsMapExpanded] = useState(false);
+  const colors = useThemeColors();
+  const shadows = colors.isDark ? Shadows.dark : Shadows.light;
 
   // Re-fetch order when orders change (for status updates)
   useEffect(() => {
@@ -27,12 +30,12 @@ export default function OrderTrackingScreen() {
 
   if (!order) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.iconButton}>
-            <MaterialIcons name="arrow-back" size={20} color={Colors.light.text} />
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <Pressable onPress={() => router.back()} style={[styles.iconButton, { borderColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
+            <MaterialIcons name="arrow-back" size={20} color={colors.text} />
           </Pressable>
-          <Text style={styles.headerTitle}>Request Not Found</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Request Not Found</Text>
           <View style={styles.iconButtonPlaceholder} />
         </View>
       </SafeAreaView>
@@ -57,22 +60,25 @@ export default function OrderTrackingScreen() {
     { latitude: deliveryLocation.latitude, longitude: deliveryLocation.longitude },
   ];
 
+  const mapStyle = colors.isDark ? darkMapStyle : [];
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.replace('/(tabs)')} style={styles.iconButton}>
-          <MaterialIcons name="arrow-back" size={20} color={Colors.light.text} />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <Pressable onPress={() => router.replace('/(tabs)')} style={[styles.iconButton, { borderColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
+          <MaterialIcons name="arrow-back" size={20} color={colors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Seva Tracking</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Seva Tracking</Text>
         <View style={styles.iconButtonPlaceholder} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Map Section */}
-        <View style={styles.mapContainer}>
+        <View style={[styles.mapContainer, shadows.card]}>
           <MapView
             style={styles.map}
             provider={PROVIDER_DEFAULT}
+            customMapStyle={mapStyle}
             initialRegion={{
               latitude: midLat,
               longitude: midLng,
@@ -81,8 +87,8 @@ export default function OrderTrackingScreen() {
             }}>
             {/* Store Marker */}
             <Marker coordinate={storeLocation} title={order.storeName}>
-              <View style={styles.markerStore}>
-                <MaterialIcons name="storefront" size={16} color={Colors.light.background} />
+              <View style={[styles.markerStore, { backgroundColor: colors.accent }]}>
+                <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
               </View>
             </Marker>
 
@@ -93,16 +99,16 @@ export default function OrderTrackingScreen() {
                 longitude: deliveryLocation.longitude,
               }}
               title="Delivery Address">
-              <View style={styles.markerDelivery}>
-                <MaterialIcons name="home" size={16} color={Colors.light.background} />
+              <View style={[styles.markerDelivery, { backgroundColor: colors.success }]}>
+                <MaterialIcons name="home" size={16} color="#FFFFFF" />
               </View>
             </Marker>
 
             {/* Driver Marker (if on the way) */}
             {driverLocation && order.status === 'on_the_way' && (
               <Marker coordinate={driverLocation} title="Driver">
-                <View style={styles.markerDriver}>
-                  <MaterialIcons name="delivery-dining" size={16} color={Colors.light.background} />
+                <View style={[styles.markerDriver, { backgroundColor: colors.accent }]}>
+                  <MaterialIcons name="delivery-dining" size={16} color="#FFFFFF" />
                 </View>
               </Marker>
             )}
@@ -110,22 +116,22 @@ export default function OrderTrackingScreen() {
             {/* Route Line */}
             <Polyline
               coordinates={routeCoordinates}
-              strokeColor={Colors.light.text}
+              strokeColor={colors.text}
               strokeWidth={3}
               lineDashPattern={[10, 5]}
             />
           </MapView>
           
           {/* Expand Map Button */}
-          <Pressable style={styles.expandButton} onPress={() => setIsMapExpanded(true)}>
-            <MaterialIcons name="fullscreen" size={24} color={Colors.light.text} />
+          <Pressable style={[styles.expandButton, { backgroundColor: colors.background }, shadows.card]} onPress={() => setIsMapExpanded(true)}>
+            <MaterialIcons name="fullscreen" size={24} color={colors.text} />
           </Pressable>
         </View>
 
         {/* Status Card */}
-        <View style={styles.statusCard}>
-          <Text style={styles.statusTitle}>{ORDER_STATUS_LABELS[order.status]}</Text>
-          <Text style={styles.statusSubtitle}>
+        <View style={[styles.statusCard, { backgroundColor: colors.surfaceElevated }, shadows.card]}>
+          <Text style={[styles.statusTitle, { color: colors.text }]}>{ORDER_STATUS_LABELS[order.status]}</Text>
+          <Text style={[styles.statusSubtitle, { color: colors.mutedText }]}>
             Estimated arrival: {formatTime(order.estimatedDelivery)}
           </Text>
 
@@ -139,16 +145,21 @@ export default function OrderTrackingScreen() {
                   <View
                     style={[
                       styles.progressDot,
-                      isCompleted && styles.progressDotCompleted,
-                      isCurrent && styles.progressDotCurrent,
+                      { backgroundColor: colors.border },
+                      isCompleted && { backgroundColor: colors.success },
+                      isCurrent && { backgroundColor: colors.accent },
                     ]}>
                     {isCompleted && (
-                      <MaterialIcons name="check" size={12} color={Colors.light.background} />
+                      <MaterialIcons name="check" size={12} color="#FFFFFF" />
                     )}
                   </View>
                   {index < 4 && (
                     <View
-                      style={[styles.progressLine, isCompleted && styles.progressLineCompleted]}
+                      style={[
+                        styles.progressLine, 
+                        { backgroundColor: colors.border },
+                        isCompleted && { backgroundColor: colors.success }
+                      ]}
                     />
                   )}
                 </View>
@@ -157,29 +168,29 @@ export default function OrderTrackingScreen() {
           </View>
 
           <View style={styles.progressLabels}>
-            <Text style={styles.progressLabel}>Placed</Text>
-            <Text style={styles.progressLabel}>Prep</Text>
-            <Text style={styles.progressLabel}>Ready</Text>
-            <Text style={styles.progressLabel}>Picked</Text>
-            <Text style={styles.progressLabel}>Delivered</Text>
+            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Placed</Text>
+            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Prep</Text>
+            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Ready</Text>
+            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Picked</Text>
+            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Delivered</Text>
           </View>
         </View>
 
         {/* Order Details */}
-        <View style={styles.detailsCard}>
+        <View style={[styles.detailsCard, { backgroundColor: colors.surfaceElevated }, shadows.card]}>
           <View style={styles.detailsHeader}>
-            <MaterialIcons name="storefront" size={20} color={Colors.light.text} />
-            <Text style={styles.detailsStoreName}>{order.storeName}</Text>
+            <MaterialIcons name="storefront" size={20} color={colors.text} />
+            <Text style={[styles.detailsStoreName, { color: colors.text }]}>{order.storeName}</Text>
           </View>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
           <View style={styles.itemsList}>
             {order.items.map((item) => (
               <View key={item.menuItem.id} style={styles.orderItem}>
-                <Text style={styles.orderItemQty}>{item.quantity}x</Text>
-                <Text style={styles.orderItemName}>{item.menuItem.name}</Text>
-                <Text style={styles.orderItemPrice}>Seva-supported</Text>
+                <Text style={[styles.orderItemQty, { color: colors.text }]}>{item.quantity}x</Text>
+                <Text style={[styles.orderItemName, { color: colors.text }]}>{item.menuItem.name}</Text>
+                <Text style={[styles.orderItemPrice, { color: colors.accent }]}>Seva-supported</Text>
               </View>
             ))}
           </View>
@@ -187,30 +198,31 @@ export default function OrderTrackingScreen() {
         </View>
 
         {/* Pickup Location */}
-        <View style={styles.addressCard}>
-          <MaterialIcons name="storefront" size={20} color={Colors.light.text} />
+        <View style={[styles.addressCard, { backgroundColor: colors.surface }]}>
+          <MaterialIcons name="storefront" size={20} color={colors.text} />
           <View style={styles.addressDetails}>
-            <Text style={styles.addressTitle}>Pickup Location</Text>
-            <Text style={styles.addressText}>{order.storeLocation.address}</Text>
+            <Text style={[styles.addressTitle, { color: colors.text }]}>Pickup Location</Text>
+            <Text style={[styles.addressText, { color: colors.mutedText }]}>{order.storeLocation.address}</Text>
           </View>
         </View>
 
         {/* Delivery Address */}
-        <View style={styles.addressCard}>
-          <MaterialIcons name="location-on" size={20} color={Colors.light.text} />
+        <View style={[styles.addressCard, { backgroundColor: colors.surface }]}>
+          <MaterialIcons name="location-on" size={20} color={colors.text} />
           <View style={styles.addressDetails}>
-            <Text style={styles.addressTitle}>Drop-off Address</Text>
-            <Text style={styles.addressText}>{order.deliveryLocation.address}</Text>
+            <Text style={[styles.addressTitle, { color: colors.text }]}>Drop-off Address</Text>
+            <Text style={[styles.addressText, { color: colors.mutedText }]}>{order.deliveryLocation.address}</Text>
           </View>
         </View>
       </ScrollView>
 
       {/* Fullscreen Map Modal */}
       <Modal visible={isMapExpanded} animationType="slide" statusBarTranslucent>
-        <SafeAreaView style={styles.fullscreenMapContainer}>
+        <SafeAreaView style={[styles.fullscreenMapContainer, { backgroundColor: colors.background }]}>
           <MapView
             style={styles.fullscreenMap}
             provider={PROVIDER_DEFAULT}
+            customMapStyle={mapStyle}
             initialRegion={{
               latitude: midLat,
               longitude: midLng,
@@ -219,8 +231,8 @@ export default function OrderTrackingScreen() {
             }}>
             {/* Store Marker */}
             <Marker coordinate={storeLocation} title={order.storeName}>
-              <View style={styles.markerStore}>
-                <MaterialIcons name="storefront" size={16} color={Colors.light.background} />
+              <View style={[styles.markerStore, { backgroundColor: colors.accent }]}>
+                <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
               </View>
             </Marker>
 
@@ -231,16 +243,16 @@ export default function OrderTrackingScreen() {
                 longitude: deliveryLocation.longitude,
               }}
               title="Delivery Address">
-              <View style={styles.markerDelivery}>
-                <MaterialIcons name="home" size={16} color={Colors.light.background} />
+              <View style={[styles.markerDelivery, { backgroundColor: colors.success }]}>
+                <MaterialIcons name="home" size={16} color="#FFFFFF" />
               </View>
             </Marker>
 
             {/* Driver Marker (if on the way) */}
             {driverLocation && order.status === 'on_the_way' && (
               <Marker coordinate={driverLocation} title="Driver">
-                <View style={styles.markerDriver}>
-                  <MaterialIcons name="delivery-dining" size={16} color={Colors.light.background} />
+                <View style={[styles.markerDriver, { backgroundColor: colors.accent }]}>
+                  <MaterialIcons name="delivery-dining" size={16} color="#FFFFFF" />
                 </View>
               </Marker>
             )}
@@ -248,15 +260,15 @@ export default function OrderTrackingScreen() {
             {/* Route Line */}
             <Polyline
               coordinates={routeCoordinates}
-              strokeColor={Colors.light.text}
+              strokeColor={colors.text}
               strokeWidth={3}
               lineDashPattern={[10, 5]}
             />
           </MapView>
 
           {/* Close Button */}
-          <Pressable style={styles.closeButton} onPress={() => setIsMapExpanded(false)}>
-            <MaterialIcons name="close" size={24} color={Colors.light.text} />
+          <Pressable style={[styles.closeButton, { backgroundColor: colors.background }, shadows.card]} onPress={() => setIsMapExpanded(false)}>
+            <MaterialIcons name="close" size={24} color={colors.text} />
           </Pressable>
         </SafeAreaView>
       </Modal>
@@ -264,10 +276,21 @@ export default function OrderTrackingScreen() {
   );
 }
 
+// Dark mode map style
+const darkMapStyle = [
+  { elementType: 'geometry', stylers: [{ color: '#1d2c4d' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#8ec3b9' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#1a3646' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#304a7d' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#255763' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#283d6a' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
+];
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
@@ -276,22 +299,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
   },
   iconButton: {
     width: 36,
     height: 36,
     borderRadius: Radii.pill,
     borderWidth: 1,
-    borderColor: Colors.light.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.surfaceElevated,
   },
   iconButtonPlaceholder: {
     width: 36,
@@ -306,7 +325,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: Spacing.lg,
     position: 'relative',
-    ...Shadows.card,
   },
   expandButton: {
     position: 'absolute',
@@ -315,14 +333,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 8,
-    backgroundColor: Colors.light.background,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadows.card,
   },
   fullscreenMapContainer: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   fullscreenMap: {
     flex: 1,
@@ -334,27 +349,21 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.light.background,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadows.card,
   },
   statusCard: {
-    backgroundColor: Colors.light.surfaceElevated,
     borderRadius: Radii.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
-    ...Shadows.card,
   },
   statusTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: Colors.light.text,
     marginBottom: 4,
   },
   statusSubtitle: {
     fontSize: 14,
-    color: Colors.light.mutedText,
     marginBottom: Spacing.lg,
   },
   progressSteps: {
@@ -371,23 +380,12 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.light.border,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  progressDotCompleted: {
-    backgroundColor: Colors.light.success,
-  },
-  progressDotCurrent: {
-    backgroundColor: Colors.light.accent,
   },
   progressLine: {
     width: 40,
     height: 2,
-    backgroundColor: Colors.light.border,
-  },
-  progressLineCompleted: {
-    backgroundColor: Colors.light.success,
   },
   progressLabels: {
     flexDirection: 'row',
@@ -395,16 +393,13 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 10,
-    color: Colors.light.mutedText,
     width: 50,
     textAlign: 'center',
   },
   detailsCard: {
-    backgroundColor: Colors.light.surfaceElevated,
     borderRadius: Radii.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
-    ...Shadows.card,
   },
   detailsHeader: {
     flexDirection: 'row',
@@ -414,11 +409,9 @@ const styles = StyleSheet.create({
   detailsStoreName: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.light.border,
     marginVertical: Spacing.md,
   },
   itemsList: {
@@ -431,23 +424,19 @@ const styles = StyleSheet.create({
   orderItemQty: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.text,
     width: 30,
   },
   orderItemName: {
     flex: 1,
     fontSize: 14,
-    color: Colors.light.text,
   },
   orderItemPrice: {
     fontSize: 14,
-    color: Colors.light.accent,
     fontWeight: '600',
   },
   addressCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: Colors.light.surface,
     borderRadius: Radii.lg,
     padding: Spacing.lg,
     gap: Spacing.md,
@@ -459,28 +448,23 @@ const styles = StyleSheet.create({
   addressTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.text,
     marginBottom: 4,
   },
   addressText: {
     fontSize: 13,
-    color: Colors.light.mutedText,
   },
   map: {
     flex: 1,
   },
   markerStore: {
-    backgroundColor: Colors.light.accent,
     padding: 8,
     borderRadius: 20,
   },
   markerDelivery: {
-    backgroundColor: Colors.light.success,
     padding: 8,
     borderRadius: 20,
   },
   markerDriver: {
-    backgroundColor: Colors.light.accent,
     padding: 8,
     borderRadius: 20,
   },

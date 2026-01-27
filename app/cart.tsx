@@ -5,8 +5,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { restaurants } from '@/constants/mock-data';
-import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
+import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { useCart, useLocation, useOrders } from '@/context';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function CartScreen() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export default function CartScreen() {
     useCart();
   const { placeOrder } = useOrders();
   const { userLocation, refreshLocation, isLoading } = useLocation();
+  const colors = useThemeColors();
+  const shadows = colors.isDark ? Shadows.dark : Shadows.light;
 
   const handlePlaceOrder = async () => {
     if (items.length === 0) return;
@@ -47,19 +50,19 @@ export default function CartScreen() {
 
   if (items.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.iconButton}>
-            <MaterialIcons name="close" size={20} color={Colors.light.text} />
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <Pressable onPress={() => router.back()} style={[styles.iconButton, { borderColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
+            <MaterialIcons name="close" size={20} color={colors.text} />
           </Pressable>
-          <Text style={styles.headerTitle}>Cart</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Cart</Text>
           <View style={styles.iconButtonPlaceholder} />
         </View>
         <View style={styles.emptyState}>
-          <MaterialIcons name="shopping-cart" size={64} color={Colors.light.border} />
-          <Text style={styles.emptyTitle}>No meal boxes yet</Text>
-          <Text style={styles.emptyText}>Choose a seva kitchen to begin</Text>
-          <Pressable style={styles.browseButton} onPress={() => router.back()}>
+          <MaterialIcons name="shopping-cart" size={64} color={colors.border} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>No meal boxes yet</Text>
+          <Text style={[styles.emptyText, { color: colors.mutedText }]}>Choose a seva kitchen to begin</Text>
+          <Pressable style={[styles.browseButton, { backgroundColor: colors.accent }]} onPress={() => router.back()}>
             <Text style={styles.browseButtonText}>Explore Seva Kitchens</Text>
           </Pressable>
         </View>
@@ -68,92 +71,92 @@ export default function CartScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.iconButton}>
-          <MaterialIcons name="close" size={20} color={Colors.light.text} />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <Pressable onPress={() => router.back()} style={[styles.iconButton, { borderColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
+          <MaterialIcons name="close" size={20} color={colors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Cart</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Cart</Text>
         <Pressable onPress={clearCart} style={styles.clearButton}>
-          <Text style={styles.clearButtonText}>Clear</Text>
+          <Text style={[styles.clearButtonText, { color: colors.mutedText }]}>Clear</Text>
         </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.storeInfo}>
-          <MaterialIcons name="storefront" size={20} color={Colors.light.text} />
-          <Text style={styles.storeName}>{storeName}</Text>
+          <MaterialIcons name="storefront" size={20} color={colors.text} />
+          <Text style={[styles.storeName, { color: colors.text }]}>{storeName}</Text>
         </View>
 
         <View style={styles.itemsSection}>
           {items.map((cartItem) => (
-            <View key={cartItem.menuItem.id} style={styles.cartItem}>
+            <View key={cartItem.menuItem.id} style={[styles.cartItem, { backgroundColor: colors.surfaceElevated }, shadows.card]}>
               <Image source={{ uri: cartItem.menuItem.image }} style={styles.itemImage} />
               <View style={styles.itemDetails}>
-                <Text style={styles.itemName}>{cartItem.menuItem.name}</Text>
-                <Text style={styles.itemUnit}>{cartItem.menuItem.unit}</Text>
-                <Text style={styles.itemSeva}>Seva-supported</Text>
+                <Text style={[styles.itemName, { color: colors.text }]}>{cartItem.menuItem.name}</Text>
+                <Text style={[styles.itemUnit, { color: colors.mutedText }]}>{cartItem.menuItem.unit}</Text>
+                <Text style={[styles.itemSeva, { color: colors.accent }]}>Seva-supported</Text>
               </View>
               <View style={styles.quantityControls}>
                 <Pressable
-                  style={styles.quantityButton}
+                  style={[styles.quantityButton, { backgroundColor: colors.surface }]}
                   onPress={() => updateQuantity(cartItem.menuItem.id, cartItem.quantity - 1)}>
                   <MaterialIcons
                     name={cartItem.quantity === 1 ? 'delete-outline' : 'remove'}
                     size={18}
-                    color={Colors.light.text}
+                    color={colors.text}
                   />
                 </Pressable>
-                <Text style={styles.quantityText}>{cartItem.quantity}</Text>
+                <Text style={[styles.quantityText, { color: colors.text }]}>{cartItem.quantity}</Text>
                 <Pressable
-                  style={styles.quantityButton}
+                  style={[styles.quantityButton, { backgroundColor: colors.surface }]}
                   onPress={() => updateQuantity(cartItem.menuItem.id, cartItem.quantity + 1)}>
-                  <MaterialIcons name="add" size={18} color={Colors.light.text} />
+                  <MaterialIcons name="add" size={18} color={colors.text} />
                 </Pressable>
               </View>
             </View>
           ))}
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.deliverySection}>
-          <Text style={styles.sectionTitle}>Delivery Address</Text>
-          <View style={styles.addressCard}>
-            <MaterialIcons name="location-on" size={20} color={Colors.light.text} />
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Delivery Address</Text>
+          <View style={[styles.addressCard, { backgroundColor: colors.surface }]}>
+            <MaterialIcons name="location-on" size={20} color={colors.text} />
             <View style={styles.addressDetails}>
-              <Text style={styles.addressText}>
+              <Text style={[styles.addressText, { color: colors.text }]}>
                 {userLocation?.address ?? 'Enable location to set your drop-off'}
               </Text>
-              <Text style={styles.addressSubtext}>Gurdwara to community partner drop-off</Text>
+              <Text style={[styles.addressSubtext, { color: colors.mutedText }]}>Gurdwara to community partner drop-off</Text>
             </View>
-            <Pressable onPress={refreshLocation} style={styles.locationButton}>
-              <Text style={styles.locationButtonText}>
+            <Pressable onPress={refreshLocation} style={[styles.locationButton, { borderColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
+              <Text style={[styles.locationButtonText, { color: colors.text }]}>
                 {isLoading ? 'Updating...' : 'Update'}
               </Text>
             </Pressable>
           </View>
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.summarySection}>
-          <Text style={styles.sectionTitle}>Seva Summary</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Seva Summary</Text>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Meal boxes</Text>
-            <Text style={styles.summaryValue}>
+            <Text style={[styles.summaryLabel, { color: colors.mutedText }]}>Meal boxes</Text>
+            <Text style={[styles.summaryValue, { color: colors.text }]}>
               {items.reduce((sum, item) => sum + item.quantity, 0)}
             </Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Delivery</Text>
-            <Text style={styles.summaryValue}>Community drop-off</Text>
+            <Text style={[styles.summaryLabel, { color: colors.mutedText }]}>Delivery</Text>
+            <Text style={[styles.summaryValue, { color: colors.text }]}>Community drop-off</Text>
           </View>
         </View>
       </ScrollView>
 
-      <View style={styles.checkoutBar}>
-        <Pressable style={styles.checkoutButton} onPress={handlePlaceOrder}>
+      <View style={[styles.checkoutBar, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
+        <Pressable style={[styles.checkoutButton, { backgroundColor: colors.accent }]} onPress={handlePlaceOrder}>
           <Text style={styles.checkoutButtonText}>Send Seva Request</Text>
         </Pressable>
       </View>
@@ -164,7 +167,6 @@ export default function CartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
@@ -173,22 +175,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
   },
   iconButton: {
     width: 36,
     height: 36,
     borderRadius: Radii.pill,
     borderWidth: 1,
-    borderColor: Colors.light.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.surfaceElevated,
   },
   iconButtonPlaceholder: {
     width: 36,
@@ -198,7 +196,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   clearButtonText: {
-    color: Colors.light.mutedText,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -215,7 +212,6 @@ const styles = StyleSheet.create({
   storeName: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
   },
   itemsSection: {
     gap: Spacing.md,
@@ -223,10 +219,8 @@ const styles = StyleSheet.create({
   cartItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.surfaceElevated,
     borderRadius: Radii.md,
     padding: Spacing.md,
-    ...Shadows.card,
   },
   itemImage: {
     width: 60,
@@ -240,18 +234,15 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.text,
     marginBottom: 2,
   },
   itemUnit: {
     fontSize: 12,
-    color: Colors.light.mutedText,
     marginBottom: 4,
   },
   itemSeva: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.light.accent,
   },
   quantityControls: {
     flexDirection: 'row',
@@ -262,20 +253,17 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: Radii.pill,
-    backgroundColor: Colors.light.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   quantityText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.text,
     minWidth: 20,
     textAlign: 'center',
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.light.border,
     marginVertical: Spacing.lg,
   },
   deliverySection: {
@@ -284,12 +272,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
   },
   addressCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.surface,
     borderRadius: Radii.md,
     padding: Spacing.md,
     gap: Spacing.md,
@@ -300,24 +286,19 @@ const styles = StyleSheet.create({
   addressText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.text,
   },
   addressSubtext: {
     fontSize: 12,
-    color: Colors.light.mutedText,
   },
   locationButton: {
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: Radii.pill,
     borderWidth: 1,
-    borderColor: Colors.light.border,
-    backgroundColor: Colors.light.surfaceElevated,
   },
   locationButtonText: {
     fontSize: 11,
     fontWeight: '600',
-    color: Colors.light.text,
   },
   summarySection: {
     gap: Spacing.sm,
@@ -329,11 +310,9 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    color: Colors.light.mutedText,
   },
   summaryValue: {
     fontSize: 14,
-    color: Colors.light.text,
   },
   checkoutBar: {
     position: 'absolute',
@@ -341,19 +320,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: Spacing.lg,
-    backgroundColor: Colors.light.background,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.border,
   },
   checkoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.md,
     padding: Spacing.lg,
   },
   checkoutButtonText: {
-    color: Colors.light.background,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -366,24 +342,21 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
     marginTop: Spacing.lg,
     marginBottom: Spacing.sm,
   },
   emptyText: {
     fontSize: 14,
-    color: Colors.light.mutedText,
     textAlign: 'center',
     marginBottom: Spacing.xl,
   },
   browseButton: {
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.md,
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
   },
   browseButtonText: {
-    color: Colors.light.background,
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
   },

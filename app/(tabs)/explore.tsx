@@ -7,13 +7,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
 import { availableRequests } from '@/constants/mock-data';
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
 import { useOrders } from '@/context';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 type FilterTab = 'available' | 'my_deliveries';
 
 export default function VolunteerScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
   const { orders, activeOrder, placeOrder } = useOrders();
   const [activeTab, setActiveTab] = useState<FilterTab>('available');
 
@@ -76,27 +78,47 @@ export default function VolunteerScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Volunteer</Text>
-        <Text style={styles.subtitle}>Find deliveries near your route home</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Volunteer</Text>
+        <Text style={[styles.subtitle, { color: colors.mutedText }]}>Find deliveries near your route home</Text>
 
         {/* Filter Tabs */}
         <GlassCard style={styles.filterTabsCard}>
           <View style={styles.filterTabs}>
             <Pressable
-              style={[styles.filterTab, activeTab === 'available' && styles.filterTabActive]}
+              style={[
+                styles.filterTab,
+                activeTab === 'available' && [
+                  styles.filterTabActive,
+                  { backgroundColor: colors.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.9)' }
+                ]
+              ]}
               onPress={() => setActiveTab('available')}
             >
-              <Text style={[styles.filterTabText, activeTab === 'available' && styles.filterTabTextActive]}>
+              <Text style={[
+                styles.filterTabText,
+                { color: colors.mutedText },
+                activeTab === 'available' && { color: colors.text, fontWeight: '600' }
+              ]}>
                 Available
               </Text>
             </Pressable>
             <Pressable
-              style={[styles.filterTab, activeTab === 'my_deliveries' && styles.filterTabActive]}
+              style={[
+                styles.filterTab,
+                activeTab === 'my_deliveries' && [
+                  styles.filterTabActive,
+                  { backgroundColor: colors.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.9)' }
+                ]
+              ]}
               onPress={() => setActiveTab('my_deliveries')}
             >
-              <Text style={[styles.filterTabText, activeTab === 'my_deliveries' && styles.filterTabTextActive]}>
+              <Text style={[
+                styles.filterTabText,
+                { color: colors.mutedText },
+                activeTab === 'my_deliveries' && { color: colors.text, fontWeight: '600' }
+              ]}>
                 My Deliveries
               </Text>
             </Pressable>
@@ -110,16 +132,16 @@ export default function VolunteerScreen() {
             onPress={() => router.push(`/order/${activeOrder.id}` as const)}
           >
             <GlassCard style={styles.activeOrderCard} variant="accent">
-              <View style={styles.activeOrderIcon}>
-                <MaterialIcons name="local-shipping" size={24} color={Colors.light.accent} />
+              <View style={[styles.activeOrderIcon, { backgroundColor: colors.isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.8)' }]}>
+                <MaterialIcons name="local-shipping" size={24} color={colors.accent} />
               </View>
               <View style={styles.activeOrderContent}>
-                <Text style={styles.activeOrderTitle}>Delivery in Progress</Text>
-                <Text style={styles.activeOrderSubtitle}>
+                <Text style={[styles.activeOrderTitle, { color: colors.text }]}>Delivery in Progress</Text>
+                <Text style={[styles.activeOrderSubtitle, { color: colors.mutedText }]}>
                   {activeOrder.storeName} - Tap to track
                 </Text>
               </View>
-              <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+              <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
             </GlassCard>
           </Pressable>
         )}
@@ -127,7 +149,7 @@ export default function VolunteerScreen() {
         {activeTab === 'available' && (
           <>
             {/* Available Deliveries */}
-            <Text style={styles.sectionTitle}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
               {availableRequests.length} deliveries available
             </Text>
 
@@ -142,17 +164,17 @@ export default function VolunteerScreen() {
                   {/* Pickup Section */}
                   <View style={styles.locationSection}>
                     <View style={styles.locationHeader}>
-                      <MaterialIcons name="place" size={18} color={Colors.light.accent} />
-                      <Text style={styles.locationLabel}>PICKUP</Text>
+                      <MaterialIcons name="place" size={18} color={colors.accent} />
+                      <Text style={[styles.locationLabel, { color: colors.mutedText }]}>PICKUP</Text>
                     </View>
-                    <Text style={styles.locationName}>{request.pickupLocation.name}</Text>
-                    <Text style={styles.locationAddress}>{request.pickupLocation.address}</Text>
+                    <Text style={[styles.locationName, { color: colors.text }]}>{request.pickupLocation.name}</Text>
+                    <Text style={[styles.locationAddress, { color: colors.mutedText }]}>{request.pickupLocation.address}</Text>
                   </View>
 
                   <View style={styles.routeDivider}>
-                    <View style={styles.routeDot} />
-                    <View style={styles.routeLine} />
-                    <View style={styles.routeDot} />
+                    <View style={[styles.routeDot, { backgroundColor: colors.border }]} />
+                    <View style={[styles.routeLine, { backgroundColor: colors.border }]} />
+                    <View style={[styles.routeDot, { backgroundColor: colors.border }]} />
                   </View>
 
                   {/* Drop-off Section */}
@@ -163,13 +185,13 @@ export default function VolunteerScreen() {
                         size={18} 
                         color="#059669" 
                       />
-                      <Text style={styles.locationLabel}>DROP-OFF</Text>
+                      <Text style={[styles.locationLabel, { color: colors.mutedText }]}>DROP-OFF</Text>
                     </View>
-                    <Text style={styles.locationName}>
+                    <Text style={[styles.locationName, { color: colors.text }]}>
                       {getDropOffTypeLabel(request.dropOffLocation.type)}
                     </Text>
-                    <Text style={styles.locationAddress}>{request.dropOffLocation.address}</Text>
-                    <Text style={styles.partnerProgram}>
+                    <Text style={[styles.locationAddress, { color: colors.mutedText }]}>{request.dropOffLocation.address}</Text>
+                    <Text style={[styles.partnerProgram, { color: colors.accent }]}>
                       Partner: {request.dropOffLocation.partnerProgram}
                     </Text>
                   </View>
@@ -177,21 +199,25 @@ export default function VolunteerScreen() {
                   {/* Meta Info */}
                   <View style={styles.metaRow}>
                     <View style={styles.metaItem}>
-                      <MaterialIcons name="schedule" size={16} color={Colors.light.mutedText} />
-                      <Text style={styles.metaText}>{request.estimatedTime}</Text>
+                      <MaterialIcons name="schedule" size={16} color={colors.mutedText} />
+                      <Text style={[styles.metaText, { color: colors.mutedText }]}>{request.estimatedTime}</Text>
                     </View>
                     <View style={styles.metaItem}>
-                      <MaterialIcons name="inventory-2" size={16} color={Colors.light.mutedText} />
-                      <Text style={styles.metaText}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
+                      <MaterialIcons name="inventory-2" size={16} color={colors.mutedText} />
+                      <Text style={[styles.metaText, { color: colors.mutedText }]}>{request.boxCount} box{request.boxCount > 1 ? 'es' : ''}</Text>
                     </View>
-                    <View style={styles.distanceBadge}>
+                    <View style={[styles.distanceBadge, { backgroundColor: colors.isDark ? '#064E3B' : '#ECFDF5' }]}>
                       <Text style={styles.distanceText}>{request.distanceFromHome} from home</Text>
                     </View>
                   </View>
 
                   {/* Claim Button */}
                   <Pressable 
-                    style={styles.claimButton}
+                    style={({ pressed }) => [
+                      styles.claimButton,
+                      { backgroundColor: colors.accent },
+                      pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] }
+                    ]}
                     onPress={() => handleClaimDelivery(request.id)}
                   >
                     <Text style={styles.claimButtonText}>Claim Delivery</Text>
@@ -202,8 +228,8 @@ export default function VolunteerScreen() {
 
             {/* Info Card */}
             <GlassCard style={styles.infoCard}>
-              <MaterialIcons name="info-outline" size={20} color={Colors.light.mutedText} />
-              <Text style={styles.infoText}>
+              <MaterialIcons name="info-outline" size={20} color={colors.mutedText} />
+              <Text style={[styles.infoText, { color: colors.mutedText }]}>
                 Deliveries are matched to locations near your home address. Update your address in settings to see more relevant options.
               </Text>
             </GlassCard>
@@ -214,38 +240,41 @@ export default function VolunteerScreen() {
           <>
             {orders.length > 0 ? (
               <>
-                <Text style={styles.sectionTitle}>Your delivery history</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Your delivery history</Text>
                 {orders.map((order) => (
                   <Pressable 
                     key={order.id}
-                    style={styles.historyPressable}
+                    style={({ pressed }) => [
+                      styles.historyPressable,
+                      pressed && { opacity: 0.8, transform: [{ scale: 0.98 }] }
+                    ]}
                     onPress={() => router.push(`/order/${order.id}` as const)}
                   >
                     <GlassCard style={styles.historyCard}>
                       <View style={styles.historyLeft}>
                         <View style={[
                           styles.statusDot,
-                          order.status === 'delivered' ? styles.statusDotComplete : styles.statusDotActive
+                          order.status === 'delivered' ? styles.statusDotComplete : { backgroundColor: colors.accent }
                         ]} />
                         <View>
-                          <Text style={styles.historyTitle}>{order.storeName}</Text>
-                          <Text style={styles.historySubtitle}>
+                          <Text style={[styles.historyTitle, { color: colors.text }]}>{order.storeName}</Text>
+                          <Text style={[styles.historySubtitle, { color: colors.mutedText }]}>
                             {order.status === 'delivered' ? 'Completed' : 'In Progress'} - {
                               order.placedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                             }
                           </Text>
                         </View>
                       </View>
-                      <MaterialIcons name="chevron-right" size={24} color={Colors.light.mutedText} />
+                      <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
                     </GlassCard>
                   </Pressable>
                 ))}
               </>
             ) : (
               <GlassCard style={styles.emptyState}>
-                <MaterialIcons name="volunteer-activism" size={48} color="#E5E7EB" />
-                <Text style={styles.emptyTitle}>No deliveries yet</Text>
-                <Text style={styles.emptyText}>
+                <MaterialIcons name="volunteer-activism" size={48} color={colors.border} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>No deliveries yet</Text>
+                <Text style={[styles.emptyText, { color: colors.mutedText }]}>
                   Claim a delivery from the Available tab to start your Seva journey
                 </Text>
               </GlassCard>
@@ -260,7 +289,6 @@ export default function VolunteerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   content: {
     paddingHorizontal: 20,
@@ -269,12 +297,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
     marginTop: Spacing.sm,
   },
   subtitle: {
     fontSize: 14,
-    color: Colors.light.mutedText,
     marginBottom: Spacing.lg,
   },
   filterTabsCard: {
@@ -290,17 +316,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: Radii.sm,
   },
-  filterTabActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  },
+  filterTabActive: {},
   filterTabText: {
     fontSize: 14,
     fontWeight: '500',
-    color: Colors.light.mutedText,
-  },
-  filterTabTextActive: {
-    color: '#1F2937',
-    fontWeight: '600',
   },
   activeOrderPressable: {
     marginBottom: Spacing.lg,
@@ -314,7 +333,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -325,16 +343,13 @@ const styles = StyleSheet.create({
   activeOrderTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2937',
   },
   activeOrderSubtitle: {
     fontSize: 13,
-    color: Colors.light.mutedText,
   },
   sectionTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: Spacing.md,
   },
   deliveryCard: {
@@ -360,22 +375,18 @@ const styles = StyleSheet.create({
   locationLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: Colors.light.mutedText,
     letterSpacing: 1,
   },
   locationName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: 2,
   },
   locationAddress: {
     fontSize: 13,
-    color: Colors.light.mutedText,
   },
   partnerProgram: {
     fontSize: 11,
-    color: Colors.light.accent,
     marginTop: 4,
   },
   routeDivider: {
@@ -388,12 +399,10 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#E5E7EB',
   },
   routeLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E5E7EB',
     marginHorizontal: 8,
   },
   metaRow: {
@@ -410,11 +419,9 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 13,
-    color: Colors.light.mutedText,
   },
   distanceBadge: {
     marginLeft: 'auto',
-    backgroundColor: '#ECFDF5',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -425,7 +432,6 @@ const styles = StyleSheet.create({
     color: '#059669',
   },
   claimButton: {
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.md,
     paddingVertical: 12,
     alignItems: 'center',
@@ -444,7 +450,6 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 13,
-    color: Colors.light.mutedText,
     lineHeight: 18,
   },
   historyPressable: {
@@ -469,17 +474,12 @@ const styles = StyleSheet.create({
   statusDotComplete: {
     backgroundColor: '#059669',
   },
-  statusDotActive: {
-    backgroundColor: Colors.light.accent,
-  },
   historyTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2937',
   },
   historySubtitle: {
     fontSize: 13,
-    color: Colors.light.mutedText,
   },
   emptyState: {
     alignItems: 'center',
@@ -489,13 +489,11 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1F2937',
     marginTop: Spacing.md,
     marginBottom: Spacing.sm,
   },
   emptyText: {
     fontSize: 14,
-    color: Colors.light.mutedText,
     textAlign: 'center',
     lineHeight: 20,
   },

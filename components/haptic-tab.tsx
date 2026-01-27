@@ -1,40 +1,99 @@
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { PlatformPressable } from '@react-navigation/elements';
 import * as Haptics from 'expo-haptics';
-import { useRef } from 'react';
-import { Animated } from 'react-native';
+import { Platform } from 'react-native';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+
+import { useThemeColors } from '@/hooks/use-theme-colors';
+
+const springConfig = {
+  damping: 15,
+  stiffness: 300,
+  mass: 0.8,
+};
 
 export function HapticTab(props: BottomTabBarButtonProps) {
-  const scaleValue = useRef(new Animated.Value(1)).current;
+  const { isDark } = useThemeColors();
+  const scale = useSharedValue(1);
+  const bubbleScale = useSharedValue(0);
+  const bubbleOpacity = useSharedValue(0);
+  const isPressed = useSharedValue(0);
 
   const handlePressIn = (ev: any) => {
-    if (process.env.EXPO_OS === 'ios') {
+    // Trigger haptic feedback on iOS
+    if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    Animated.spring(scaleValue, {
-      toValue: 0.9,
-      useNativeDriver: true,
-    }).start();
+    
+    // Scale down the icon slightly
+    scale.value = withSpring(0.85, springConfig);
+    
+    // Show the bubble indicator
+    bubbleScale.value = withSpring(1, { damping: 12, stiffness: 200 });
+    bubbleOpacity.value = withTiming(1, { duration: 100 });
+    isPressed.value = withTiming(1, { duration: 100 });
+    
     props.onPressIn?.(ev);
   };
 
   const handlePressOut = (ev: any) => {
-    Animated.spring(scaleValue, {
-      toValue: 1,
-      friction: 3,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
+    // Scale back to normal
+    scale.value = withSpring(1, springConfig);
+    
+    // Fade out the bubble
+    bubbleScale.value = withSpring(0.8, springConfig);
+    bubbleOpacity.value = withTiming(0, { duration: 200 });
+    isPressed.value = withTiming(0, { duration: 200 });
+    
     props.onPressOut?.(ev);
   };
 
+  const animatedIconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const animatedBubbleStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      isPressed.value,
+      [0, 1],
+      [
+        isDark ? 'rgba(255, 255, 255, 0)' : 'rgba(0, 0, 0, 0)',
+        isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(249, 115, 22, 0.15)',
+      ]
+    );
+
+    return {
+      position: 'absolute' as const,
+      top: -4,
+      left: -8,
+      right: -8,
+      bottom: -4,
+      borderRadius: 16,
+      backgroundColor,
+      transform: [{ scale: bubbleScale.value }],
+      opacity: bubbleOpacity.value,
+    };
+  });
+
   return (
-    <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-      <PlatformPressable
-        {...props}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-      />
+    <Animated.View style={{ position: 'relative' }}>
+      {/* Bubble indicator behind the icon */}
+      <Animated.View style={animatedBubbleStyle} pointerEvents="none" />
+      
+      {/* Animated icon container */}
+      <Animated.View style={animatedIconStyle}>
+        <PlatformPressable
+          {...props}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+        />
+      </Animated.View>
     </Animated.View>
   );
 }

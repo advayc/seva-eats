@@ -71,6 +71,39 @@ export const Radii = {
 };
 
 export const Shadows = {
+  light: {
+    card: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
+      elevation: 3,
+    },
+    floating: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.12,
+      shadowRadius: 18,
+      elevation: 6,
+    },
+  },
+  dark: {
+    card: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 3,
+    },
+    floating: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.4,
+      shadowRadius: 18,
+      elevation: 6,
+    },
+  },
+  // Legacy: For backwards compatibility, also export the light shadows at root level
   card: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },

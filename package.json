@@ -11,7 +11,8 @@
     "run-ios:iphone17": "xcrun simctl boot 6DCB7D91-F046-4CAA-8FC8-95B162E6C3BE || true && open -a Simulator || true && npx react-native run-ios --udid 6DCB7D91-F046-4CAA-8FC8-95B162E6C3BE",
     "web": "expo start --web",
     "lint": "expo lint",
-    "prebuild": "expo prebuild --clean",
+    "fix-widget": "./scripts/fix-widget-entry.sh",
+    "prebuild": "expo prebuild --clean && npm run fix-widget",
     "build:ios": "npm run prebuild && xcodebuild -workspace ios/SevaEats.xcworkspace -scheme SevaEats -configuration Release -derivedDataPath ios/build",
     "build:ios:sim": "npm run prebuild && xcodebuild -workspace ios/SevaEats.xcworkspace -scheme SevaEats -sdk iphonesimulator -configuration Debug -derivedDataPath ios/build"
   },

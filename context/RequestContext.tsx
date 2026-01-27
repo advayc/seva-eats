@@ -45,6 +45,15 @@ export type MealRequest = {
   volunteerName?: string;
   gurdwaraId?: string;
   gurdwaraName?: string;
+  gurdwaraLocation?: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  volunteerLocation?: {
+    latitude: number;
+    longitude: number;
+  };
   liveActivityId?: string | null;
   statusHistory: { status: MealRequestStatus; timestamp: Date }[];
 };
@@ -172,8 +181,13 @@ export function RequestProvider({ children }: { children: ReactNode }) {
             status: 'matched' as MealRequestStatus,
             volunteerId: 'vol-123',
             volunteerName: 'Gurpreet Singh',
-            gurdwaraId: 'gurdwara-1',
+            gurdwaraId: 'gurdwara-sahib-brampton',
             gurdwaraName: 'Gurdwara Sahib Brampton',
+            gurdwaraLocation: {
+              address: '123 Sikh Way, Brampton, ON',
+              latitude: 43.7315,
+              longitude: -79.7624,
+            },
             estimatedDelivery,
             statusHistory: [...req.statusHistory, { status: 'matched' as MealRequestStatus, timestamp: now }],
           };
@@ -204,9 +218,32 @@ export function RequestProvider({ children }: { children: ReactNode }) {
             if (req.status === 'delivered' || req.status === 'cancelled') return req;
             
             const now = new Date();
+            
+            // Calculate volunteer location based on status (interpolate between gurdwara and delivery)
+            let volunteerLocation = req.volunteerLocation;
+            if (req.gurdwaraLocation && req.deliveryAddress) {
+              const gurdwara = req.gurdwaraLocation;
+              const delivery = req.deliveryAddress;
+              
+              if (status === 'picked_up') {
+                // At the gurdwara
+                volunteerLocation = { latitude: gurdwara.latitude, longitude: gurdwara.longitude };
+              } else if (status === 'on_the_way') {
+                // Halfway between gurdwara and delivery
+                volunteerLocation = {
+                  latitude: (gurdwara.latitude + delivery.latitude) / 2,
+                  longitude: (gurdwara.longitude + delivery.longitude) / 2,
+                };
+              } else if (status === 'delivered') {
+                // At delivery location
+                volunteerLocation = { latitude: delivery.latitude, longitude: delivery.longitude };
+              }
+            }
+            
             const nextRequest = {
               ...req,
               status,
+              volunteerLocation,
               statusHistory: [...req.statusHistory, { status, timestamp: now }],
             };
             updateMealLiveActivity(nextRequest, nextRequest.liveActivityId);

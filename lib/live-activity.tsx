@@ -5,6 +5,14 @@ import { NativeModulesProxy } from 'expo-modules-core';
 
 import { REQUEST_STATUS_LABELS, type MealRequest } from '@/context/RequestContext';
 
+// Debug logging utility
+const DEBUG = __DEV__;
+function debugLog(message: string, data?: any) {
+  if (DEBUG) {
+    console.log(`[LiveActivity] ${message}`, data !== undefined ? data : '');
+  }
+}
+
 let HStack: any;
 let Image: any;
 let Spacer: any;
@@ -21,8 +29,9 @@ try {
   VStack = expoUI.VStack;
   const modifiers = require('@expo/ui/swift-ui/modifiers');
   padding = modifiers.padding;
-} catch {
-  // @expo/ui not available
+  debugLog('Successfully loaded @expo/ui/swift-ui components');
+} catch (error) {
+  debugLog('Failed to load @expo/ui/swift-ui', error);
 }
 
 type SFSymbol = string;
@@ -75,7 +84,7 @@ export function buildMealActivityData(request: MealRequest): MealActivityData {
       ? `${request.volunteerName} is handling your request`
       : 'Tracking your meal request';
 
-  return {
+  const data = {
     status: request.status,
     statusLabel: REQUEST_STATUS_LABELS[request.status],
     shortStatus: SHORT_STATUS[request.status],
@@ -88,6 +97,9 @@ export function buildMealActivityData(request: MealRequest): MealActivityData {
     volunteerName: request.volunteerName,
     gurdwaraName: request.gurdwaraName,
   };
+
+  debugLog('Built activity data', { requestId: request.id, status: request.status, etaMinutes });
+  return data;
 }
 
 export type LiveActivityComponent = () => {
@@ -103,6 +115,12 @@ export type LiveActivityComponent = () => {
 };
 
 export function createMealLiveActivity(data: MealActivityData): LiveActivityComponent {
+  // Check if UI components are available
+  if (!VStack || !HStack || !Text || !Image || !Spacer || !padding) {
+    debugLog('UI components not available, returning empty activity');
+    return () => ({});
+  }
+
   return () => ({
     banner: (
       <VStack modifiers={[padding({ all: 12 })]}>
@@ -150,38 +168,168 @@ export function createMealLiveActivity(data: MealActivityData): LiveActivityComp
 type ExpoWidgetsModule = {
   startLiveActivity?: (name: string, component: LiveActivityComponent, url?: string) => string;
   updateLiveActivity?: (id: string, name: string, component: LiveActivityComponent) => void;
+  endLiveActivity?: (id: string) => void;
 };
 
 function hasExpoWidgetsNativeModule(): boolean {
-  if (Platform.OS !== 'ios') return false;
-  if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) return false;
-  return !!NativeModulesProxy?.ExpoWidgets;
+  debugLog('Checking for ExpoWidgets native module...');
+  
+  if (Platform.OS !== 'ios') {
+    debugLog('Not iOS, Live Activities not available');
+    return false;
+  }
+  
+  if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+    debugLog('Running in Expo Go, Live Activities not available');
+    return false;
+  }
+  
+  const hasModule = !!NativeModulesProxy?.ExpoWidgets;
+  debugLog('ExpoWidgets module available:', hasModule);
+  
+  if (!hasModule) {
+    debugLog('NativeModulesProxy contents:', Object.keys(NativeModulesProxy || {}));
+  }
+  
+  return hasModule;
 }
 
 function getExpoWidgetsModule(): ExpoWidgetsModule | null {
-  if (!hasExpoWidgetsNativeModule()) return null;
+  if (!hasExpoWidgetsNativeModule()) {
+    debugLog('No native module available');
+    return null;
+  }
+  
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require('expo-widgets') as ExpoWidgetsModule;
-  } catch {
+    const module = require('expo-widgets') as ExpoWidgetsModule;
+    debugLog('Successfully loaded expo-widgets module', {
+      hasStartLiveActivity: !!module?.startLiveActivity,
+      hasUpdateLiveActivity: !!module?.updateLiveActivity,
+      hasEndLiveActivity: !!module?.endLiveActivity,
+    });
+    return module;
+  } catch (error) {
+    debugLog('Failed to load expo-widgets module', error);
     return null;
   }
 }
 
 export function startMealLiveActivity(request: MealRequest): string | null {
+  debugLog('Starting Live Activity for request:', request.id);
+  
   const module = getExpoWidgetsModule();
-  if (!module?.startLiveActivity) return null;
-  const data = buildMealActivityData(request);
-  const activity = createMealLiveActivity(data);
-  const deepLink = `seveats://request/${request.id}`;
-  return module.startLiveActivity(LIVE_ACTIVITY_NAME, activity, deepLink);
+  if (!module?.startLiveActivity) {
+    debugLog('startLiveActivity function not available');
+    return null;
+  }
+  
+  try {
+    const data = buildMealActivityData(request);
+    const activity = createMealLiveActivity(data);
+    const deepLink = `seveats://request/${request.id}`;
+    
+    debugLog('Calling startLiveActivity with:', {
+      name: LIVE_ACTIVITY_NAME,
+      deepLink,
+    });
+    
+    const activityId = module.startLiveActivity(LIVE_ACTIVITY_NAME, activity, deepLink);
+    debugLog('Live Activity started successfully, ID:', activityId);
+    return activityId;
+  } catch (error) {
+    debugLog('Error starting Live Activity:', error);
+    return null;
+  }
 }
 
 export function updateMealLiveActivity(request: MealRequest, activityId?: string | null): void {
-  if (!activityId) return;
+  if (!activityId) {
+    debugLog('No activity ID provided, skipping update');
+    return;
+  }
+  
+  debugLog('Updating Live Activity:', { activityId, requestId: request.id, status: request.status });
+  
   const module = getExpoWidgetsModule();
-  if (!module?.updateLiveActivity) return;
-  const data = buildMealActivityData(request);
-  const activity = createMealLiveActivity(data);
-  module.updateLiveActivity(activityId, LIVE_ACTIVITY_NAME, activity);
+  if (!module?.updateLiveActivity) {
+    debugLog('updateLiveActivity function not available');
+    return;
+  }
+  
+  try {
+    const data = buildMealActivityData(request);
+    const activity = createMealLiveActivity(data);
+    module.updateLiveActivity(activityId, LIVE_ACTIVITY_NAME, activity);
+    debugLog('Live Activity updated successfully');
+  } catch (error) {
+    debugLog('Error updating Live Activity:', error);
+  }
+}
+
+export function endMealLiveActivity(activityId?: string | null): void {
+  if (!activityId) {
+    debugLog('No activity ID provided, skipping end');
+    return;
+  }
+  
+  debugLog('Ending Live Activity:', activityId);
+  
+  const module = getExpoWidgetsModule();
+  if (!module?.endLiveActivity) {
+    debugLog('endLiveActivity function not available');
+    return;
+  }
+  
+  try {
+    module.endLiveActivity(activityId);
+    debugLog('Live Activity ended successfully');
+  } catch (error) {
+    debugLog('Error ending Live Activity:', error);
+  }
+}
+
+// Diagnostic function to check Live Activity availability
+export function getLiveActivityDiagnostics(): {
+  isAvailable: boolean;
+  platform: string;
+  executionEnvironment: string;
+  hasNativeModule: boolean;
+  hasUIComponents: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+  
+  if (Platform.OS !== 'ios') {
+    errors.push('Live Activities are only available on iOS');
+  }
+  
+  if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+    errors.push('Live Activities are not available in Expo Go. Use a development build.');
+  }
+  
+  const hasNativeModule = !!NativeModulesProxy?.ExpoWidgets;
+  if (!hasNativeModule) {
+    errors.push('ExpoWidgets native module not found. Make sure expo-widgets is installed and you have a development build.');
+  }
+  
+  const hasUIComponents = !!(VStack && HStack && Text && Image && Spacer && padding);
+  if (!hasUIComponents) {
+    errors.push('@expo/ui/swift-ui components not available');
+  }
+  
+  const diagnostics = {
+    isAvailable: Platform.OS === 'ios' && 
+      Constants.executionEnvironment !== ExecutionEnvironment.StoreClient && 
+      hasNativeModule && 
+      hasUIComponents,
+    platform: Platform.OS,
+    executionEnvironment: Constants.executionEnvironment ?? 'unknown',
+    hasNativeModule,
+    hasUIComponents,
+    errors,
+  };
+  
+  debugLog('Live Activity diagnostics:', diagnostics);
+  return diagnostics;
 }

@@ -21,7 +21,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 const ONBOARDING_KEY = 'onboarding-completed';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -42,10 +43,12 @@ function AnimatedLogoMark({
   isAnimating,
   onAnimationComplete,
   size,
+  overlayColor,
 }: {
   isAnimating: boolean;
   onAnimationComplete: () => void;
   size: number;
+  overlayColor: string;
 }) {
   const logoScale = useSharedValue(1);
   const logoOpacity = useSharedValue(1);
@@ -86,13 +89,14 @@ function AnimatedLogoMark({
       <Animated.View style={[logoStyle, { width: size, height: size }]}> 
         <LogoMark size={size} />
       </Animated.View>
-      <Animated.View style={[styles.overlay, overlayStyle]} />
+      <Animated.View style={[styles.overlay, overlayStyle, { backgroundColor: overlayColor }]} />
     </View>
   );
 }
 
 export default function IndexScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
   const [loading, setLoading] = useState(true);
   const [showLanding, setShowLanding] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -157,13 +161,13 @@ export default function IndexScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loader}>
           {/* Branded loading screen */}
           <Animated.View style={styles.loaderContent}>
             <LogoMark size={PLATE_SIZE} />
-            <Text style={styles.loaderTitle}>Seva Eats</Text>
-            <ActivityIndicator color={Colors.light.accent} size="small" style={styles.loaderSpinner} />
+            <Text style={[styles.loaderTitle, { color: colors.text }]}>Seva Eats</Text>
+            <ActivityIndicator color={colors.accent} size="small" style={styles.loaderSpinner} />
           </Animated.View>
         </View>
       </SafeAreaView>
@@ -172,13 +176,13 @@ export default function IndexScreen() {
 
   if (showLanding) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.landingContent}>
           {/* Main content - centered */}
           <View style={styles.centerSection}>
             <Animated.View style={titleStyle}>
-              <Text style={styles.title}>Seva Eats</Text>
-              <Text style={styles.tagline}>FOOD   •   COMMUNITY   •   SERVICE</Text>
+              <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
+              <Text style={[styles.tagline, { color: colors.accent }]}>FOOD   •   COMMUNITY   •   SERVICE</Text>
             </Animated.View>
             
             <Animated.View style={[styles.illustrationWrap, { width: PLATE_SIZE, height: PLATE_SIZE }, contentStyle]}>
@@ -187,6 +191,7 @@ export default function IndexScreen() {
                   isAnimating={isTransitioning}
                   onAnimationComplete={handleAnimationComplete}
                   size={PLATE_SIZE}
+                  overlayColor={colors.background}
                 />
               ) : (
                 <LogoMark size={PLATE_SIZE} />
@@ -197,7 +202,7 @@ export default function IndexScreen() {
           {/* Button at bottom */}
           <Animated.View style={[styles.buttonSection, buttonStyle]}>
             <Pressable 
-              style={styles.enterButton} 
+              style={[styles.enterButton, { backgroundColor: colors.accent, shadowColor: colors.accent }]} 
               onPress={handleEnterApp}
               disabled={isTransitioning}
             >
@@ -215,7 +220,6 @@ export default function IndexScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   loader: {
     flex: 1,
@@ -235,7 +239,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 40,
     fontWeight: '700',
-    color: '#1F2937',
     letterSpacing: -0.5,
     textAlign: 'center',
   },
@@ -244,7 +247,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '500',
     letterSpacing: 1.5,
-    color: '#F97316',
     textAlign: 'center',
   },
   illustrationWrap: {
@@ -264,17 +266,14 @@ const styles = StyleSheet.create({
     left: -SCREEN_WIDTH,
     width: SCREEN_WIDTH * 3,
     height: SCREEN_HEIGHT * 3,
-    backgroundColor: '#FFFFFF',
   },
   buttonSection: {
     paddingHorizontal: Spacing.md,
   },
   enterButton: {
-    backgroundColor: Colors.light.accent,
     borderRadius: Radii.lg,
     paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: '#F97316',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -292,7 +291,6 @@ const styles = StyleSheet.create({
   loaderTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
     letterSpacing: -0.5,
   },
   loaderSpinner: {

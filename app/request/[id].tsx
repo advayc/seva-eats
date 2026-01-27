@@ -1,33 +1,30 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  Dimensions,
 } from 'react-native';
+import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-  withDelay,
-  withSequence,
   FadeIn,
   FadeInDown,
   Easing,
 } from 'react-native-reanimated';
 
-import { Colors, Radii, Shadows, Spacing } from '@/constants/theme';
+import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { useRequests, REQUEST_STATUS_LABELS, type MealRequestStatus } from '@/context';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 // Progress steps configuration
 const PROGRESS_STEPS: { status: MealRequestStatus; icon: string; label: string }[] = [
@@ -44,7 +41,7 @@ function getStepIndex(status: MealRequestStatus): number {
 }
 
 // Animated pulsing dot for active step
-function PulsingDot() {
+function PulsingDot({ color }: { color: string }) {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(0.3);
 
@@ -64,6 +61,7 @@ function PulsingDot() {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
+    backgroundColor: color,
   }));
 
   return (
@@ -77,32 +75,34 @@ function ProgressStep({
   index,
   currentIndex,
   isLast,
+  colors,
 }: {
   step: typeof PROGRESS_STEPS[0];
   index: number;
   currentIndex: number;
   isLast: boolean;
+  colors: ReturnType<typeof useThemeColors>;
 }) {
   const isCompleted = index < currentIndex;
   const isActive = index === currentIndex;
-  const isPending = index > currentIndex;
 
   return (
     <View style={styles.progressStep}>
       {/* Step Circle */}
       <View style={styles.stepCircleContainer}>
-        {isActive && <PulsingDot />}
+        {isActive && <PulsingDot color={colors.accent} />}
         <View
           style={[
             styles.stepCircle,
+            { backgroundColor: colors.isDark ? '#374151' : '#F3F4F6' },
             isCompleted && styles.stepCircleCompleted,
-            isActive && styles.stepCircleActive,
+            isActive && { backgroundColor: colors.accent },
           ]}
         >
           <MaterialIcons
             name={isCompleted ? 'check' : (step.icon as any)}
             size={isCompleted ? 16 : 20}
-            color={isCompleted || isActive ? '#FFFFFF' : Colors.light.mutedText}
+            color={isCompleted || isActive ? '#FFFFFF' : colors.mutedText}
           />
         </View>
       </View>
@@ -112,14 +112,15 @@ function ProgressStep({
         <Text
           style={[
             styles.stepLabel,
+            { color: colors.mutedText },
             isCompleted && styles.stepLabelCompleted,
-            isActive && styles.stepLabelActive,
+            isActive && { color: colors.text, fontWeight: '600' },
           ]}
         >
           {step.label}
         </Text>
         {isActive && (
-          <Text style={styles.stepActiveHint}>In progress...</Text>
+          <Text style={[styles.stepActiveHint, { color: colors.accent }]}>In progress...</Text>
         )}
       </View>
 
@@ -129,6 +130,7 @@ function ProgressStep({
           <View
             style={[
               styles.stepLineInner,
+              { backgroundColor: colors.isDark ? '#374151' : '#E5E7EB' },
               isCompleted && styles.stepLineCompleted,
             ]}
           />
@@ -138,33 +140,124 @@ function ProgressStep({
   );
 }
 
-// Static Map Component
-function StaticMapPreview({
-  pickupAddress,
-  deliveryAddress,
+// Real Map Component with route
+function RouteMapView({
+  pickupLocation,
+  deliveryLocation,
+  volunteerLocation,
+  status,
+  colors,
+  onExpand,
 }: {
-  pickupAddress?: string;
-  deliveryAddress: string;
+  pickupLocation?: { latitude: number; longitude: number; address: string };
+  deliveryLocation: { latitude: number; longitude: number; address: string };
+  volunteerLocation?: { latitude: number; longitude: number };
+  status: MealRequestStatus;
+  colors: ReturnType<typeof useThemeColors>;
+  onExpand: () => void;
 }) {
+  // Default pickup location if not set (use a Gurdwara in Brampton area)
+  const pickup = pickupLocation ?? {
+    latitude: 43.7315,
+    longitude: -79.7624,
+    address: 'Gurdwara Sahib Brampton',
+  };
+
+  // Calculate map region to show both points
+  const midLat = (pickup.latitude + deliveryLocation.latitude) / 2;
+  const midLng = (pickup.longitude + deliveryLocation.longitude) / 2;
+  const latDelta = Math.abs(pickup.latitude - deliveryLocation.latitude) * 1.8;
+  const lngDelta = Math.abs(pickup.longitude - deliveryLocation.longitude) * 1.8;
+
+  // Build route coordinates
+  const routeCoordinates = [
+    { latitude: pickup.latitude, longitude: pickup.longitude },
+    ...(volunteerLocation && (status === 'on_the_way' || status === 'picked_up')
+      ? [volunteerLocation]
+      : []),
+    { latitude: deliveryLocation.latitude, longitude: deliveryLocation.longitude },
+  ];
+
   return (
     <View style={styles.mapContainer}>
-      <View style={styles.mapPlaceholder}>
-        <MaterialIcons name="map" size={48} color="#E5E7EB" />
-        <Text style={styles.mapPlaceholderText}>Route Preview</Text>
-      </View>
-      <View style={styles.mapOverlay}>
+      <MapView
+        style={styles.map}
+        provider={PROVIDER_DEFAULT}
+        initialRegion={{
+          latitude: midLat,
+          longitude: midLng,
+          latitudeDelta: Math.max(latDelta, 0.02),
+          longitudeDelta: Math.max(lngDelta, 0.02),
+        }}
+      >
+        {/* Pickup Marker (Gurdwara) */}
+        <Marker
+          coordinate={{ latitude: pickup.latitude, longitude: pickup.longitude }}
+          title="Pickup Location"
+          description={pickup.address}
+        >
+          <View style={[styles.markerPickup, { backgroundColor: colors.accent }]}>
+            <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
+          </View>
+        </Marker>
+
+        {/* Delivery Marker */}
+        <Marker
+          coordinate={{
+            latitude: deliveryLocation.latitude,
+            longitude: deliveryLocation.longitude,
+          }}
+          title="Your Location"
+          description={deliveryLocation.address}
+        >
+          <View style={styles.markerDelivery}>
+            <MaterialIcons name="home" size={16} color="#FFFFFF" />
+          </View>
+        </Marker>
+
+        {/* Volunteer Marker (when on the way) */}
+        {volunteerLocation && (status === 'on_the_way' || status === 'picked_up') && (
+          <Marker
+            coordinate={volunteerLocation}
+            title="Volunteer"
+          >
+            <View style={[styles.markerVolunteer, { backgroundColor: colors.accent }]}>
+              <MaterialIcons name="directions-car" size={16} color="#FFFFFF" />
+            </View>
+          </Marker>
+        )}
+
+        {/* Route Line */}
+        <Polyline
+          coordinates={routeCoordinates}
+          strokeColor={colors.accent}
+          strokeWidth={3}
+          lineDashPattern={[10, 5]}
+        />
+      </MapView>
+
+      {/* Expand Button */}
+      <Pressable
+        style={[styles.expandButton, { backgroundColor: colors.background }]}
+        onPress={onExpand}
+      >
+        <MaterialIcons name="fullscreen" size={24} color={colors.text} />
+      </Pressable>
+
+      {/* Route Info Overlay */}
+      <View style={[styles.mapOverlay, { backgroundColor: colors.isDark ? 'rgba(26,31,37,0.95)' : 'rgba(255,255,255,0.95)' }]}>
         <View style={styles.mapRoute}>
           <View style={styles.mapRoutePoint}>
-            <MaterialIcons name="place" size={16} color={Colors.light.accent} />
-            <Text style={styles.mapRouteText} numberOfLines={1}>
-              {pickupAddress ?? 'Gurdwara'}
+            <MaterialIcons name="place" size={16} color={colors.accent} />
+            <Text style={[styles.mapRouteText, { color: colors.mutedText }]} numberOfLines={1}>
+              {pickup.address}
             </Text>
           </View>
-          <View style={styles.mapRouteLine} />
+          <View style={[styles.mapRouteLine, { backgroundColor: colors.border }]} />
           <View style={styles.mapRoutePoint}>
             <MaterialIcons name="home" size={16} color="#059669" />
-            <Text style={styles.mapRouteText} numberOfLines={1}>
-              {deliveryAddress}
+            <Text style={[styles.mapRouteText, { color: colors.mutedText }]} numberOfLines={1}>
+              {deliveryLocation.address}
             </Text>
           </View>
         </View>
@@ -175,8 +268,10 @@ function StaticMapPreview({
 
 export default function RequestTrackingScreen() {
   const router = useRouter();
+  const colors = useThemeColors();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getRequest, cancelRequest, requests } = useRequests();
+  const { cancelRequest, requests } = useRequests();
+  const [isMapExpanded, setIsMapExpanded] = useState(false);
 
   // Get fresh request data on each render
   const request = requests.find((r) => r.id === id);
@@ -227,13 +322,13 @@ export default function RequestTrackingScreen() {
     : 'Calculating...';
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <MaterialIcons name="close" size={24} color={Colors.light.text} />
+          <MaterialIcons name="close" size={24} color={colors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
           {isDelivered ? 'Delivered!' : isCancelled ? 'Cancelled' : 'Tracking'}
         </Text>
         <View style={styles.headerSpacer} />
@@ -245,14 +340,17 @@ export default function RequestTrackingScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Status Card */}
-        <Animated.View entering={FadeIn.delay(100)} style={styles.statusCard}>
+        <Animated.View
+          entering={FadeIn.delay(100)}
+          style={[styles.statusCard, { backgroundColor: colors.surface }]}
+        >
           {isDelivered ? (
             <>
               <View style={styles.deliveredIcon}>
                 <MaterialIcons name="check-circle" size={64} color="#059669" />
               </View>
-              <Text style={styles.deliveredTitle}>Meal Delivered!</Text>
-              <Text style={styles.deliveredSubtitle}>
+              <Text style={[styles.deliveredTitle, { color: '#059669' }]}>Meal Delivered!</Text>
+              <Text style={[styles.deliveredSubtitle, { color: colors.mutedText }]}>
                 Thank you for using Seva Eats. We hope you enjoy your meal!
               </Text>
             </>
@@ -262,19 +360,19 @@ export default function RequestTrackingScreen() {
                 <MaterialIcons name="cancel" size={64} color="#DC2626" />
               </View>
               <Text style={styles.cancelledTitle}>Request Cancelled</Text>
-              <Text style={styles.cancelledSubtitle}>
+              <Text style={[styles.cancelledSubtitle, { color: colors.mutedText }]}>
                 Your meal request has been cancelled.
               </Text>
             </>
           ) : (
             <>
-              <Text style={styles.statusLabel}>
+              <Text style={[styles.statusLabel, { color: colors.text }]}>
                 {REQUEST_STATUS_LABELS[request.status]}
               </Text>
               <View style={styles.etaRow}>
-                <MaterialIcons name="schedule" size={20} color={Colors.light.accent} />
-                <Text style={styles.etaText}>
-                  Estimated arrival: <Text style={styles.etaBold}>{etaText}</Text>
+                <MaterialIcons name="schedule" size={20} color={colors.accent} />
+                <Text style={[styles.etaText, { color: colors.mutedText }]}>
+                  Estimated arrival: <Text style={[styles.etaBold, { color: colors.text }]}>{etaText}</Text>
                 </Text>
               </View>
             </>
@@ -283,8 +381,18 @@ export default function RequestTrackingScreen() {
 
         {/* Progress Tracker */}
         {!isCancelled && (
-          <Animated.View entering={FadeInDown.delay(200)} style={styles.progressCard}>
-            <Text style={styles.progressTitle}>Delivery Progress</Text>
+          <Animated.View
+            entering={FadeInDown.delay(200)}
+            style={[
+              styles.progressCard,
+              {
+                backgroundColor: colors.surfaceElevated,
+                borderColor: colors.border,
+                ...(colors.isDark ? Shadows.dark.card : Shadows.light.card),
+              },
+            ]}
+          >
+            <Text style={[styles.progressTitle, { color: colors.text }]}>Delivery Progress</Text>
             {PROGRESS_STEPS.map((step, index) => (
               <ProgressStep
                 key={step.status}
@@ -292,6 +400,7 @@ export default function RequestTrackingScreen() {
                 index={index}
                 currentIndex={currentStepIndex}
                 isLast={index === PROGRESS_STEPS.length - 1}
+                colors={colors}
               />
             ))}
           </Animated.View>
@@ -300,57 +409,74 @@ export default function RequestTrackingScreen() {
         {/* Map Preview */}
         {!isDelivered && !isCancelled && (
           <Animated.View entering={FadeInDown.delay(300)}>
-            <StaticMapPreview
-              pickupAddress={request.gurdwaraName}
-              deliveryAddress={request.deliveryAddress.address}
+            <RouteMapView
+              pickupLocation={request.gurdwaraLocation}
+              deliveryLocation={request.deliveryAddress}
+              volunteerLocation={request.volunteerLocation}
+              status={request.status}
+              colors={colors}
+              onExpand={() => setIsMapExpanded(true)}
             />
           </Animated.View>
         )}
 
         {/* Volunteer Info (when matched) */}
         {request.volunteerName && !isDelivered && !isCancelled && (
-          <Animated.View entering={FadeInDown.delay(400)} style={styles.volunteerCard}>
-            <View style={styles.volunteerAvatar}>
-              <MaterialIcons name="person" size={24} color={Colors.light.accent} />
+          <Animated.View
+            entering={FadeInDown.delay(400)}
+            style={[
+              styles.volunteerCard,
+              {
+                backgroundColor: colors.surfaceElevated,
+                borderColor: colors.border,
+                ...(colors.isDark ? Shadows.dark.card : Shadows.light.card),
+              },
+            ]}
+          >
+            <View style={[styles.volunteerAvatar, { backgroundColor: colors.isDark ? '#3D2A1A' : '#FFF7ED' }]}>
+              <MaterialIcons name="person" size={24} color={colors.accent} />
             </View>
             <View style={styles.volunteerInfo}>
-              <Text style={styles.volunteerLabel}>Your Volunteer</Text>
-              <Text style={styles.volunteerName}>{request.volunteerName}</Text>
+              <Text style={[styles.volunteerLabel, { color: colors.mutedText }]}>Your Volunteer</Text>
+              <Text style={[styles.volunteerName, { color: colors.text }]}>{request.volunteerName}</Text>
             </View>
-            <Pressable style={styles.callButton}>
+            <Pressable style={[styles.callButton, { backgroundColor: colors.accent }]}>
               <MaterialIcons name="phone" size={20} color="#FFFFFF" />
             </Pressable>
           </Animated.View>
         )}
 
         {/* Request Details */}
-        <Animated.View entering={FadeInDown.delay(500)} style={styles.detailsCard}>
-          <Text style={styles.detailsTitle}>Request Details</Text>
-          
+        <Animated.View
+          entering={FadeInDown.delay(500)}
+          style={[styles.detailsCard, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}
+        >
+          <Text style={[styles.detailsTitle, { color: colors.text }]}>Request Details</Text>
+
           <View style={styles.detailRow}>
-            <MaterialIcons name="person" size={18} color={Colors.light.mutedText} />
-            <Text style={styles.detailLabel}>Name</Text>
-            <Text style={styles.detailValue}>{request.recipientName}</Text>
+            <MaterialIcons name="person" size={18} color={colors.mutedText} />
+            <Text style={[styles.detailLabel, { color: colors.mutedText }]}>Name</Text>
+            <Text style={[styles.detailValue, { color: colors.text }]}>{request.recipientName}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
-            <MaterialIcons name="phone" size={18} color={Colors.light.mutedText} />
-            <Text style={styles.detailLabel}>Phone</Text>
-            <Text style={styles.detailValue}>{request.recipientPhone}</Text>
+            <MaterialIcons name="phone" size={18} color={colors.mutedText} />
+            <Text style={[styles.detailLabel, { color: colors.mutedText }]}>Phone</Text>
+            <Text style={[styles.detailValue, { color: colors.text }]}>{request.recipientPhone}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
-            <MaterialIcons name="location-on" size={18} color={Colors.light.mutedText} />
-            <Text style={styles.detailLabel}>Delivery to</Text>
-            <Text style={styles.detailValue} numberOfLines={2}>
+            <MaterialIcons name="location-on" size={18} color={colors.mutedText} />
+            <Text style={[styles.detailLabel, { color: colors.mutedText }]}>Delivery to</Text>
+            <Text style={[styles.detailValue, { color: colors.text }]} numberOfLines={2}>
               {request.deliveryAddress.address}
             </Text>
           </View>
-          
+
           <View style={styles.detailRow}>
-            <MaterialIcons name="group" size={18} color={Colors.light.mutedText} />
-            <Text style={styles.detailLabel}>Family size</Text>
-            <Text style={styles.detailValue}>{request.familySize} people</Text>
+            <MaterialIcons name="group" size={18} color={colors.mutedText} />
+            <Text style={[styles.detailLabel, { color: colors.mutedText }]}>Family size</Text>
+            <Text style={[styles.detailValue, { color: colors.text }]}>{request.familySize} people</Text>
           </View>
         </Animated.View>
 
@@ -359,9 +485,9 @@ export default function RequestTrackingScreen() {
       </ScrollView>
 
       {/* Bottom Actions */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.background }]}>
         {isDelivered || isCancelled ? (
-          <Pressable style={styles.homeButton} onPress={handleGoHome}>
+          <Pressable style={[styles.homeButton, { backgroundColor: colors.accent }]} onPress={handleGoHome}>
             <Text style={styles.homeButtonText}>Back to Home</Text>
           </Pressable>
         ) : (
@@ -370,6 +496,85 @@ export default function RequestTrackingScreen() {
           </Pressable>
         )}
       </View>
+
+      {/* Fullscreen Map Modal */}
+      <Modal visible={isMapExpanded} animationType="slide" statusBarTranslucent>
+        <SafeAreaView style={[styles.fullscreenMapContainer, { backgroundColor: colors.background }]}>
+          <MapView
+            style={styles.fullscreenMap}
+            provider={PROVIDER_DEFAULT}
+            initialRegion={{
+              latitude:
+                ((request.gurdwaraLocation?.latitude ?? 43.7315) + request.deliveryAddress.latitude) / 2,
+              longitude:
+                ((request.gurdwaraLocation?.longitude ?? -79.7624) + request.deliveryAddress.longitude) / 2,
+              latitudeDelta: 0.05,
+              longitudeDelta: 0.05,
+            }}
+          >
+            {/* Pickup Marker */}
+            <Marker
+              coordinate={{
+                latitude: request.gurdwaraLocation?.latitude ?? 43.7315,
+                longitude: request.gurdwaraLocation?.longitude ?? -79.7624,
+              }}
+              title={request.gurdwaraName ?? 'Pickup'}
+            >
+              <View style={[styles.markerPickup, { backgroundColor: colors.accent }]}>
+                <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
+              </View>
+            </Marker>
+
+            {/* Delivery Marker */}
+            <Marker
+              coordinate={{
+                latitude: request.deliveryAddress.latitude,
+                longitude: request.deliveryAddress.longitude,
+              }}
+              title="Your Location"
+            >
+              <View style={styles.markerDelivery}>
+                <MaterialIcons name="home" size={16} color="#FFFFFF" />
+              </View>
+            </Marker>
+
+            {/* Volunteer Marker */}
+            {request.volunteerLocation && request.status === 'on_the_way' && (
+              <Marker coordinate={request.volunteerLocation} title="Volunteer">
+                <View style={[styles.markerVolunteer, { backgroundColor: colors.accent }]}>
+                  <MaterialIcons name="directions-car" size={16} color="#FFFFFF" />
+                </View>
+              </Marker>
+            )}
+
+            {/* Route */}
+            <Polyline
+              coordinates={[
+                {
+                  latitude: request.gurdwaraLocation?.latitude ?? 43.7315,
+                  longitude: request.gurdwaraLocation?.longitude ?? -79.7624,
+                },
+                ...(request.volunteerLocation ? [request.volunteerLocation] : []),
+                {
+                  latitude: request.deliveryAddress.latitude,
+                  longitude: request.deliveryAddress.longitude,
+                },
+              ]}
+              strokeColor={colors.accent}
+              strokeWidth={3}
+              lineDashPattern={[10, 5]}
+            />
+          </MapView>
+
+          {/* Close Button */}
+          <Pressable
+            style={[styles.closeButton, { backgroundColor: colors.background }]}
+            onPress={() => setIsMapExpanded(false)}
+          >
+            <MaterialIcons name="close" size={24} color={colors.text} />
+          </Pressable>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -377,7 +582,6 @@ export default function RequestTrackingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -386,7 +590,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   backButton: {
     width: 40,
@@ -397,7 +600,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1F2937',
   },
   headerSpacer: {
     width: 40,
@@ -409,7 +611,6 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
   statusCard: {
-    backgroundColor: '#F9FAFB',
     borderRadius: Radii.lg,
     padding: Spacing.xl,
     alignItems: 'center',
@@ -418,7 +619,6 @@ const styles = StyleSheet.create({
   statusLabel: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: Spacing.sm,
   },
   etaRow: {
@@ -428,11 +628,9 @@ const styles = StyleSheet.create({
   },
   etaText: {
     fontSize: 14,
-    color: Colors.light.mutedText,
   },
   etaBold: {
     fontWeight: '600',
-    color: '#1F2937',
   },
   deliveredIcon: {
     marginBottom: Spacing.md,
@@ -440,12 +638,10 @@ const styles = StyleSheet.create({
   deliveredTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#059669',
     marginBottom: Spacing.sm,
   },
   deliveredSubtitle: {
     fontSize: 14,
-    color: Colors.light.mutedText,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -460,22 +656,17 @@ const styles = StyleSheet.create({
   },
   cancelledSubtitle: {
     fontSize: 14,
-    color: Colors.light.mutedText,
     textAlign: 'center',
   },
   progressCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: Radii.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
     borderWidth: 1,
-    borderColor: '#F3F4F6',
-    ...Shadows.card,
   },
   progressTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: Spacing.lg,
   },
   progressStep: {
@@ -495,22 +686,17 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.light.accent,
   },
   stepCircle: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F3F4F6',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
   },
   stepCircleCompleted: {
     backgroundColor: '#059669',
-  },
-  stepCircleActive: {
-    backgroundColor: Colors.light.accent,
   },
   stepContent: {
     flex: 1,
@@ -520,19 +706,13 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: Colors.light.mutedText,
   },
   stepLabelCompleted: {
     color: '#059669',
     fontWeight: '600',
   },
-  stepLabelActive: {
-    color: '#1F2937',
-    fontWeight: '600',
-  },
   stepActiveHint: {
     fontSize: 12,
-    color: Colors.light.accent,
     marginTop: 2,
   },
   stepLine: {
@@ -544,36 +724,41 @@ const styles = StyleSheet.create({
   },
   stepLineInner: {
     flex: 1,
-    backgroundColor: '#E5E7EB',
     borderRadius: 1,
   },
   stepLineCompleted: {
     backgroundColor: '#059669',
   },
   mapContainer: {
-    height: 160,
+    height: 200,
     borderRadius: Radii.lg,
     overflow: 'hidden',
     marginBottom: Spacing.lg,
-    backgroundColor: '#F3F4F6',
     position: 'relative',
   },
-  mapPlaceholder: {
+  map: {
     flex: 1,
+  },
+  expandButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  mapPlaceholderText: {
-    fontSize: 12,
-    color: Colors.light.mutedText,
-    marginTop: Spacing.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   mapOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(255,255,255,0.95)',
     padding: Spacing.md,
   },
   mapRoute: {
@@ -589,30 +774,37 @@ const styles = StyleSheet.create({
   mapRouteLine: {
     width: 40,
     height: 2,
-    backgroundColor: '#E5E7EB',
     marginHorizontal: Spacing.sm,
   },
   mapRouteText: {
     fontSize: 11,
-    color: Colors.light.mutedText,
     flex: 1,
+  },
+  markerPickup: {
+    padding: 8,
+    borderRadius: 20,
+  },
+  markerDelivery: {
+    backgroundColor: '#059669',
+    padding: 8,
+    borderRadius: 20,
+  },
+  markerVolunteer: {
+    padding: 8,
+    borderRadius: 20,
   },
   volunteerCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     borderRadius: Radii.lg,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
     borderWidth: 1,
-    borderColor: '#F3F4F6',
-    ...Shadows.card,
   },
   volunteerAvatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#FFF7ED',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -622,32 +814,26 @@ const styles = StyleSheet.create({
   },
   volunteerLabel: {
     fontSize: 12,
-    color: Colors.light.mutedText,
   },
   volunteerName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
   },
   callButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.light.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   detailsCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: Radii.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: '#F3F4F6',
   },
   detailsTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: Spacing.md,
   },
   detailRow: {
@@ -659,19 +845,15 @@ const styles = StyleSheet.create({
   detailLabel: {
     width: 80,
     fontSize: 13,
-    color: Colors.light.mutedText,
   },
   detailValue: {
     flex: 1,
     fontSize: 13,
-    color: '#1F2937',
     fontWeight: '500',
   },
   footer: {
     padding: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    backgroundColor: '#FFFFFF',
   },
   cancelButton: {
     alignItems: 'center',
@@ -690,11 +872,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.md,
     borderRadius: Radii.lg,
-    backgroundColor: Colors.light.accent,
   },
   homeButtonText: {
     fontSize: 15,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  fullscreenMapContainer: {
+    flex: 1,
+  },
+  fullscreenMap: {
+    flex: 1,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 60,
+    right: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

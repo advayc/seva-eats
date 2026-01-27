@@ -4,18 +4,21 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { categories } from '@/constants/mock-data';
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function ModalScreen() {
+  const colors = useThemeColors();
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <Link href="/" dismissTo asChild>
-          <Pressable style={styles.backButton}>
-            <MaterialIcons name="arrow-back" size={20} color={Colors.light.text} />
+          <Pressable style={[styles.backButton, { borderColor: colors.border }]}>
+            <MaterialIcons name="arrow-back" size={20} color={colors.text} />
           </Pressable>
         </Link>
-        <Text style={styles.title}>All categories</Text>
+        <Text style={[styles.title, { color: colors.text }]}>All categories</Text>
         <View style={styles.backButtonPlaceholder} />
       </View>
 
@@ -23,10 +26,10 @@ export default function ModalScreen() {
         <View style={styles.grid}>
           {categories.map((category) => (
             <View key={category.id} style={styles.item}>
-              <View style={styles.iconWrap}>
-                <MaterialIcons name={category.icon as never} size={26} color={Colors.light.text} />
+              <View style={[styles.iconWrap, { backgroundColor: colors.surface }]}>
+                <MaterialIcons name={category.icon as never} size={26} color={colors.text} />
               </View>
-              <Text style={styles.label}>{category.name}</Text>
+              <Text style={[styles.label, { color: colors.text }]}>{category.name}</Text>
             </View>
           ))}
         </View>
@@ -38,7 +41,6 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
@@ -52,7 +54,6 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: Radii.pill,
     borderWidth: 1,
-    borderColor: Colors.light.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
   },
   content: {
     paddingHorizontal: Spacing.xxl,
@@ -84,13 +84,11 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: Radii.md,
-    backgroundColor: Colors.light.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   label: {
     fontSize: 11,
-    color: Colors.light.text,
     textAlign: 'center',
   },
 });
