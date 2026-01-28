@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { CartProvider, LocationProvider, OrderProvider, RequestProvider, UserProvider } from '@/context';
@@ -21,23 +21,31 @@ export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const [hasOnboarded, setHasOnboarded] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    AsyncStorage.getItem(ONBOARDING_KEY)
-      .then((value) => {
-        setHasOnboarded(value === 'true');
-        setIsReady(true);
-      })
-      .catch(() => {
-        setHasOnboarded(false);
-        setIsReady(true);
-      });
+  const refreshOnboarding = useCallback(async () => {
+    try {
+      const value = await AsyncStorage.getItem(ONBOARDING_KEY);
+      setHasOnboarded(value === 'true');
+    } catch {
+      setHasOnboarded(false);
+    } finally {
+      setIsReady(true);
+    }
   }, []);
+
+  useEffect(() => {
+    refreshOnboarding();
+  }, [refreshOnboarding]);
+
+  useEffect(() => {
+    if (!isReady) return;
+    refreshOnboarding();
+  }, [segments.join('/'), isReady, refreshOnboarding]);
 
   useEffect(() => {
     if (!isReady || hasOnboarded === null) return;
     const inOnboarding = segments[0] === '(onboarding)';
     if (!hasOnboarded && !inOnboarding) {
-      router.replace('/(onboarding)/splash');
+      router.replace('/(onboarding)/welcome');
     }
   }, [isReady, hasOnboarded, segments, router]);
 
@@ -57,9 +65,7 @@ export default function RootLayout() {
                   <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                    <Stack.Screen name="dasher" options={{ headerShown: false }} />
-                   <Stack.Screen name="kitchen" options={{ headerShown: false }} />
                    <Stack.Screen name="dispatcher" options={{ headerShown: false }} />
-                   <Stack.Screen name="volunteer" options={{ headerShown: false }} />
                   <Stack.Screen name="modal" options={{ headerShown: true, presentation: 'modal', title: 'Categories' }} />
                   <Stack.Screen name="store/[id]" options={{ headerShown: false }} />
                   <Stack.Screen name="cart" options={{ headerShown: true, presentation: 'modal', title: 'Cart' }} />

@@ -55,17 +55,10 @@ export default function DispatcherDashboardScreen() {
           </Pressable>
           <Pressable
             style={[styles.secondaryButton, { borderColor: colors.border }]}
-            onPress={() => router.push('/kitchen/meal-ready' as any)}
-          >
-            <MaterialIcons name="inventory-2" size={18} color={colors.accent} />
-            <Text style={[styles.secondaryText, { color: colors.text }]}>View kitchen intake</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.secondaryButton, { borderColor: colors.border }]}
-            onPress={() => router.replace('/volunteer' as any)}
+            onPress={() => router.replace('/dasher/dashboard' as any)}
           >
             <MaterialIcons name="groups" size={18} color={colors.accent} />
-            <Text style={[styles.secondaryText, { color: colors.text }]}>Back to volunteer hub</Text>
+            <Text style={[styles.secondaryText, { color: colors.text }]}>Back to dashboard</Text>
           </Pressable>
         </GlassCard>
       </ScrollView>

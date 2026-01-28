@@ -21,12 +21,12 @@ export default function DasherLayout() {
   useEffect(() => {
     if (isLoading || hasOnboarded === null) return;
     if (!hasOnboarded) {
-      router.replace('/(onboarding)/splash');
+      router.replace('/(onboarding)/welcome');
       return;
     }
 
     if (user?.role !== 'dasher') {
-      router.replace('/volunteer' as any);
+      router.replace('/(onboarding)/choose-role' as any);
     }
   }, [hasOnboarded, isLoading, user?.role, router, segments]);
 

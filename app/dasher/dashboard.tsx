@@ -1,12 +1,12 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
-import { availableRequests } from '@/constants/mock-data';
+import { availableRequests, gurdwaraLeaderboard, sevadarBadges, sevadarStats } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
 import { useOrders, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
@@ -19,10 +19,11 @@ export default function DasherDashboardScreen() {
   const { setVolunteerNameVisibility, activeRequest } = useRequests();
   const [showNameToRecipients, setShowNameToRecipients] = useState(false);
 
-  if (user?.role !== 'dasher') {
-    router.replace('/volunteer' as any);
-    return null;
-  }
+  useEffect(() => {
+    if (user?.role !== 'dasher') {
+      router.replace('/(onboarding)/choose-role' as any);
+    }
+  }, [user?.role, router]);
 
   const handleViewDelivery = (requestId: string) => {
     router.push(`/dasher/delivery/${requestId}` as any);
@@ -41,8 +42,8 @@ export default function DasherDashboardScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.title, { color: colors.text }]}>Dasher Hub</Text>
-            <Text style={[styles.subtitle, { color: colors.mutedText }]}>Pick up and deliver meals nearby</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Sevadar Delivery</Text>
+            <Text style={[styles.subtitle, { color: colors.mutedText }]}>Pick up and deliver meals with seva</Text>
           </View>
           <Pressable
             style={[styles.switchButton, { borderColor: colors.border }]}
@@ -120,32 +121,79 @@ export default function DasherDashboardScreen() {
           <Text style={[styles.emptyText, { color: colors.mutedText }]}>No deliveries claimed yet. Tap a delivery to begin.</Text>
         )}
 
-        {/* Impact & Seva */}
+        {/* Sevadar Impact */}
         <GlassCard style={styles.impactCard}>
           <View style={styles.impactHeader}>
-            <View style={[styles.impactIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
+            <View style={[styles.impactIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}> 
               <MaterialIcons name="workspace-premium" size={22} color={colors.accent} />
             </View>
             <View>
               <Text style={[styles.impactTitle, { color: colors.text }]}>Seva Impact</Text>
-              <Text style={[styles.impactSubtitle, { color: colors.mutedText }]}>Quiet milestones, real service</Text>
+              <Text style={[styles.impactSubtitle, { color: colors.mutedText }]}>Families served and food saved</Text>
             </View>
           </View>
           <View style={styles.impactRow}>
             <View style={styles.impactItem}>
-              <Text style={[styles.impactValue, { color: colors.text }]}>3 weeks</Text>
-              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Seva Streak</Text>
+              <Text style={[styles.impactValue, { color: colors.text }]}>{sevadarStats.sevaHours} hrs</Text>
+              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Seva Hours</Text>
             </View>
             <View style={[styles.impactDivider, { backgroundColor: colors.border }]} />
             <View style={styles.impactItem}>
-              <Text style={[styles.impactValue, { color: colors.text }]}>50 meals</Text>
-              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Impact Milestone</Text>
+              <Text style={[styles.impactValue, { color: colors.text }]}>{sevadarStats.familiesServed}</Text>
+              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Families Served</Text>
             </View>
             <View style={[styles.impactDivider, { backgroundColor: colors.border }]} />
             <View style={styles.impactItem}>
-              <Text style={[styles.impactValue, { color: colors.text }]}>1,000 meals</Text>
-              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Team Goal</Text>
+              <Text style={[styles.impactValue, { color: colors.text }]}>{sevadarStats.foodSavedKg} kg</Text>
+              <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Food Saved</Text>
             </View>
+          </View>
+        </GlassCard>
+
+        <GlassCard style={styles.badgesCard}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Badges</Text>
+          <View style={styles.badgeList}>
+            {sevadarBadges.map((badge) => (
+              <View key={badge.id} style={styles.badgeRow}>
+                <View style={[styles.badgeIconBubble, { backgroundColor: badge.color || colors.accent }]}>
+                  <MaterialIcons name={badge.icon as never} size={20} color="#FFFFFF" />
+                </View>
+                <View style={styles.badgeContent}>
+                  <Text style={[styles.badgeTitle, { color: colors.text }]}>{badge.title}</Text>
+                </View>
+                <View style={[styles.badgeStatus, { backgroundColor: badge.achieved ? '#DCFCE7' : '#F3F4F6' }]}>
+                  <Text style={[styles.badgeStatusText, { color: badge.achieved ? '#166534' : '#6B7280' }]}>
+                    {badge.achieved ? 'Achieved' : 'Locked'}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </GlassCard>
+
+        <GlassCard style={styles.leaderboardCard}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Leaderboard</Text>
+          <View style={styles.leaderboardList}>
+            {gurdwaraLeaderboard.map((entry, index) => (
+              <View key={entry.id} style={styles.leaderRow}>
+                <View style={[styles.leaderRankBubble, { backgroundColor: index < 3 ? '#FEF3C7' : '#F3F4F6' }]}>
+                   {index < 3 ? (
+                      <MaterialIcons name="emoji-events" size={20} color={index === 0 ? '#D97706' : '#B45309'} />
+                   ) : (
+                      <Text style={[styles.leaderRankText, { color: colors.mutedText }]}>{index + 1}</Text>
+                   )}
+                </View>
+                
+                <View style={styles.leaderInfo}>
+                  <Text style={[styles.leaderName, { color: colors.text }]}>{entry.name}</Text>
+                  <Text style={[styles.leaderSubtext, { color: colors.mutedText }]}>{entry.drops} drops</Text>
+                </View>
+
+                <View style={[styles.leaderStatBadge, { backgroundColor: '#ECFDF5' }]}>
+                   <Text style={[styles.leaderStatValue, { color: '#059669' }]}>{entry.sevaHours} hrs</Text>
+                </View>
+              </View>
+            ))}
           </View>
         </GlassCard>
       </ScrollView>
@@ -339,5 +387,86 @@ const styles = StyleSheet.create({
   impactLabel: {
     fontSize: 11,
     textAlign: 'center',
+  },
+  badgesCard: {
+    marginTop: Spacing.xl,
+    padding: Spacing.lg,
+  },
+  badgeList: {
+    marginTop: Spacing.md,
+    gap: Spacing.md,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  badgeIconBubble: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeContent: {
+    flex: 1,
+  },
+  badgeTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  badgeStatus: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  badgeStatusText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  leaderboardCard: {
+    marginTop: Spacing.xl,
+    padding: Spacing.lg,
+    marginBottom: Spacing.xxl,
+  },
+  leaderboardList: {
+    marginTop: Spacing.md,
+    gap: Spacing.md,
+  },
+  leaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  leaderRankBubble: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  leaderRankText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  leaderInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  leaderName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  leaderSubtext: {
+    fontSize: 12,
+  },
+  leaderStatBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  leaderStatValue: {
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

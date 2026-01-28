@@ -45,22 +45,22 @@ export default function DasherLoginScreen() {
               <MaterialIcons name="delivery-dining" size={24} color={colors.accent} />
             </View>
             <View style={styles.cardText}>
-              <Text style={[styles.cardTitle, { color: colors.text }]}>Dasher Login</Text>
-              <Text style={[styles.cardSubtitle, { color: colors.mutedText }]}>Dasher delivery access</Text>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>Sevadar Delivery</Text>
+              <Text style={[styles.cardSubtitle, { color: colors.mutedText }]}>Volunteer delivery access</Text>
             </View>
           </View>
-          <Text style={[styles.cardBody, { color: colors.mutedText }]}>Use dasher mode to view available deliveries, pick up Langar from a nearby Gurdwara, and complete drop-offs.</Text>
+          <Text style={[styles.cardBody, { color: colors.mutedText }]}>Use Sevadar Delivery to view available routes, pick up langar from a nearby gurdwara, and complete drop-offs.</Text>
         </View>
 
         <View style={styles.actions}>
           <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={handleEnterDasher}>
-            <Text style={styles.primaryText}>Enter Dasher Hub</Text>
+            <Text style={styles.primaryText}>Enter Sevadar Delivery</Text>
           </Pressable>
           <Pressable
             style={[styles.secondaryButton, { borderColor: colors.border }]}
-            onPress={() => router.replace('/volunteer' as any)}
+            onPress={() => router.replace('/(onboarding)/choose-role' as any)}
           >
-            <Text style={[styles.secondaryText, { color: colors.text }]}>Back to volunteer hub</Text>
+            <Text style={[styles.secondaryText, { color: colors.text }]}>Change role</Text>
           </Pressable>
         </View>
       </View>

@@ -14,6 +14,10 @@ export default function IntroScreen() {
     router.replace('/(onboarding)/choose-role' as any);
   };
 
+  const goToLanding = () => {
+    router.replace('/(onboarding)/welcome' as any);
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -44,10 +48,10 @@ export default function IntroScreen() {
 
         <View style={styles.actions}>
           <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={goToRoleSelection}>
-            <Text style={styles.primaryText}>Continue</Text>
+            <Text style={styles.primaryText}>Choose your role</Text>
           </Pressable>
-          <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={goToRoleSelection}>
-            <Text style={[styles.secondaryText, { color: colors.text }]}>Skip</Text>
+          <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={goToLanding}>
+            <Text style={[styles.secondaryText, { color: colors.text }]}>Back to landing</Text>
           </Pressable>
         </View>
 

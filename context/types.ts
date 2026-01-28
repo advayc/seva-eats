@@ -18,6 +18,9 @@ export type CartItem = {
 export type OrderStatus =
   | 'placed'
   | 'confirmed'
+  | 'supply_confirmed'
+  | 'batch_assigned'
+  | 'prep_ops'
   | 'preparing'
   | 'ready_for_pickup'
   | 'picked_up'
@@ -61,6 +64,9 @@ export type Order = {
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   placed: 'Seva Requested',
   confirmed: 'Request Confirmed',
+  supply_confirmed: 'Supply Confirmed',
+  batch_assigned: 'Batch Assigned',
+  prep_ops: 'Prep Ops Underway',
   preparing: 'Meal Box Prepared',
   ready_for_pickup: 'Ready for Pickup',
   picked_up: 'Picked Up',
@@ -71,6 +77,9 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
 export const ORDER_STATUS_ORDER: OrderStatus[] = [
   'placed',
   'confirmed',
+  'supply_confirmed',
+  'batch_assigned',
+  'prep_ops',
   'preparing',
   'ready_for_pickup',
   'picked_up',

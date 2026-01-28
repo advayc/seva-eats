@@ -25,7 +25,7 @@ export default function DasherScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.emptyState}>
           <MaterialIcons name="lock" size={48} color={colors.border} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>Volunteer access only</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Sevadar access only</Text>
           <Text style={[styles.emptyText, { color: colors.mutedText }]}>
             Switch to the volunteer role to view delivery routes.
           </Text>
@@ -67,7 +67,7 @@ export default function DasherScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.title, { color: colors.text }]}>Volunteer deliveries</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Sevadar deliveries</Text>
         <Text style={[styles.subtitle, { color: colors.mutedText }]}>Pick up langar and deliver to partner shelters</Text>
 
         {/* Filter Tabs */}

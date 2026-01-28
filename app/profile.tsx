@@ -178,7 +178,6 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          {/* Role Selection */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Roles</Text>
             <Text style={[styles.inputHint, { color: colors.mutedText }]}>Switch modes from the role chooser.</Text>

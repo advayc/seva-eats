@@ -23,9 +23,20 @@ export default function WelcomeScreen() {
           </View>
         </View>
 
-        <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/(onboarding)/intro')}>
-          <Text style={styles.primaryText}>Continue</Text>
-        </Pressable>
+        <View style={styles.actions}>
+          <Pressable
+            style={[styles.primaryButton, { backgroundColor: colors.accent }]}
+            onPress={() => router.replace('/(onboarding)/choose-role')}
+          >
+            <Text style={styles.primaryText}>Get started</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.secondaryButton, { borderColor: colors.border }]}
+            onPress={() => router.push('/(onboarding)/intro')}
+          >
+            <Text style={[styles.secondaryText, { color: colors.text }]}>How it works</Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -77,9 +88,22 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
   },
+  actions: {
+    gap: Spacing.md,
+  },
   primaryText: {
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
+  },
+  secondaryButton: {
+    borderRadius: Radii.pill,
+    borderWidth: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  secondaryText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

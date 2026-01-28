@@ -61,8 +61,8 @@ export type CommunityStats = {
 export const sevaActions: SevaAction[] = [
   {
     id: 'dasher',
-    name: 'Dasher Deliveries',
-    description: 'Pick up Langar and deliver to a nearby household',
+    name: 'Sevadar Delivery',
+    description: 'Pick up langar and deliver to a nearby household',
     icon: 'delivery-dining',
   },
   {
@@ -235,6 +235,65 @@ export const communityStats: CommunityStats = {
   foodSavedKg: 5420,
 };
 
+export type SevadarBadge = {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  achieved: boolean;
+  color?: string;
+};
+
+export type GurdwaraLeaderboardEntry = {
+  id: string;
+  name: string;
+  sevaHours: number;
+  drops: number;
+  onTimeRate: number;
+};
+
+export const sevadarStats = {
+  sevaHours: 72,
+  onTimeRate: 96,
+  flawlessDrops: 10,
+  shiftsCompleted: 67,
+  familiesServed: 48,
+  foodSavedKg: 136,
+};
+
+export const sevadarBadges: SevadarBadge[] = [
+  {
+    id: 'on-time-hero',
+    title: 'On-Time Hero',
+    description: 'Consistently on time for 10 deliveries',
+    icon: 'schedule',
+    achieved: true,
+    color: '#3B82F6',
+  },
+  {
+    id: 'flawless-drops',
+    title: 'Flawless Drops',
+    description: '10 perfect drop-offs',
+    icon: 'verified',
+    achieved: true,
+    color: '#059669',
+  },
+  {
+    id: 'seva-streak',
+    title: 'Seva Streak',
+    description: '4 weeks of active service',
+    icon: 'local-fire-department',
+    achieved: false,
+    color: '#F97316',
+  },
+];
+
+export const gurdwaraLeaderboard: GurdwaraLeaderboardEntry[] = [
+  { id: 'g1', name: 'Gurdwara Sahib Brampton', sevaHours: 312, drops: 420, onTimeRate: 97 },
+  { id: 'g2', name: 'Ontario Khalsa Darbar', sevaHours: 288, drops: 390, onTimeRate: 95 },
+  { id: 'g3', name: 'Gurdwara Dasmesh Darbar', sevaHours: 241, drops: 318, onTimeRate: 94 },
+];
+
 // Legacy exports for backward compatibility (will be removed)
 export type Category = {
   id: string;
@@ -271,7 +330,7 @@ export type StoreSection = {
 
 // Map old categories to Seva-appropriate ones
 export const categories: Category[] = [
-  { id: 'dasher', name: 'Dashers', icon: 'delivery-dining' },
+  { id: 'dasher', name: 'Sevadars', icon: 'delivery-dining' },
   { id: 'gurdwaras', name: 'Gurdwaras', icon: 'location-on' },
   { id: 'routes', name: 'Routes', icon: 'route' },
   { id: 'schedule', name: 'Schedule', icon: 'event' },

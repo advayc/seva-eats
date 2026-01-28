@@ -73,11 +73,14 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const simulateOrderProgression = useCallback((orderId: string) => {
     const statusProgression: { status: OrderStatus; delay: number }[] = [
       { status: 'confirmed', delay: 3000 },
-      { status: 'preparing', delay: 8000 },
-      { status: 'ready_for_pickup', delay: 15000 },
-      { status: 'picked_up', delay: 20000 },
-      { status: 'on_the_way', delay: 25000 },
-      { status: 'delivered', delay: 40000 },
+      { status: 'supply_confirmed', delay: 6000 },
+      { status: 'batch_assigned', delay: 9000 },
+      { status: 'prep_ops', delay: 12000 },
+      { status: 'preparing', delay: 15000 },
+      { status: 'ready_for_pickup', delay: 20000 },
+      { status: 'picked_up', delay: 26000 },
+      { status: 'on_the_way', delay: 32000 },
+      { status: 'delivered', delay: 45000 },
     ];
 
     statusProgression.forEach(({ status, delay }) => {

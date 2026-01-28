@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -12,11 +12,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Radii, Spacing } from '@/constants/theme';
+import { LocationPicker } from '@/components/location-picker';
 import { getMealById } from '@/constants/meals';
+import { Radii, Spacing } from '@/constants/theme';
 import { useLocation, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
@@ -45,6 +46,8 @@ export default function DeliveryDetailsScreen() {
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [address, setAddress] = useState('');
+  const [selectedLat, setSelectedLat] = useState(userLocation?.latitude ?? 43.7315);
+  const [selectedLon, setSelectedLon] = useState(userLocation?.longitude ?? -79.7624);
   const [servingSize, setServingSize] = useState(user?.servingSize ?? 2);
   const [thankYouNote, setThankYouNote] = useState('');
   const [deliveryPreference, setDeliveryPreference] = useState<'leave_at_door' | 'hand_to_me'>('leave_at_door');
@@ -93,8 +96,8 @@ export default function DeliveryDetailsScreen() {
       recipientPhone: phone.trim(),
       deliveryAddress: {
         address: address.trim(),
-        latitude: userLocation?.latitude ?? 43.7315,
-        longitude: userLocation?.longitude ?? -79.7624,
+        latitude: selectedLat,
+        longitude: selectedLon,
       },
       servingSize,
       dietaryRestrictions: [],
@@ -180,27 +183,18 @@ export default function DeliveryDetailsScreen() {
           {/* Shelter / Partner Location */}
           <Animated.View entering={FadeInDown.delay(250)} style={styles.inputGroup}>
             <Text style={[styles.label, { color: colors.text }]}>Shelter or partner location</Text>
-            <View style={[styles.addressInputRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <MaterialIcons name="location-on" size={20} color={colors.accent} />
-              <TextInput
-                style={[styles.addressInput, { color: colors.text }]}
-                placeholder="Enter a nearby shelter or partner address"
-                value={address}
-                onChangeText={setAddress}
-                multiline
-                placeholderTextColor={colors.mutedText}
-              />
-            </View>
+            <LocationPicker
+              address={address}
+              onAddressChange={setAddress}
+              onLocationChange={(lat, lon) => {
+                setSelectedLat(lat);
+                setSelectedLon(lon);
+              }}
+              initialLatitude={selectedLat}
+              initialLongitude={selectedLon}
+              placeholder="Enter a nearby shelter or partner address"
+            />
             <Text style={[styles.helper, { color: colors.mutedText }]}>Beta: deliveries go to partner shelters and community drop-offs.</Text>
-            {userLocation?.address && address !== userLocation.address && (
-              <Pressable
-                style={styles.useCurrentButton}
-                onPress={() => setAddress(userLocation.address!)}
-              >
-                <MaterialIcons name="my-location" size={16} color={colors.accent} />
-                <Text style={[styles.useCurrentText, { color: colors.accent }]}>Use current location</Text>
-              </Pressable>
-            )}
           </Animated.View>
 
           {/* Serving Size */}
@@ -291,42 +285,12 @@ export default function DeliveryDetailsScreen() {
                 </Text>
               </Pressable>
             </View>
-          </Animated.View>
-          <Animated.View entering={FadeInDown.delay(350)} style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Delivery preference</Text>
-            <View style={styles.deliveryOptions}>
-              <Pressable
-                style={[
-                  styles.deliveryOption,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                  deliveryPreference === 'leave_at_door' && { backgroundColor: colors.accent, borderColor: colors.accent },
-                ]}
-                onPress={() => setDeliveryPreference('leave_at_door')}
-              >
-                <MaterialIcons name="door-front" size={18} color={deliveryPreference === 'leave_at_door' ? '#FFFFFF' : colors.text} />
-                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'leave_at_door' && { color: '#FFFFFF' }]}>
-                  Leave at door
-                </Text>
-              </Pressable>
-              <Pressable
-                style={[
-                  styles.deliveryOption,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                  deliveryPreference === 'hand_to_me' && { backgroundColor: colors.accent, borderColor: colors.accent },
-                ]}
-                onPress={() => setDeliveryPreference('hand_to_me')}
-              >
-                <MaterialIcons name="person" size={18} color={deliveryPreference === 'hand_to_me' ? '#FFFFFF' : colors.text} />
-                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'hand_to_me' && { color: '#FFFFFF' }]}>
-                  Hand to me
-                </Text>
-              </Pressable>
-            </View>
+            <Text style={[styles.helper, { color: colors.mutedText }]}>We can’t promise restaurant-heat, but every meal is made with love.</Text>
           </Animated.View>
 
           {/* Thank You Note */}
           <Animated.View entering={FadeInDown.delay(450)} style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Give a ty to your driver ❤️</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Give a message to your driver ❤️</Text>
             <Text style={[styles.helper, { color: colors.mutedText }]}>Optional message that stays private</Text>
             <TextInput
               style={[styles.input, styles.textArea, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}

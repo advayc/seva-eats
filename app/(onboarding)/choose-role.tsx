@@ -27,8 +27,8 @@ const ROLE_OPTIONS: RoleOption[] = [
   },
   {
     id: 'dasher',
-    title: 'Volunteer',
-    description: 'Deliver meals or support kitchen and dispatch teams.',
+    title: 'Sevadar Delivery',
+    description: 'Deliver meals or support kitchen and dispatch teams with seva.',
     icon: 'volunteer-activism',
   },
 ];
@@ -43,12 +43,12 @@ export default function ChooseRoleScreen() {
     await setRole(role);
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
 
-    if (role === 'recipient') {
+    // Navigate directly to the appropriate screen based on role
+    if (role === 'dasher') {
+      router.replace('/dasher/dashboard' as any);
+    } else {
       router.replace('/(tabs)');
-      return;
     }
-
-    router.replace('/volunteer' as any);
   };
 
   return (

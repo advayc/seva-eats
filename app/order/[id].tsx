@@ -1,11 +1,11 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 
 import { Radii, Shadows, Spacing } from '@/constants/theme';
-import { ORDER_STATUS_LABELS, ORDER_STATUS_ORDER, useOrders } from '@/context';
+import { ORDER_STATUS_LABELS, useOrders } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 function formatTime(date: Date): string {
@@ -18,6 +18,8 @@ export default function OrderTrackingScreen() {
   const { getOrder, orders } = useOrders();
   const [order, setOrder] = useState(getOrder(id ?? ''));
   const [isMapExpanded, setIsMapExpanded] = useState(false);
+  const [pickupConfirmed, setPickupConfirmed] = useState(false);
+  const [proofPhotoAdded, setProofPhotoAdded] = useState(false);
   const colors = useThemeColors();
   const shadows = colors.isDark ? Shadows.dark : Shadows.light;
 
@@ -42,7 +44,26 @@ export default function OrderTrackingScreen() {
     );
   }
 
-  const currentStatusIndex = ORDER_STATUS_ORDER.indexOf(order.status);
+  const progressSteps = [
+    { status: 'supply_confirmed', label: 'Supply' },
+    { status: 'batch_assigned', label: 'Batch' },
+    { status: 'prep_ops', label: 'Prep Ops' },
+    { status: 'ready_for_pickup', label: 'Ready' },
+    { status: 'picked_up', label: 'Picked' },
+    { status: 'delivered', label: 'Delivered' },
+  ] as const;
+
+  const progressIndexByStatus: Record<string, number> = {
+    placed: 0,
+    confirmed: 0,
+    preparing: 2,
+    on_the_way: 4,
+  };
+
+  const currentStatusIndex =
+    progressSteps.findIndex((step) => step.status === order.status) >= 0
+      ? progressSteps.findIndex((step) => step.status === order.status)
+      : progressIndexByStatus[order.status] ?? 0;
 
   // Calculate map region to show both store and delivery
   const storeLocation = order.storeLocation;
@@ -137,11 +158,11 @@ export default function OrderTrackingScreen() {
 
           {/* Progress Steps */}
           <View style={styles.progressSteps}>
-            {ORDER_STATUS_ORDER.slice(0, 5).map((status, index) => {
+            {progressSteps.map((step, index) => {
               const isCompleted = index <= currentStatusIndex;
               const isCurrent = index === currentStatusIndex;
               return (
-                <View key={status} style={styles.progressStep}>
+                <View key={step.status} style={styles.progressStep}>
                   <View
                     style={[
                       styles.progressDot,
@@ -153,7 +174,7 @@ export default function OrderTrackingScreen() {
                       <MaterialIcons name="check" size={12} color="#FFFFFF" />
                     )}
                   </View>
-                  {index < 4 && (
+                  {index < progressSteps.length - 1 && (
                     <View
                       style={[
                         styles.progressLine, 
@@ -168,12 +189,51 @@ export default function OrderTrackingScreen() {
           </View>
 
           <View style={styles.progressLabels}>
-            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Placed</Text>
-            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Prep</Text>
-            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Ready</Text>
-            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Picked</Text>
-            <Text style={[styles.progressLabel, { color: colors.mutedText }]}>Delivered</Text>
+            {progressSteps.map((step) => (
+              <Text key={step.status} style={[styles.progressLabel, { color: colors.mutedText }]}>
+                {step.label}
+              </Text>
+            ))}
           </View>
+        </View>
+
+        <View style={[styles.actionCard, { backgroundColor: colors.surfaceElevated }, shadows.card]}>
+          <View style={styles.actionHeader}>
+            <MaterialIcons name="qr-code" size={20} color={colors.text} />
+            <View style={styles.actionText}>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>Pickup confirmation</Text>
+              <Text style={[styles.actionSubtitle, { color: colors.mutedText }]}>Scan the gurdwara QR code to confirm pickup.</Text>
+            </View>
+          </View>
+          <Pressable
+            style={[styles.actionButton, { backgroundColor: pickupConfirmed ? colors.success : colors.accent }]}
+            onPress={() => setPickupConfirmed(true)}
+          >
+            <Text style={styles.actionButtonText}>{pickupConfirmed ? 'Pickup confirmed' : 'Confirm pickup (mock scan)'}</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.secondaryActionButton, { borderColor: colors.border }]}
+            onPress={() => Alert.alert('Reassign requested', 'Dispatch has been notified (mock). Another Sevadar will be rerouted.')}
+          >
+            <Text style={[styles.secondaryActionText, { color: colors.text }]}>Report no-show / request reroute</Text>
+          </Pressable>
+        </View>
+
+        <View style={[styles.actionCard, { backgroundColor: colors.surfaceElevated }, shadows.card]}>
+          <View style={styles.actionHeader}>
+            <MaterialIcons name="photo-camera" size={20} color={colors.text} />
+            <View style={styles.actionText}>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>Proof of delivery</Text>
+              <Text style={[styles.actionSubtitle, { color: colors.mutedText }]}>Take a photo when leaving the meal at the door.</Text>
+            </View>
+          </View>
+          <Pressable
+            style={[styles.actionButton, { backgroundColor: proofPhotoAdded ? colors.success : colors.accent }]}
+            onPress={() => setProofPhotoAdded(true)}
+          >
+            <Text style={styles.actionButtonText}>{proofPhotoAdded ? 'Photo saved (mock)' : 'Add proof photo (mock)'}</Text>
+          </Pressable>
+          <Text style={[styles.actionHint, { color: colors.mutedText }]}>We can’t promise restaurant-heat, but every meal is made with love.</Text>
         </View>
 
         {/* Order Details */}
@@ -278,14 +338,14 @@ export default function OrderTrackingScreen() {
 
 // Dark mode map style
 const darkMapStyle = [
-  { elementType: 'geometry', stylers: [{ color: '#1d2c4d' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#8ec3b9' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#1a3646' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#304a7d' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#255763' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
-  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#283d6a' }] },
-  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
+  { elementType: 'geometry', stylers: [{ color: '#0F141A' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#9CA3AF' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#111827' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1F2937' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#111827' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0B0F14' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#1A2330' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#1F2937' }] },
 ];
 
 const styles = StyleSheet.create({
@@ -395,6 +455,51 @@ const styles = StyleSheet.create({
     fontSize: 10,
     width: 50,
     textAlign: 'center',
+  },
+  actionCard: {
+    borderRadius: Radii.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  actionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  actionText: {
+    flex: 1,
+  },
+  actionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  actionSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  actionButton: {
+    borderRadius: Radii.pill,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  actionButtonText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  secondaryActionButton: {
+    borderRadius: Radii.pill,
+    borderWidth: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  secondaryActionText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  actionHint: {
+    fontSize: 12,
   },
   detailsCard: {
     borderRadius: Radii.lg,

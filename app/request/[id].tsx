@@ -2,34 +2,38 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Alert,
+    Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-  FadeIn,
-  FadeInDown,
-  Easing,
+    Easing,
+    FadeIn,
+    FadeInDown,
+    useAnimatedStyle,
+    useSharedValue,
+    withRepeat,
+    withTiming,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Radii, Shadows, Spacing } from '@/constants/theme';
-import { useRequests, REQUEST_STATUS_LABELS, type MealRequestStatus } from '@/context';
+import { REQUEST_STATUS_LABELS, useRequests, type MealRequestStatus } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 // Progress steps configuration
 const PROGRESS_STEPS: { status: MealRequestStatus; icon: string; label: string }[] = [
   { status: 'pending', icon: 'search', label: 'Finding Driver' },
   { status: 'matched', icon: 'verified', label: 'Driver Matched' },
+  { status: 'supply_confirmed', icon: 'inventory-2', label: 'Supply Confirmed' },
+  { status: 'batch_assigned', icon: 'assignment-turned-in', label: 'Batch Assigned' },
+  { status: 'prep_ops', icon: 'local-dining', label: 'Prep Ops' },
+  { status: 'ready_for_pickup', icon: 'check-circle', label: 'Ready for Pickup' },
   { status: 'picked_up', icon: 'takeout-dining', label: 'Meal Picked Up' },
   { status: 'on_the_way', icon: 'directions-car', label: 'On the Way' },
   { status: 'delivered', icon: 'check-circle', label: 'Delivered' },
@@ -140,7 +144,7 @@ function ProgressStep({
   );
 }
 
-// Real Map Component with route
+  // Real Map Component with route
 function RouteMapView({
   pickupLocation,
   deliveryLocation,
@@ -160,7 +164,7 @@ function RouteMapView({
   const pickup = pickupLocation ?? {
     latitude: 43.7315,
     longitude: -79.7624,
-    address: 'Gurdwara Sahib Brampton',
+    address: 'Brampton',
   };
 
   // Calculate map region to show both points

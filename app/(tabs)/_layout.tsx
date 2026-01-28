@@ -20,7 +20,7 @@ export default function TabLayout() {
   const { user, isLoading } = useUser();
 
   if (!isLoading && user?.role === 'dasher') {
-    return <Redirect href={'/volunteer' as any} />;
+    return <Redirect href={'/dasher/dashboard' as any} />;
   }
 
   return (
@@ -45,50 +45,9 @@ export default function TabLayout() {
           marginBottom: -2,
         },
         tabBarBackground: () => <LiquidGlassTabBar />,
-        tabBarStyle: Platform.select({
-          ios: {
-            position: 'absolute',
-            left: horizontalMargin,
-            right: horizontalMargin,
-            bottom: 35,
-            height: 68,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderTopWidth: 0,
-            borderRadius: 34,
-            backgroundColor: 'transparent',
-            borderWidth: showGlass ? 0.5 : 0,
-            borderColor: isDark
-              ? 'rgba(255, 255, 255, 0.12)'
-              : 'rgba(0, 0, 0, 0.06)',
-            shadowColor: isDark ? '#000000' : colors.accent,
-            shadowOffset: { width: 0, height: 12 },
-            shadowOpacity: showGlass ? 0.25 : 0.15,
-            shadowRadius: 32,
-            overflow: 'hidden',
-          },
-          default: {
-            position: 'absolute',
-            left: horizontalMargin,
-            right: horizontalMargin,
-            bottom: 35,
-            height: 68,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderTopWidth: 0,
-            borderRadius: 34,
-            backgroundColor: isDark ? 'rgba(31, 41, 55, 0.96)' : 'rgba(255, 255, 255, 0.96)',
-            borderWidth: 1,
-            borderColor: isDark 
-              ? 'rgba(255, 255, 255, 0.12)' 
-              : 'rgba(0, 0, 0, 0.08)',
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: 12 },
-            shadowOpacity: 0.2,
-            shadowRadius: 32,
-            elevation: 16,
-          },
-        }),
+        tabBarStyle: {
+          display: 'none',
+        },
       }}>
       <Tabs.Screen
         name="index"
@@ -103,7 +62,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* Volunteer access is routed separately via Dasher Hub */}
+      {/* Volunteer access is routed separately via Sevadar Delivery */}
     </Tabs>
   );
 }
