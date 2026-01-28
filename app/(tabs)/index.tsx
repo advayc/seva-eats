@@ -10,7 +10,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
-import { LiquidGlassButton } from '@/components/liquid-glass-button';
 import { communityStats } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
 import { useLocation, useRequests } from '@/context';
@@ -169,13 +168,21 @@ export default function HomeScreen() {
         {/* Main Action Cards */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Start a request</Text>
 
-        <LiquidGlassButton
-          title="Request a shelter drop-off"
-          description="Request a free langar meal for a partner shelter or community drop-off"
-          icon="restaurant"
-          onPress={() => router.push('/request/new')}
-          variant="default"
-        />
+        <GlassCard
+          style={[styles.actionButton, { borderColor: colors.border }]}
+        >
+          <Pressable
+            style={styles.actionButtonPress}
+            onPress={() => router.push('/request/new')}
+          >
+            <MaterialIcons name="restaurant" size={24} color={colors.accent} />
+            <View style={styles.actionButtonText}>
+              <Text style={[styles.actionButtonTitle, { color: colors.text }]}>Request a shelter drop-off</Text>
+              <Text style={[styles.actionButtonDesc, { color: colors.mutedText }]}>Request a free langar meal for a partner shelter or community drop-off</Text>
+            </View>
+            <MaterialIcons name="arrow-forward" size={20} color={colors.mutedText} />
+          </Pressable>
+        </GlassCard>
 
         <GlassCard style={styles.howItWorksCard}>
           <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How it works</Text>
@@ -431,5 +438,28 @@ const styles = StyleSheet.create({
   stepDesc: {
     fontSize: 12,
     marginTop: 2,
+  },
+  actionButton: {
+    marginVertical: Spacing.md,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  actionButtonPress: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    gap: Spacing.md,
+  },
+  actionButtonText: {
+    flex: 1,
+  },
+  actionButtonTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  actionButtonDesc: {
+    fontSize: 12,
   },
 });

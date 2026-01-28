@@ -15,18 +15,22 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LocationPicker } from '@/components/location-picker';
 import { Radii, Spacing } from '@/constants/theme';
-import { useUser } from '@/context';
+import { useLocation, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, updateProfile, clearProfile, hasCompletedProfile } = useUser();
+  const { userLocation } = useLocation();
   const colors = useThemeColors();
   
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [address, setAddress] = useState(user?.homeAddress?.address ?? '');
+  const [addressLat, setAddressLat] = useState(user?.homeAddress?.latitude ?? 43.7315);
+  const [addressLon, setAddressLon] = useState(user?.homeAddress?.longitude ?? -79.7624);
   const [servingSize, setServingSize] = useState(user?.servingSize?.toString() ?? '1');
   const [notificationsEnabled, setNotificationsEnabled] = useState(user?.notificationsEnabled ?? true);
   const [isSaving, setIsSaving] = useState(false);
@@ -49,8 +53,8 @@ export default function ProfileScreen() {
         phone: phone.trim(),
         homeAddress: address.trim() ? {
           address: address.trim(),
-          latitude: 43.7315, // Default coordinates (would use geocoding in production)
-          longitude: -79.7624,
+          latitude: addressLat,
+          longitude: addressLon,
         } : user?.homeAddress ?? null,
         servingSize: servingSizeValue,
         notificationsEnabled,
@@ -146,12 +150,19 @@ export default function ProfileScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={[styles.inputLabel, { color: colors.mutedText }]}>Address</Text>
-              <TextInput
-                style={[styles.textInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
-                value={address}
-                onChangeText={setAddress}
+              <LocationPicker
+                address={address}
+                onAddressChange={setAddress}
+                onLocationChange={(lat, lon) => {
+                  setAddressLat(lat);
+                  setAddressLon(lon);
+                }}
+                initialLatitude={addressLat}
+                initialLongitude={addressLon}
+                currentAddress={userLocation?.address}
+                currentLat={userLocation?.latitude}
+                currentLon={userLocation?.longitude}
                 placeholder="Enter a shelter or partner location"
-                placeholderTextColor={colors.mutedText}
               />
               <Text style={[styles.inputHint, { color: colors.mutedText }]}>
                 Used to find nearby partner shelters during the beta
@@ -207,20 +218,22 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          {/* Stats (if user has activity) */}
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Impact</Text>
-            <View style={styles.statsGrid}>
-              <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.statNumber, { color: colors.accent }]}>0</Text>
-                <Text style={[styles.statLabel, { color: colors.mutedText }]}>Deliveries Made</Text>
-              </View>
-              <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.statNumber, { color: colors.accent }]}>0</Text>
-                <Text style={[styles.statLabel, { color: colors.mutedText }]}>Meals Received</Text>
+          {/* Stats (if user has activity - volunteers only) */}
+          {user?.role === 'dasher' && (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Impact</Text>
+              <View style={styles.statsGrid}>
+                <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+                  <Text style={[styles.statNumber, { color: colors.accent }]}>0</Text>
+                  <Text style={[styles.statLabel, { color: colors.mutedText }]}>Deliveries Made</Text>
+                </View>
+                <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+                  <Text style={[styles.statNumber, { color: colors.accent }]}>0</Text>
+                  <Text style={[styles.statLabel, { color: colors.mutedText }]}>Meals Received</Text>
+                </View>
               </View>
             </View>
-          </View>
+          )}
 
           {/* Actions */}
           <View style={styles.section}>

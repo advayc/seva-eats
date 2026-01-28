@@ -45,9 +45,9 @@ export default function DeliveryDetailsScreen() {
 
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
-  const [address, setAddress] = useState('');
-  const [selectedLat, setSelectedLat] = useState(userLocation?.latitude ?? 43.7315);
-  const [selectedLon, setSelectedLon] = useState(userLocation?.longitude ?? -79.7624);
+  const [address, setAddress] = useState(user?.homeAddress?.address ?? '');
+  const [selectedLat, setSelectedLat] = useState(user?.homeAddress?.latitude ?? userLocation?.latitude ?? 43.7315);
+  const [selectedLon, setSelectedLon] = useState(user?.homeAddress?.longitude ?? userLocation?.longitude ?? -79.7624);
   const [servingSize, setServingSize] = useState(user?.servingSize ?? 2);
   const [thankYouNote, setThankYouNote] = useState('');
   const [deliveryPreference, setDeliveryPreference] = useState<'leave_at_door' | 'hand_to_me'>('leave_at_door');
@@ -192,6 +192,9 @@ export default function DeliveryDetailsScreen() {
               }}
               initialLatitude={selectedLat}
               initialLongitude={selectedLon}
+              currentAddress={userLocation?.address}
+              currentLat={userLocation?.latitude}
+              currentLon={userLocation?.longitude}
               placeholder="Enter a nearby shelter or partner address"
             />
             <Text style={[styles.helper, { color: colors.mutedText }]}>Beta: deliveries go to partner shelters and community drop-offs.</Text>

@@ -2,19 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
-let startMealLiveActivity: any = () => {};
-let updateMealLiveActivity: any = () => {};
-
-if (Platform.OS === 'ios') {
-  try {
-    const liveActivity = require('@/lib/live-activity');
-    startMealLiveActivity = liveActivity.startMealLiveActivity;
-    updateMealLiveActivity = liveActivity.updateMealLiveActivity;
-  } catch (e) {
-    // Live activity not available
-  }
-}
-
 const REQUESTS_STORAGE_KEY = 'meal-requests';
 
 export type MealRequestStatus = 
@@ -157,11 +144,6 @@ export function RequestProvider({ children }: { children: ReactNode }) {
       statusHistory: [{ status: 'pending', timestamp: now }],
     };
 
-    const liveActivityId = startMealLiveActivity(newRequest);
-    if (liveActivityId) {
-      newRequest.liveActivityId = liveActivityId;
-    }
-
     setRequests((prev) => {
       const updated = [newRequest, ...prev];
       saveRequests(updated);
@@ -202,7 +184,6 @@ export function RequestProvider({ children }: { children: ReactNode }) {
             estimatedDelivery,
             statusHistory: [...req.statusHistory, { status: 'matched' as MealRequestStatus, timestamp: now }],
           };
-          updateMealLiveActivity(nextRequest, nextRequest.liveActivityId);
           return nextRequest;
         });
         saveRequests(updated);
@@ -261,7 +242,6 @@ export function RequestProvider({ children }: { children: ReactNode }) {
               volunteerLocation,
               statusHistory: [...req.statusHistory, { status, timestamp: now }],
             };
-            updateMealLiveActivity(nextRequest, nextRequest.liveActivityId);
             return nextRequest;
           });
           saveRequests(updated);
@@ -284,7 +264,6 @@ export function RequestProvider({ children }: { children: ReactNode }) {
           status: newStatus,
           statusHistory: [...req.statusHistory, { status: newStatus, timestamp: now }],
         };
-        updateMealLiveActivity(nextRequest, nextRequest.liveActivityId);
         return nextRequest;
       });
       saveRequests(updated);
@@ -309,7 +288,6 @@ export function RequestProvider({ children }: { children: ReactNode }) {
             status,
             statusHistory: [...req.statusHistory, { status, timestamp: now }],
           };
-          updateMealLiveActivity(nextRequest, nextRequest.liveActivityId);
           return nextRequest;
         });
         saveRequests(updated);

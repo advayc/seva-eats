@@ -1,9 +1,7 @@
 import { Radii, Spacing } from '@/constants/theme';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
 
 interface LocationPickerProps {
   address: string;
@@ -13,6 +11,8 @@ interface LocationPickerProps {
   initialLongitude?: number;
   placeholder?: string;
   currentAddress?: string;
+  currentLat?: number;
+  currentLon?: number;
 }
 
 export function LocationPicker({
@@ -23,27 +23,22 @@ export function LocationPicker({
   initialLongitude = -79.7624,
   placeholder = 'Enter a shelter or partner address',
   currentAddress,
+  currentLat,
+  currentLon,
 }: LocationPickerProps) {
   const colors = useThemeColors();
-  const [showMap, setShowMap] = useState(false);
-  const [markerLocation, setMarkerLocation] = useState({
-    latitude: initialLatitude,
-    longitude: initialLongitude,
-  });
 
-  const handleMapPress = (e: any) => {
-    const { latitude, longitude } = e.nativeEvent.coordinate;
-    setMarkerLocation({ latitude, longitude });
-    onLocationChange?.(latitude, longitude);
+  const handleQuickAddLocation = () => {
+    if (currentAddress) {
+      onAddressChange(currentAddress);
+      onLocationChange?.(currentLat ?? 43.7315, currentLon ?? -79.7624);
+    }
   };
 
   return (
     <View>
       {/* Address Input */}
-      <Pressable
-        style={[styles.addressInputRow, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        onPress={() => setShowMap(!showMap)}
-      >
+      <View style={[styles.addressInputRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <MaterialIcons name="location-on" size={20} color={colors.accent} />
         <TextInput
           style={[styles.addressInput, { color: colors.text }]}
@@ -52,58 +47,18 @@ export function LocationPicker({
           onChangeText={onAddressChange}
           multiline
           placeholderTextColor={colors.mutedText}
-          editable={!showMap}
         />
-        <MaterialIcons name={showMap ? 'expand-less' : 'expand-more'} size={20} color={colors.mutedText} />
-      </Pressable>
+      </View>
 
-      {/* Use Current Location Button */}
-      {currentAddress && address !== currentAddress && (
+      {/* Quick Add Current Location Button */}
+      {currentAddress && (
         <Pressable
-          style={styles.useCurrentButton}
-          onPress={() => onAddressChange(currentAddress)}
+          style={[styles.quickAddButton, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.1)' : '#FFF7ED', borderColor: colors.accent }]}
+          onPress={handleQuickAddLocation}
         >
-          <MaterialIcons name="my-location" size={16} color={colors.accent} />
-          <Text style={[styles.useCurrentText, { color: colors.accent }]}>Use current location</Text>
+          <MaterialIcons name="my-location" size={18} color={colors.accent} />
+          <Text style={[styles.quickAddText, { color: colors.accent }]}>Quick add current location</Text>
         </Pressable>
-      )}
-
-      {/* Map */}
-      {showMap && (
-        <View style={[styles.mapContainer, { borderColor: colors.border }]}>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: markerLocation.latitude,
-              longitude: markerLocation.longitude,
-              latitudeDelta: 0.015,
-              longitudeDelta: 0.0121,
-            }}
-            onPress={handleMapPress}
-            customMapStyle={colors.isDark ? darkMapStyle : lightMapStyle}
-          >
-            <Marker
-              coordinate={markerLocation}
-              title="Delivery Location"
-              description={address || 'Selected location'}
-              pinColor={colors.accent}
-            />
-          </MapView>
-
-          {/* Map Instructions */}
-          <View style={[styles.mapInstructions, { backgroundColor: colors.surface }]}>
-            <MaterialIcons name="info" size={16} color={colors.accent} />
-            <Text style={[styles.instructionText, { color: colors.mutedText }]}>Tap on the map to pin your location</Text>
-          </View>
-
-          {/* Confirm Button */}
-          <Pressable
-            style={[styles.confirmButton, { backgroundColor: colors.accent }]}
-            onPress={() => setShowMap(false)}
-          >
-            <Text style={styles.confirmButtonText}>Confirm Location</Text>
-          </Pressable>
-        </View>
       )}
     </View>
   );
@@ -323,37 +278,18 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     maxHeight: 100,
   },
-  mapContainer: {
+  quickAddButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     marginTop: Spacing.md,
     borderWidth: 1,
     borderRadius: Radii.md,
-    overflow: 'hidden',
-    height: 300,
   },
-  map: {
-    flex: 1,
-  },
-  mapInstructions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  instructionText: {
-    fontSize: 12,
-    flex: 1,
-  },
-  confirmButton: {
-    marginHorizontal: Spacing.md,
-    marginVertical: Spacing.md,
-    paddingVertical: Spacing.md,
-    borderRadius: Radii.md,
-    alignItems: 'center',
-  },
-  confirmButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+  quickAddText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

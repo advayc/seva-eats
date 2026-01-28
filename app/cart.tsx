@@ -30,7 +30,7 @@ export default function CartScreen() {
     const order = placeOrder(
       items,
       storeId,
-      storeName ?? store?.name ?? 'Seva Kitchen',
+      storeName ?? store?.name ?? 'Distribution Hub',
       subtotal,
       deliveryFee,
       userLocation ?? {
@@ -41,7 +41,7 @@ export default function CartScreen() {
       {
         latitude: store?.location.latitude ?? 37.7749,
         longitude: store?.location.longitude ?? -122.4194,
-        address: store?.location.address ?? 'Gurdwara Seva Hub',
+        address: store?.location.address ?? 'Partner Distribution Hub',
       }
     );
     clearCart();
@@ -61,9 +61,9 @@ export default function CartScreen() {
         <View style={styles.emptyState}>
           <MaterialIcons name="shopping-cart" size={64} color={colors.border} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>No meal boxes yet</Text>
-          <Text style={[styles.emptyText, { color: colors.mutedText }]}>Choose a seva kitchen to begin</Text>
+          <Text style={[styles.emptyText, { color: colors.mutedText }]}>Choose a distribution hub to begin</Text>
           <Pressable style={[styles.browseButton, { backgroundColor: colors.accent }]} onPress={() => router.back()}>
-            <Text style={styles.browseButtonText}>Explore Seva Kitchens</Text>
+            <Text style={styles.browseButtonText}>Explore Hubs</Text>
           </Pressable>
         </View>
       </SafeAreaView>
