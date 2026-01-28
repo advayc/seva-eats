@@ -6,7 +6,7 @@ export type SevaAction = {
   icon: string;
 };
 
-// Gurdwara/pickup locations
+// Hub/pickup locations
 export type PickupLocation = {
   id: string;
   name: string;
@@ -14,7 +14,7 @@ export type PickupLocation = {
   address: string;
   distance: string;
   boxesAvailable: number;
-  nextLangar: string;
+  nextPickupWindow: string;
   location: {
     latitude: number;
     longitude: number;
@@ -66,8 +66,8 @@ export const sevaActions: SevaAction[] = [
     icon: 'delivery-dining',
   },
   {
-    id: 'find-gurdwara',
-    name: 'Find a Gurdwara',
+    id: 'find-hub',
+    name: 'Find a Hub',
     description: 'Locate nearby pickup points with available meals',
     icon: 'location-on',
   },
@@ -113,30 +113,30 @@ export const quickActions: SevaAction[] = [
   },
 ];
 
-// Sample Gurdwara pickup locations
+// Sample Hub pickup locations
 export const pickupLocations: PickupLocation[] = [
   {
-    id: 'gurdwara-sahib-brampton',
-    name: 'Gurdwara Sahib Brampton',
+    id: 'hub-brampton',
+    name: 'Brampton Distribution Hub',
     image: 'https://images.unsplash.com/photo-1609947017136-9daf32a3d37e?q=80&w=1200&auto=format&fit=crop',
-    address: '123 Sikh Way, Brampton, ON',
+    address: '123 Community Way, Brampton, ON',
     distance: '2.3 km',
     boxesAvailable: 45,
-    nextLangar: 'Friday, 6:00 PM',
+    nextPickupWindow: 'Friday, 6:00 PM',
     location: {
       latitude: 43.7315,
       longitude: -79.7624,
-      address: '123 Sikh Way, Brampton, ON',
+      address: '123 Community Way, Brampton, ON',
     },
   },
   {
-    id: 'ontario-khalsa-darbar',
-    name: 'Ontario Khalsa Darbar',
+    id: 'hub-mississauga',
+    name: 'Mississauga Central Hub',
     image: 'https://images.unsplash.com/photo-1545459720-aac8509eb02c?q=80&w=1200&auto=format&fit=crop',
     address: '7080 Dixie Road, Mississauga, ON',
     distance: '4.1 km',
     boxesAvailable: 62,
-    nextLangar: 'Friday, 7:00 PM',
+    nextPickupWindow: 'Friday, 7:00 PM',
     location: {
       latitude: 43.6629,
       longitude: -79.6832,
@@ -144,13 +144,13 @@ export const pickupLocations: PickupLocation[] = [
     },
   },
   {
-    id: 'gurdwara-dasmesh-darbar',
-    name: 'Gurdwara Dasmesh Darbar',
+    id: 'hub-malton',
+    name: 'Malton Distribution Center',
     image: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?q=80&w=1200&auto=format&fit=crop',
     address: '2155 Derry Rd E, Mississauga, ON',
     distance: '5.8 km',
     boxesAvailable: 38,
-    nextLangar: 'Friday, 6:30 PM',
+    nextPickupWindow: 'Friday, 6:30 PM',
     location: {
       latitude: 43.7066,
       longitude: -79.6441,
@@ -244,7 +244,7 @@ export type SevadarBadge = {
   color?: string;
 };
 
-export type GurdwaraLeaderboardEntry = {
+export type DistributionLeaderboardEntry = {
   id: string;
   name: string;
   sevaHours: number;
@@ -288,10 +288,10 @@ export const sevadarBadges: SevadarBadge[] = [
   },
 ];
 
-export const gurdwaraLeaderboard: GurdwaraLeaderboardEntry[] = [
-  { id: 'g1', name: 'Gurdwara Sahib Brampton', sevaHours: 312, drops: 420, onTimeRate: 97 },
-  { id: 'g2', name: 'Ontario Khalsa Darbar', sevaHours: 288, drops: 390, onTimeRate: 95 },
-  { id: 'g3', name: 'Gurdwara Dasmesh Darbar', sevaHours: 241, drops: 318, onTimeRate: 94 },
+export const distributionLeaderboard: DistributionLeaderboardEntry[] = [
+  { id: 'g1', name: 'Brampton Hub', sevaHours: 312, drops: 420, onTimeRate: 97 },
+  { id: 'g2', name: 'Mississauga Hub', sevaHours: 288, drops: 390, onTimeRate: 95 },
+  { id: 'g3', name: 'Malton Hub', sevaHours: 241, drops: 318, onTimeRate: 94 },
 ];
 
 // Legacy exports for backward compatibility (will be removed)
@@ -331,7 +331,7 @@ export type StoreSection = {
 // Map old categories to Seva-appropriate ones
 export const categories: Category[] = [
   { id: 'dasher', name: 'Sevadars', icon: 'delivery-dining' },
-  { id: 'gurdwaras', name: 'Gurdwaras', icon: 'location-on' },
+  { id: 'hubs', name: 'Distribution Hubs', icon: 'location-on' },
   { id: 'routes', name: 'Routes', icon: 'route' },
   { id: 'schedule', name: 'Schedule', icon: 'event' },
   { id: 'shelters', name: 'Shelters', icon: 'night-shelter' },
@@ -346,7 +346,7 @@ export const restaurants: Restaurant[] = pickupLocations.map((loc) => ({
   name: loc.name,
   image: loc.image,
   deliveryNote: `${loc.boxesAvailable} boxes available`,
-  eta: loc.nextLangar,
+  eta: loc.nextPickupWindow,
   rating: loc.distance,
   location: loc.location,
 }));

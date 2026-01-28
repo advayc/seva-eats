@@ -12,40 +12,40 @@ const tintColorDark = '#FFFFFF';
 export const sevaColors = {
   primary: '#F97316',
   primaryDark: '#EA580C',
-  background: '#FFF7ED',
+  background: '#FAFAF9', // Stone 50 - Cleaner than #FFF7ED
   text: '#111827',
   textSecondary: '#6B7280',
 };
 
 export const Colors = {
   light: {
-    text: '#1F2937',
-    background: '#FFF7ED',
+    text: '#1F2937', // Gray 900
+    background: '#FAFAF9', // Stone 50
     tint: tintColorLight,
-    icon: '#6B7280',
-    tabIconDefault: '#6B7280',
+    icon: '#6B7280', // Gray 500
+    tabIconDefault: '#9CA3AF',
     tabIconSelected: tintColorLight,
     surface: '#FFFFFF',
-    surfaceElevated: '#FFF4E6',
-    border: '#E7D9C8',
+    surfaceElevated: '#FFFFFF', // Clean white for cards
+    border: '#E5E5E5', // Neutral border
     mutedText: '#6B7280',
-    success: '#16A34A',
+    success: '#10B981', // Emerald 500
     warning: '#F59E0B',
-    accent: '#F97316',
+    accent: '#F97316', // Orange 500
     chip: '#F97316',
   },
   dark: {
-    text: '#F9FAFB',
-    background: '#0B0F14',
+    text: '#FAFAFA', // Neutral 50
+    background: '#0A0A0A', // Neutral 950
     tint: '#F97316',
-    icon: '#A1A7B0',
-    tabIconDefault: '#A1A7B0',
+    icon: '#A3A3A3', // Neutral 400
+    tabIconDefault: '#737373', // Neutral 500
     tabIconSelected: '#F97316',
-    surface: '#141A22',
-    surfaceElevated: '#1A2330',
-    border: '#2A3441',
-    mutedText: '#A1A7B0',
-    success: '#22C55E',
+    surface: '#171717', // Neutral 900
+    surfaceElevated: '#262626', // Neutral 800
+    border: '#404040', // Neutral 700 - more visible
+    mutedText: '#A3A3A3', // Neutral 400
+    success: '#10B981',
     warning: '#FBBF24',
     accent: '#F97316',
     chip: '#F97316',
@@ -57,16 +57,16 @@ export const Spacing = {
   sm: 8,
   md: 12,
   lg: 16,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
+  xl: 24, // Wider spacing
+  xxl: 32,
+  xxxl: 48,
 };
 
 export const Radii = {
-  sm: 8,
+  sm: 6,
   md: 12,
-  lg: 16,
-  xl: 20,
+  lg: 20, // More rounded, friendly
+  xl: 28,
   pill: 999,
 };
 
@@ -74,33 +74,33 @@ export const Shadows = {
   light: {
     card: {
       shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.07,
-      shadowRadius: 12,
-      elevation: 3,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 8, // Softer dispersion
+      elevation: 2,
     },
     floating: {
       shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 10 },
-      shadowOpacity: 0.12,
-      shadowRadius: 18,
-      elevation: 6,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.1,
+      shadowRadius: 24,
+      elevation: 8,
     },
   },
   dark: {
     card: {
       shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.35,
-      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8, // Tighter in dark mode
       elevation: 3,
     },
     floating: {
       shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 10 },
-      shadowOpacity: 0.45,
-      shadowRadius: 18,
-      elevation: 6,
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.4,
+      shadowRadius: 24,
+      elevation: 10,
     },
   },
   // Legacy: For backwards compatibility, also export the light shadows at root level

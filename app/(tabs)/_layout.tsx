@@ -1,7 +1,5 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { useUser } from '@/context';
@@ -37,24 +35,21 @@ export default function TabLayout() {
           marginBottom: -2,
         },
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
+          display: 'none',
         },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size, focused }) => (
-            <MaterialIcons 
-              name="home" 
-              size={focused ? 26 : 24} 
-              color={color} 
-            />
-          ),
+          href: null,
         }}
       />
-      {/* Volunteer access is routed separately via Sevadar Delivery */}
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

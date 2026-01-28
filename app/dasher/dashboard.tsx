@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GlassCard } from '@/components/glass-card';
-import { availableRequests, gurdwaraLeaderboard, sevadarBadges, sevadarStats } from '@/constants/mock-data';
+import { availableRequests, distributionLeaderboard, sevadarBadges, sevadarStats } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
 import { useOrders, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
@@ -174,7 +174,7 @@ export default function DasherDashboardScreen() {
         <GlassCard style={styles.leaderboardCard}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Leaderboard</Text>
           <View style={styles.leaderboardList}>
-            {gurdwaraLeaderboard.map((entry, index) => (
+            {distributionLeaderboard.map((entry, index) => (
               <View key={entry.id} style={styles.leaderRow}>
                 <View style={[styles.leaderRankBubble, { backgroundColor: index < 3 ? '#FEF3C7' : '#F3F4F6' }]}>
                    {index < 3 ? (

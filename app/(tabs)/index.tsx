@@ -169,7 +169,7 @@ export default function HomeScreen() {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Start a request</Text>
 
         <GlassCard
-          style={[styles.actionButton, { borderColor: colors.border }]}
+          style={[styles.actionButton, !colors.isDark && { borderColor: colors.border, borderWidth: 1 }]}
         >
           <Pressable
             style={styles.actionButtonPress}
@@ -203,7 +203,7 @@ export default function HomeScreen() {
             </View>
             <View style={styles.stepContent}>
               <Text style={[styles.stepTitle, { color: colors.text }]}>Pickup</Text>
-              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>A volunteer collects langar from a nearby gurdwara</Text>
+              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>A volunteer collects meals from a nearby distribution hub</Text>
             </View>
           </View>
 
@@ -441,7 +441,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginVertical: Spacing.md,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   actionButtonPress: {

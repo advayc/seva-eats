@@ -128,7 +128,7 @@ export default function CartScreen() {
               <Text style={[styles.addressText, { color: colors.text }]}>
                 {userLocation?.address ?? 'Enable location to set your drop-off'}
               </Text>
-              <Text style={[styles.addressSubtext, { color: colors.mutedText }]}>Gurdwara to community partner drop-off</Text>
+              <Text style={[styles.addressSubtext, { color: colors.mutedText }]}>Distribution hub to community partner drop-off</Text>
             </View>
             <Pressable onPress={refreshLocation} style={[styles.locationButton, { borderColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
               <Text style={[styles.locationButtonText, { color: colors.text }]}>

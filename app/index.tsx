@@ -1,23 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
     Dimensions,
+    Pressable,
     StyleSheet,
     Text,
     View,
 } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Radii, Spacing } from '@/constants/theme';
 import { useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 const ONBOARDING_KEY = 'onboarding-completed';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const PLATE_SIZE = Math.min(SCREEN_WIDTH * 0.6, 240);
+const PLATE_SIZE = Math.min(SCREEN_WIDTH * 0.4, 160);
 
 function LogoMark({ size }: { size: number }) {
   return (
@@ -30,50 +31,56 @@ function LogoMark({ size }: { size: number }) {
   );
 }
 
-// AnimatedLogoMark removed for simplified flow
-
 export default function IndexScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { user, isLoading } = useUser();
+  const [hasOnboarded, setHasOnboarded] = useState<boolean | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
     const checkOnboarding = async () => {
       try {
         const value = await AsyncStorage.getItem(ONBOARDING_KEY);
-        if (!isMounted) return;
-        if (value === 'true') {
-          if (isLoading) return;
-          if (user?.role === 'dasher') {
-            router.replace('/dasher/dashboard' as any);
-          } else {
-            router.replace('/(tabs)');
-          }
-        } else {
-          router.replace('/(onboarding)/welcome');
-        }
+        setHasOnboarded(value === 'true');
       } catch {
-        if (!isMounted) return;
-        router.replace('/(onboarding)/welcome');
+        setHasOnboarded(false);
       }
     };
-
     checkOnboarding();
+  }, []);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [router, isLoading, user?.role]);
+  const handleContinue = () => {
+    if (hasOnboarded && !isLoading) {
+      if (user?.role === 'dasher') {
+        router.replace('/dasher/dashboard' as any);
+      } else {
+        router.replace('/(tabs)');
+      }
+    } else {
+      router.replace('/(onboarding)/welcome');
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
-      <View style={styles.loader}>
-        <Animated.View style={styles.loaderContent}>
-          <LogoMark size={PLATE_SIZE} />
-          <Text style={[styles.loaderTitle, { color: colors.text }]}>Seva Eats</Text>
-          <ActivityIndicator color={colors.accent} size="small" style={styles.loaderSpinner} />
+      <View style={styles.content}>
+        <View style={styles.heroSection}>
+          <Animated.View entering={FadeIn.duration(600).delay(200)}>
+            <LogoMark size={PLATE_SIZE} />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.duration(500).delay(400)} style={styles.titleBlock}>
+            <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
+            <Text style={[styles.tagline, { color: colors.accent }]}>FOOD • COMMUNITY • SERVICE</Text>
+          </Animated.View>
+        </View>
+
+        <Animated.View entering={FadeInDown.duration(500).delay(600)} style={styles.actions}>
+          <Pressable
+            style={[styles.continueButton, { backgroundColor: colors.accent }]}
+            onPress={handleContinue}
+          >
+            <Text style={styles.continueText}>Continue</Text>
+          </Pressable>
         </Animated.View>
       </View>
     </SafeAreaView>
@@ -84,21 +91,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loader: {
+  content: {
+    flex: 1,
+    paddingHorizontal: Spacing.xxl,
+    paddingVertical: Spacing.xxxl,
+    justifyContent: 'space-between',
+  },
+  heroSection: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: Spacing.xl,
   },
-  loaderContent: {
+  titleBlock: {
     alignItems: 'center',
-    gap: 24,
   },
-  loaderTitle: {
-    fontSize: 28,
+  title: {
+    fontSize: 36,
+    fontWeight: '800',
+    letterSpacing: -0.8,
+  },
+  tagline: {
+    marginTop: Spacing.sm,
+    fontSize: 12,
     fontWeight: '700',
-    letterSpacing: -0.5,
+    letterSpacing: 2.5,
   },
-  loaderSpinner: {
-    marginTop: 8,
+  actions: {
+    paddingBottom: Spacing.xl,
+  },
+  continueButton: {
+    borderRadius: Radii.pill,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  continueText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '700',
   },
 });

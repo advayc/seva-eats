@@ -160,11 +160,11 @@ function RouteMapView({
   colors: ReturnType<typeof useThemeColors>;
   onExpand: () => void;
 }) {
-  // Default pickup location if not set (use a Gurdwara in Brampton area)
+  // Default pickup location if not set (use a Hub in Brampton area)
   const pickup = pickupLocation ?? {
     latitude: 43.7315,
     longitude: -79.7624,
-    address: 'Brampton',
+    address: 'Brampton Hub',
   };
 
   // Calculate map region to show both points
@@ -194,10 +194,10 @@ function RouteMapView({
           longitudeDelta: Math.max(lngDelta, 0.02),
         }}
       >
-        {/* Pickup Marker (Gurdwara) */}
+        {/* Pickup Marker (Distribution Hub) */}
         <Marker
           coordinate={{ latitude: pickup.latitude, longitude: pickup.longitude }}
-          title="Pickup Location"
+          title="Distribution Hub"
           description={pickup.address}
         >
           <View style={[styles.markerPickup, { backgroundColor: colors.accent }]}>

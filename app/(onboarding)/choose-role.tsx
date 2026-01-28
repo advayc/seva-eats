@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -28,7 +29,7 @@ const ROLE_OPTIONS: RoleOption[] = [
   {
     id: 'dasher',
     title: 'Sevadar Delivery',
-    description: 'Deliver meals or support kitchen and dispatch teams with seva.',
+    description: 'Deliver meals to those in need. Join our network of volunteer drivers.',
     icon: 'volunteer-activism',
   },
 ];
@@ -38,16 +39,35 @@ export default function ChooseRoleScreen() {
   const colors = useThemeColors();
   const { setRole } = useUser();
   const shadows = colors.isDark ? Shadows.dark : Shadows.light;
+  const [isAlreadyOnboarded, setIsAlreadyOnboarded] = useState(false);
+
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      const value = await AsyncStorage.getItem(ONBOARDING_KEY);
+      setIsAlreadyOnboarded(value === 'true');
+    };
+    checkOnboarding();
+  }, []);
 
   const handleSelectRole = async (role: RoleOption['id']) => {
     await setRole(role);
-    await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
-
-    // Navigate directly to the appropriate screen based on role
-    if (role === 'dasher') {
-      router.replace('/dasher/dashboard' as any);
+    
+    // If already onboarded, navigate based on new role
+    if (isAlreadyOnboarded) {
+      if (role === 'dasher') {
+        router.replace('/dasher/dashboard' as any);
+      } else {
+        router.replace('/(tabs)' as any);
+      }
     } else {
-      router.replace('/(tabs)');
+      // First time onboarding
+      await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+      // Navigate directly to the appropriate screen based on role
+      if (role === 'dasher') {
+        router.replace('/dasher/dashboard' as any);
+      } else {
+        router.replace('/(tabs)');
+      }
     }
   };
 
@@ -64,6 +84,8 @@ export default function ChooseRoleScreen() {
           </View>
         </View>
 
+        <View style={styles.spacer} />
+
         <Text style={[styles.prompt, { color: colors.mutedText }]}>Choose how you want to serve</Text>
 
         <View style={styles.cardList}>
@@ -72,20 +94,20 @@ export default function ChooseRoleScreen() {
               key={option.id}
               style={({ pressed }) => [
                 styles.roleCard,
-                { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
+                { backgroundColor: colors.surface, borderColor: colors.border },
                 shadows.card,
                 pressed && styles.roleCardPressed,
               ]}
               onPress={() => handleSelectRole(option.id)}
             >
-              <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}>
-                <MaterialIcons name={option.icon} size={24} color={colors.accent} />
+              <View style={[styles.roleIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}>
+                <MaterialIcons name={option.icon} size={28} color={colors.accent} />
               </View>
               <View style={styles.roleText}>
                 <Text style={[styles.roleTitle, { color: colors.text }]}>{option.title}</Text>
                 <Text style={[styles.roleDescription, { color: colors.mutedText }]}>{option.description}</Text>
               </View>
-              <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
+              <MaterialIcons name="chevron-right" size={24} color={colors.border} />
             </Pressable>
           ))}
         </View>
@@ -109,38 +131,47 @@ const styles = StyleSheet.create({
   heroRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xxl,
+    gap: Spacing.lg,
+    marginBottom: Spacing.lg,
   },
   logoWrap: {
-    width: 90,
-    height: 90,
+    width: 80,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   logo: {
-    width: 78,
-    height: 78,
+    width: 72,
+    height: 72,
   },
   titleBlock: {
     flex: 1,
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: '800',
-    letterSpacing: -0.4,
+    letterSpacing: -0.8,
+    lineHeight: 36,
   },
   tagline: {
-    marginTop: Spacing.xs,
+    marginTop: 4,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
+    opacity: 0.9,
+  },
+  spacer: {
+    height: Spacing.lg,
   },
   prompt: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: Spacing.xs,
   },
   cardList: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   roleCard: {
     flexDirection: 'row',
@@ -152,29 +183,32 @@ const styles = StyleSheet.create({
   },
   roleCardPressed: {
     transform: [{ scale: 0.98 }],
-    opacity: 0.85,
+    opacity: 0.9,
   },
   roleIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
   roleText: {
     flex: 1,
-    gap: 4,
+    gap: 2,
   },
   roleTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
+    letterSpacing: -0.3,
   },
   roleDescription: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 18,
   },
   footerNote: {
+    marginTop: Spacing.xl,
     fontSize: 12,
     textAlign: 'center',
+    opacity: 0.7,
   },
 });

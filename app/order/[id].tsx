@@ -1,9 +1,10 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 
+import { ProofOfDelivery } from '@/components/proof-of-delivery';
 import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { ORDER_STATUS_LABELS, useOrders } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
@@ -19,9 +20,11 @@ export default function OrderTrackingScreen() {
   const [order, setOrder] = useState(getOrder(id ?? ''));
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [pickupConfirmed, setPickupConfirmed] = useState(false);
-  const [proofPhotoAdded, setProofPhotoAdded] = useState(false);
+  const [proofPhotoUri, setProofPhotoUri] = useState<string | null>(null);
+  const [animatedDriverLocation, setAnimatedDriverLocation] = useState(order?.driverLocation || order?.storeLocation);
   const colors = useThemeColors();
   const shadows = colors.isDark ? Shadows.dark : Shadows.light;
+  const animationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Re-fetch order when orders change (for status updates)
   useEffect(() => {
@@ -29,6 +32,47 @@ export default function OrderTrackingScreen() {
       setOrder(getOrder(id));
     }
   }, [id, orders, getOrder]);
+
+  // Animate driver movement when on the way
+  useEffect(() => {
+    if (!order || order.status !== 'on_the_way' || !order.driverLocation) return;
+
+    // Clear any existing animation
+    if (animationIntervalRef.current) {
+      clearInterval(animationIntervalRef.current);
+    }
+
+    // Animate movement from current position towards delivery location
+    let step = 0;
+    const totalSteps = 60; // 60 steps for smooth animation
+
+    animationIntervalRef.current = setInterval(() => {
+      step++;
+      const progress = Math.min(step / totalSteps, 1);
+
+      const newLat =
+        order.storeLocation.latitude +
+        (order.deliveryLocation.latitude - order.storeLocation.latitude) * progress;
+      const newLng =
+        order.storeLocation.longitude +
+        (order.deliveryLocation.longitude - order.storeLocation.longitude) * progress;
+
+      setAnimatedDriverLocation({
+        latitude: newLat,
+        longitude: newLng,
+      });
+
+      if (progress >= 1) {
+        clearInterval(animationIntervalRef.current!);
+      }
+    }, 200); // Update every 200ms
+
+    return () => {
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
+      }
+    };
+  }, [order?.status, order?.driverLocation, order?.storeLocation, order?.deliveryLocation]);
 
   if (!order) {
     return (
@@ -77,7 +121,7 @@ export default function OrderTrackingScreen() {
 
   const routeCoordinates = [
     storeLocation,
-    ...(driverLocation ? [driverLocation] : []),
+    ...(animatedDriverLocation ? [animatedDriverLocation] : []),
     { latitude: deliveryLocation.latitude, longitude: deliveryLocation.longitude },
   ];
 
@@ -227,12 +271,10 @@ export default function OrderTrackingScreen() {
               <Text style={[styles.actionSubtitle, { color: colors.mutedText }]}>Take a photo when leaving the meal at the door.</Text>
             </View>
           </View>
-          <Pressable
-            style={[styles.actionButton, { backgroundColor: proofPhotoAdded ? colors.success : colors.accent }]}
-            onPress={() => setProofPhotoAdded(true)}
-          >
-            <Text style={styles.actionButtonText}>{proofPhotoAdded ? 'Photo saved (mock)' : 'Add proof photo (mock)'}</Text>
-          </Pressable>
+          <ProofOfDelivery 
+            onPhotoCapture={setProofPhotoUri}
+            initialPhoto={proofPhotoUri ?? undefined}
+          />
           <Text style={[styles.actionHint, { color: colors.mutedText }]}>We can’t promise restaurant-heat, but every meal is made with love.</Text>
         </View>
 

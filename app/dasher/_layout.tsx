@@ -25,8 +25,9 @@ export default function DasherLayout() {
       return;
     }
 
-    if (user?.role !== 'dasher') {
-      router.replace('/(onboarding)/choose-role' as any);
+    // If user is no longer a dasher but is inside the dasher route, redirect to recipient home
+    if (user?.role !== 'dasher' && segments[0] === 'dasher') {
+      router.replace('/(tabs)' as any);
     }
   }, [hasOnboarded, isLoading, user?.role, router, segments]);
 

@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Platform } from 'react-native';
 
 const REQUESTS_STORAGE_KEY = 'meal-requests';
 
@@ -35,9 +34,16 @@ export type MealRequest = {
   volunteerId?: string;
   volunteerName?: string;
   showVolunteerName?: boolean;
-  gurdwaraId?: string;
-  gurdwaraName?: string;
-  gurdwaraLocation?: {
+  gurdwaraId?: string; // Kept for legacy compatibility
+  gurdwaraName?: string; // Kept for legacy compatibility
+  gurdwaraLocation?: { // Kept for legacy compatibility
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  pickupLocationId?: string;
+  pickupLocationName?: string;
+  pickupLocation?: {
     address: string;
     latitude: number;
     longitude: number;
@@ -174,10 +180,17 @@ export function RequestProvider({ children }: { children: ReactNode }) {
               volunteerId: 'vol-123',
               volunteerName: 'Gurpreet Singh',
               showVolunteerName: false,
-            gurdwaraId: 'gurdwara-sahib-brampton',
-            gurdwaraName: 'Gurdwara Sahib Brampton',
+            gurdwaraId: 'hub-brampton',
+            gurdwaraName: 'Brampton Distribution Hub',
             gurdwaraLocation: {
-              address: '123 Sikh Way, Brampton, ON',
+              address: '123 Community Way, Brampton, ON',
+              latitude: 43.7315,
+              longitude: -79.7624,
+            },
+            pickupLocationId: 'hub-brampton',
+            pickupLocationName: 'Brampton Distribution Hub',
+            pickupLocation: {
+              address: '123 Community Way, Brampton, ON',
               latitude: 43.7315,
               longitude: -79.7624,
             },

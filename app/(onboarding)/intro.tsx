@@ -37,7 +37,7 @@ export default function IntroScreen() {
           <Text style={[styles.sectionTitle, { color: colors.accent }]}>How it works</Text>
           <View style={styles.stepRow}>
             <Text style={[styles.stepNumber, { color: colors.text, backgroundColor: colors.isDark ? colors.surface : '#E5E7EB' }]}>1</Text>
-            <Text style={[styles.stepText, { color: colors.text }]}>Pick up a prepared meal box at a nearby partner kitchen.</Text>
+            <Text style={[styles.stepText, { color: colors.text }]}>Pick up a prepared meal box at a nearby distribution hub.</Text>
           </View>
           <View style={styles.stepRow}>
             <Text style={[styles.stepNumber, { color: colors.text, backgroundColor: colors.isDark ? colors.surface : '#E5E7EB' }]}>2</Text>

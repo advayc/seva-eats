@@ -29,11 +29,11 @@ export function GlassCard({
   const getTintColor = () => {
     switch (variant) {
       case 'accent':
-        return isDark ? 'rgba(249, 115, 22, 0.22)' : 'rgba(249, 115, 22, 0.12)';
+        return isDark ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.12)';
       case 'success':
-        return isDark ? 'rgba(34, 197, 94, 0.22)' : 'rgba(22, 163, 74, 0.12)';
+        return isDark ? 'rgba(34, 197, 94, 0.15)' : 'rgba(22, 163, 74, 0.12)';
       default:
-        return isDark ? 'rgba(31, 41, 55, 0.65)' : 'rgba(255, 255, 255, 0.7)';
+        return isDark ? 'rgba(38, 38, 38, 0.8)' : 'rgba(255, 255, 255, 0.7)';
     }
   };
 
@@ -48,18 +48,36 @@ export function GlassCard({
   const getFallbackBackground = () => {
     switch (variant) {
       case 'accent':
-        return isDark ? 'rgba(249, 115, 22, 0.12)' : 'rgba(255, 247, 237, 0.95)';
+        return isDark ? 'rgba(249, 115, 22, 0.1)' : 'rgba(255, 247, 237, 0.95)';
       case 'success':
-        return isDark ? 'rgba(34, 197, 94, 0.12)' : 'rgba(236, 253, 245, 0.95)';
+        return isDark ? 'rgba(34, 197, 94, 0.1)' : 'rgba(236, 253, 245, 0.95)';
       default:
-        return isDark ? colors.surface : colors.surfaceElevated;
+        return isDark ? colors.surfaceElevated : colors.surfaceElevated;
     }
   };
 
-  const borderStyle = noBorder ? {} : {
+  // No borders in dark mode for cleaner look
+  const borderStyle = noBorder || isDark ? {} : {
     borderWidth: 1,
     borderColor: colors.border,
   };
+
+  // In dark mode, use solid background instead of glass effect for cleaner look
+  if (isDark) {
+    return (
+      <View 
+        style={[
+          styles.container,
+          { backgroundColor: getFallbackBackground() },
+          shadows.card,
+          style
+        ]} 
+        {...props}
+      >
+        {children}
+      </View>
+    );
+  }
 
   if (showGlass) {
     return (

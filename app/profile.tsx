@@ -2,27 +2,28 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LocationPicker } from '@/components/location-picker';
 import { Radii, Spacing } from '@/constants/theme';
-import { useLocation, useUser } from '@/context';
+import { useLocation, useTheme, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, updateProfile, clearProfile, hasCompletedProfile } = useUser();
+  const { themeMode, setThemeMode } = useTheme();
   const { userLocation } = useLocation();
   const colors = useThemeColors();
   
@@ -193,11 +194,11 @@ export default function ProfileScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Roles</Text>
             <Text style={[styles.inputHint, { color: colors.mutedText }]}>Switch modes from the role chooser.</Text>
               <Pressable
-                style={[styles.kitchenButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
+                style={[styles.roleButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
                 onPress={() => router.push('/(onboarding)/choose-role' as any)}
               >
                 <MaterialIcons name="swap-horiz" size={20} color={colors.accent} />
-                <Text style={[styles.kitchenButtonText, { color: colors.text }]}>Switch role</Text>
+                <Text style={[styles.roleButtonText, { color: colors.text }]}>Switch role</Text>
               </Pressable>
           </View>
 
@@ -215,6 +216,35 @@ export default function ProfileScreen() {
                 trackColor={{ false: colors.border, true: colors.accent }}
                 thumbColor="#FFFFFF"
               />
+            </View>
+          </View>
+
+          {/* Appearance */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Appearance</Text>
+            <View style={styles.themeOptions}>
+              {(['light', 'dark', 'system'] as const).map((mode) => (
+                <Pressable
+                  key={mode}
+                  style={[
+                    styles.themeButton,
+                    {
+                      backgroundColor: themeMode === mode ? colors.accent : colors.surface,
+                      borderColor: colors.border,
+                    }
+                  ]}
+                  onPress={() => setThemeMode(mode)}
+                >
+                  <MaterialIcons 
+                    name={mode === 'light' ? 'light-mode' : mode === 'dark' ? 'dark-mode' : 'brightness-auto'} 
+                    size={20} 
+                    color={themeMode === mode ? '#FFFFFF' : colors.text}
+                  />
+                  <Text style={[styles.themeButtonText, { color: themeMode === mode ? '#FFFFFF' : colors.text }]}>
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
           </View>
 
@@ -428,7 +458,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#DC2626',
   },
-  kitchenButton: {
+  roleButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -438,8 +468,27 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     marginTop: Spacing.sm,
   },
-  kitchenButtonText: {
+  roleButtonText: {
     fontSize: 14,
+    fontWeight: '600',
+  },
+  themeOptions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+  },
+  themeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    borderRadius: Radii.md,
+    borderWidth: 1,
+    paddingVertical: Spacing.md,
+  },
+  themeButtonText: {
+    fontSize: 12,
     fontWeight: '600',
   },
   appInfo: {
