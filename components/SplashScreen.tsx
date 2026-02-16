@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   primaryText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 15,
     fontWeight: '700',
   },

@@ -18,8 +18,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LocationPicker } from '@/components/location-picker';
 import { Radii, Spacing } from '@/constants/theme';
 import { useLocation, useTheme, useUser } from '@/context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColors } from '@/hooks/use-theme-colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -231,7 +231,7 @@ export default function ProfileScreen() {
                 value={notificationsEnabled}
                 onValueChange={setNotificationsEnabled}
                 trackColor={{ false: colors.border, true: colors.accent }}
-                thumbColor="#FFFFFF"
+                thumbColor="#FFF8F0"
               />
             </View>
           </View>
@@ -255,9 +255,9 @@ export default function ProfileScreen() {
                   <MaterialIcons 
                     name={mode === 'light' ? 'light-mode' : mode === 'dark' ? 'dark-mode' : 'brightness-auto'} 
                     size={20} 
-                    color={themeMode === mode ? '#FFFFFF' : colors.text}
+                    color={themeMode === mode ? '#FFF8F0' : colors.text}
                   />
-                  <Text style={[styles.themeButtonText, { color: themeMode === mode ? '#FFFFFF' : colors.text }]}>
+                  <Text style={[styles.themeButtonText, { color: themeMode === mode ? '#FFF8F0' : colors.text }]}>
                     {mode.charAt(0).toUpperCase() + mode.slice(1)}
                   </Text>
                 </Pressable>
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
   dangerButton: {
     flexDirection: 'row',

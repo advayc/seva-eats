@@ -74,7 +74,7 @@ export default function HomeScreen() {
             </Pressable>
           </View>
           <Pressable 
-            style={[styles.profileButton, { backgroundColor: colors.isDark ? colors.surface : '#FFFFFF', borderColor: colors.border }]} 
+            style={[styles.profileButton, { backgroundColor: colors.isDark ? colors.surface : '#FFF8F0', borderColor: colors.border }]} 
             onPress={() => router.push('/profile')}
           >
             <MaterialIcons name="account-circle" size={26} color={colors.text} />
@@ -97,7 +97,7 @@ export default function HomeScreen() {
 
         {/* Community Impact Stats */}
         <View style={[styles.impactCard, { 
-          backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+          backgroundColor: colors.isDark ? colors.surface : '#FFF8F0',
           borderColor: colors.border,
         }]}>
           <Text style={[styles.impactLabel, { color: colors.mutedText }]}>COMMUNITY IMPACT</Text>
@@ -136,7 +136,7 @@ export default function HomeScreen() {
                 <MaterialIcons 
                   name={getRequestIcon(activeRequest.status) as any} 
                   size={20} 
-                  color="#FFFFFF" 
+                  color="#FFF8F0" 
                 />
               </View>
               <View style={styles.activeOrderText}>
@@ -153,13 +153,13 @@ export default function HomeScreen() {
                 </Text>
               </View>
             </View>
-            <MaterialIcons name="chevron-right" size={24} color="#FFFFFF" />
+            <MaterialIcons name="chevron-right" size={24} color="#FFF8F0" />
           </Pressable>
         )}
 
         {activeRequest && (
           <View style={[styles.statusCard, { 
-            backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+            backgroundColor: colors.isDark ? colors.surface : '#FFF8F0',
             borderColor: colors.border,
           }]}>
             <View style={styles.statusHeader}>
@@ -193,7 +193,7 @@ export default function HomeScreen() {
           style={({ pressed }) => [
             styles.requestCard,
             { 
-              backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+              backgroundColor: colors.isDark ? colors.surface : '#FFF8F0',
               borderColor: colors.border,
             },
             pressed && { opacity: 0.7 }
@@ -214,7 +214,7 @@ export default function HomeScreen() {
 
         {/* How it Works Card */}
         <View style={[styles.howItWorksCard, { 
-          backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+          backgroundColor: colors.isDark ? colors.surface : '#FFF8F0',
           borderColor: colors.border,
         }]}>
           <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How it works</Text>
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: 'rgba(255,248,240,0.25)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -419,13 +419,13 @@ const styles = StyleSheet.create({
   activeOrderTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     letterSpacing: -0.3,
     marginBottom: 2,
   },
   activeOrderSubtitle: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.85)',
+    color: 'rgba(255,248,240,0.85)',
     letterSpacing: -0.1,
   },
 
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
   stepNumber: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     letterSpacing: 0.3,
   },
   stepTextContainer: {

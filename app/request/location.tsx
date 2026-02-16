@@ -2,17 +2,17 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
-  FadeIn,
-  FadeInDown,
+    FadeIn,
+    FadeInDown,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { pickupLocations, type PickupLocation } from '@/constants/mock-data';
 import { Radii, Shadows, Spacing } from '@/constants/theme';
@@ -55,11 +55,11 @@ function LocationCard({
         ]}
         onPress={onPress}
       >
-        <View style={[styles.iconCircle, { backgroundColor: selected ? colors.accent : colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}>
+          <View style={[styles.iconCircle, { backgroundColor: selected ? colors.accent : colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}>
           <MaterialIcons
             name={getIcon() as any}
             size={28}
-            color={selected ? '#FFFFFF' : colors.accent}
+            color={selected ? '#FFF8F0' : colors.accent}
           />
         </View>
 
@@ -78,7 +78,7 @@ function LocationCard({
 
         {selected && (
           <View style={[styles.selectedBadge, { backgroundColor: colors.accent }]}>
-            <MaterialIcons name="check" size={16} color="#FFFFFF" />
+            <MaterialIcons name="check" size={16} color="#FFF8F0" />
           </View>
         )}
       </Pressable>
@@ -160,16 +160,16 @@ export default function LocationSelectionScreen() {
           <View style={styles.bottomBarContent}>
             <View style={styles.locationSummary}>
               <View style={[styles.locationBadge, { backgroundColor: colors.accent }]}>
-                <MaterialIcons name="location-on" size={16} color="#FFFFFF" />
-              </View>
+                  <MaterialIcons name="location-on" size={16} color="#FFF8F0" />
+                </View>
               <View>
               <Text style={[styles.locationLabel, { color: colors.text }]}>{selectedLocation.name}</Text>
               <Text style={[styles.locationSubLabel, { color: colors.mutedText }]}>Pickup hub selected</Text>
               </View>
             </View>
-            <Pressable style={[styles.continueButton, { backgroundColor: colors.accent }]} onPress={handleContinue}>
+              <Pressable style={[styles.continueButton, { backgroundColor: colors.accent }]} onPress={handleContinue}>
               <Text style={styles.continueButtonText}>Continue</Text>
-              <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
+              <MaterialIcons name="arrow-forward" size={20} color="#FFF8F0" />
             </Pressable>
           </View>
         </Animated.View>
@@ -349,6 +349,6 @@ const styles = StyleSheet.create({
   continueButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
 });

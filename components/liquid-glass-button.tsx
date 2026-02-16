@@ -59,7 +59,7 @@ export function LiquidGlassButton({
       case 'success':
         return isDark ? 'rgba(34, 197, 94, 0.14)' : 'rgba(236, 253, 245, 0.98)';
       default:
-        return isDark ? colors.surfaceElevated : '#FFFFFF';
+        return isDark ? colors.surfaceElevated : '#FFF8F0';
     }
   };
 

@@ -1,24 +1,24 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useState, useCallback } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  FadeIn,
-  FadeInDown,
+    FadeIn,
+    FadeInDown,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { mealOptions, type MealOption } from '@/constants/meals';
+import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -110,10 +110,10 @@ function MealCard({
               onPress={onDecrement}
               hitSlop={8}
             >
-              <MaterialIcons
+                <MaterialIcons
                 name={quantity === 1 ? 'close' : 'remove'}
                 size={16}
-                color="#FFFFFF"
+                color="#FFF8F0"
               />
             </Pressable>
             <Text style={styles.quantityText}>{quantity}</Text>
@@ -122,7 +122,7 @@ function MealCard({
               onPress={onIncrement}
               hitSlop={8}
             >
-              <MaterialIcons name="add" size={16} color="#FFFFFF" />
+              <MaterialIcons name="add" size={16} color="#FFF8F0" />
             </Pressable>
           </View>
         ) : (
@@ -289,9 +289,9 @@ export default function MealSelectionScreen() {
                 {totalMeals === 1 ? 'meal' : 'meals'} selected
               </Text>
             </View>
-            <Pressable style={[styles.continueButton, { backgroundColor: colors.accent }]} onPress={handleContinue}>
+              <Pressable style={[styles.continueButton, { backgroundColor: colors.accent }]} onPress={handleContinue}>
               <Text style={styles.continueButtonText}>Continue</Text>
-              <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
+              <MaterialIcons name="arrow-forward" size={20} color="#FFF8F0" />
             </Pressable>
           </View>
         </Animated.View>
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
   quantityText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     minWidth: 20,
     textAlign: 'center',
   },
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
   mealsBadgeText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
   mealsLabel: {
     fontSize: 14,
@@ -484,6 +484,6 @@ const styles = StyleSheet.create({
   continueButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
 });

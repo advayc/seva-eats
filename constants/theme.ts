@@ -6,27 +6,27 @@
 import { Platform } from 'react-native';
 
 const tintColorLight = '#F97316';
-const tintColorDark = '#FFFFFF';
+const tintColorDark = '#FFF8F0';
 
 // Seva Eats brand colors
 export const sevaColors = {
   primary: '#F97316',
   primaryDark: '#EA580C',
-  background: '#FAFAF9', // Stone 50 - Cleaner than #FFF7ED
-  text: '#111827',
+  background: '#FFF8F0', // Creamy white
+  text: '#181A18',
   textSecondary: '#6B7280',
 };
 
 export const Colors = {
   light: {
-    text: '#1F2937', // Gray 900
-    background: '#FAFAF9', // Stone 50
+    text: '#181A18',
+    background: '#FFF8F0',
     tint: tintColorLight,
     icon: '#6B7280', // Gray 500
     tabIconDefault: '#9CA3AF',
     tabIconSelected: tintColorLight,
-    surface: '#FFFFFF',
-    surfaceElevated: '#FFFFFF', // Clean white for cards
+    surface: '#FFF8F0',
+    surfaceElevated: '#FFF8F0', // Creamy white for cards
     border: '#E5E5E5', // Neutral border
     mutedText: '#6B7280',
     success: '#10B981', // Emerald 500

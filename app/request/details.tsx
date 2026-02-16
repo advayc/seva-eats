@@ -2,15 +2,15 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -252,7 +252,7 @@ export default function DeliveryDetailsScreen() {
                     style={[
                       styles.familySizeText,
                       { color: colors.text },
-                      servingSize === size && { color: '#FFFFFF' },
+                      servingSize === size && { color: '#FFF8F0' },
                     ]}
                   >
                     {size}{size === 8 ? '+' : ''}
@@ -280,7 +280,7 @@ export default function DeliveryDetailsScreen() {
                     style={[
                       styles.deliveryOptionText,
                       { color: colors.text },
-                      deliveryWindow === window && { color: '#FFFFFF' },
+                      deliveryWindow === window && { color: '#FFF8F0' },
                     ]}
                   >
                     {window}
@@ -302,8 +302,8 @@ export default function DeliveryDetailsScreen() {
                 ]}
                 onPress={() => setDeliveryPreference('leave_at_door')}
               >
-                <MaterialIcons name="door-front" size={18} color={deliveryPreference === 'leave_at_door' ? '#FFFFFF' : colors.text} />
-                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'leave_at_door' && { color: '#FFFFFF' }]}>
+                <MaterialIcons name="door-front" size={18} color={deliveryPreference === 'leave_at_door' ? '#FFF8F0' : colors.text} />
+                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'leave_at_door' && { color: '#FFF8F0' }]}>
                   Leave at door
                 </Text>
               </Pressable>
@@ -315,8 +315,8 @@ export default function DeliveryDetailsScreen() {
                 ]}
                 onPress={() => setDeliveryPreference('hand_to_me')}
               >
-                <MaterialIcons name="person" size={18} color={deliveryPreference === 'hand_to_me' ? '#FFFFFF' : colors.text} />
-                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'hand_to_me' && { color: '#FFFFFF' }]}>
+                <MaterialIcons name="person" size={18} color={deliveryPreference === 'hand_to_me' ? '#FFF8F0' : colors.text} />
+                <Text style={[styles.deliveryOptionText, { color: colors.text }, deliveryPreference === 'hand_to_me' && { color: '#FFF8F0' }]}>
                   Hand to me
                 </Text>
               </Pressable>
@@ -372,7 +372,7 @@ export default function DeliveryDetailsScreen() {
             onPress={handleSubmit}
             disabled={isSubmitting}
           >
-            <MaterialIcons name="restaurant" size={20} color="#FFFFFF" />
+            <MaterialIcons name="restaurant" size={20} color="#FFF8F0" />
             <Text style={styles.submitButtonText}>
               {isSubmitting ? 'Submitting...' : 'Request Drop-off'}
             </Text>
@@ -596,6 +596,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
 });

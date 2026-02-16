@@ -37,7 +37,7 @@ export default function VolunteerEntryScreen() {
           style={[styles.primaryButton, { backgroundColor: colors.accent }]}
           onPress={() => router.push('/dasher/login' as any)}
         >
-          <MaterialIcons name="delivery-dining" size={20} color="#FFFFFF" style={styles.buttonIcon} />
+          <MaterialIcons name="delivery-dining" size={20} color="#FFF8F0" style={styles.buttonIcon} />
           <Text style={styles.primaryButtonText}>Start delivering</Text>
         </Pressable>
       </View>
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   primaryButtonText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 16,
     fontWeight: '700',
   },

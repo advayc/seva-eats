@@ -103,10 +103,10 @@ function ProgressStep({
             isActive && { backgroundColor: colors.accent },
           ]}
         >
-          <MaterialIcons
+            <MaterialIcons
             name={isCompleted ? 'check' : (step.icon as any)}
             size={isCompleted ? 16 : 20}
-            color={isCompleted || isActive ? '#FFFFFF' : colors.mutedText}
+            color={isCompleted || isActive ? '#FFF8F0' : colors.mutedText}
           />
         </View>
       </View>
@@ -201,7 +201,7 @@ function RouteMapView({
           description={pickup.address}
         >
           <View style={[styles.markerPickup, { backgroundColor: colors.accent }]}>
-            <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
+            <MaterialIcons name="storefront" size={16} color="#FFF8F0" />
           </View>
         </Marker>
 
@@ -215,7 +215,7 @@ function RouteMapView({
           description={deliveryLocation.address}
         >
           <View style={styles.markerDelivery}>
-            <MaterialIcons name="home" size={16} color="#FFFFFF" />
+            <MaterialIcons name="home" size={16} color="#FFF8F0" />
           </View>
         </Marker>
 
@@ -226,7 +226,7 @@ function RouteMapView({
             title="Driver"
           >
             <View style={[styles.markerVolunteer, { backgroundColor: colors.accent }]}>
-              <MaterialIcons name="directions-car" size={16} color="#FFFFFF" />
+              <MaterialIcons name="directions-car" size={16} color="#FFF8F0" />
             </View>
           </Marker>
         )}
@@ -249,7 +249,7 @@ function RouteMapView({
       </Pressable>
 
       {/* Route Info Overlay */}
-      <View style={[styles.mapOverlay, { backgroundColor: colors.isDark ? 'rgba(26,31,37,0.95)' : 'rgba(255,255,255,0.95)' }]}>
+      <View style={[styles.mapOverlay, { backgroundColor: colors.isDark ? 'rgba(26,31,37,0.95)' : 'rgba(255,248,240,0.95)' }]}>
         <View style={styles.mapRoute}>
           <View style={styles.mapRoutePoint}>
             <MaterialIcons name="place" size={16} color={colors.accent} />
@@ -437,7 +437,7 @@ export default function RequestTrackingScreen() {
               },
             ]}
           >
-            <View style={[styles.volunteerAvatar, { backgroundColor: colors.isDark ? '#1F2937' : '#EEF2FF' }]}>
+            <View style={[styles.volunteerAvatar, { backgroundColor: colors.isDark ? '#181A18' : '#EEF2FF' }]}>
               <MaterialIcons name={request.showVolunteerName ? 'person' : 'support-agent'} size={24} color={colors.accent} />
             </View>
             <View style={styles.volunteerInfo}>
@@ -452,7 +452,7 @@ export default function RequestTrackingScreen() {
               style={[styles.callButton, { backgroundColor: colors.accent }]}
               onPress={() => Alert.alert('Support', 'A support specialist will reach out shortly.')}
             >
-              <MaterialIcons name="message" size={20} color="#FFFFFF" />
+              <MaterialIcons name="message" size={20} color="#FFF8F0" />
             </Pressable>
           </Animated.View>
         )}
@@ -532,7 +532,7 @@ export default function RequestTrackingScreen() {
               title={request.gurdwaraName ?? 'Pickup'}
             >
               <View style={[styles.markerPickup, { backgroundColor: colors.accent }]}>
-                <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
+                <MaterialIcons name="storefront" size={16} color="#FFF8F0" />
               </View>
             </Marker>
 
@@ -545,7 +545,7 @@ export default function RequestTrackingScreen() {
               title="Your Location"
             >
               <View style={styles.markerDelivery}>
-                <MaterialIcons name="home" size={16} color="#FFFFFF" />
+                <MaterialIcons name="home" size={16} color="#FFF8F0" />
               </View>
             </Marker>
 
@@ -553,7 +553,7 @@ export default function RequestTrackingScreen() {
             {request.volunteerLocation && request.status === 'on_the_way' && (
               <Marker coordinate={request.volunteerLocation} title="Driver">
                 <View style={[styles.markerVolunteer, { backgroundColor: colors.accent }]}>
-                  <MaterialIcons name="directions-car" size={16} color="#FFFFFF" />
+                  <MaterialIcons name="directions-car" size={16} color="#FFF8F0" />
                 </View>
               </Marker>
             )}
@@ -887,7 +887,7 @@ const styles = StyleSheet.create({
   homeButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
   fullscreenMapContainer: {
     flex: 1,

@@ -5,9 +5,8 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GlassCard } from '@/components/glass-card';
 import { availableRequests } from '@/constants/mock-data';
-import { Radii, Spacing } from '@/constants/theme';
+import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { useOrders, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
@@ -71,14 +70,14 @@ export default function DasherScreen() {
         <Text style={[styles.subtitle, { color: colors.mutedText }]}>Pick up langar and deliver to partner shelters</Text>
 
         {/* Filter Tabs */}
-        <GlassCard style={styles.filterTabsCard}>
+        <View style={[styles.filterTabsCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
           <View style={styles.filterTabs}>
             <Pressable
               style={[
                 styles.filterTab,
                 activeTab === 'available' && [
                   styles.filterTabActive,
-                  { backgroundColor: colors.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.9)' }
+                  { backgroundColor: colors.isDark ? 'rgba(255,248,240,0.15)' : 'rgba(255,248,240,0.9)' }
                 ]
               ]}
               onPress={() => setActiveTab('available')}
@@ -96,7 +95,7 @@ export default function DasherScreen() {
                 styles.filterTab,
                 activeTab === 'my_deliveries' && [
                   styles.filterTabActive,
-                  { backgroundColor: colors.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.9)' }
+                  { backgroundColor: colors.isDark ? 'rgba(255,248,240,0.15)' : 'rgba(255,248,240,0.9)' }
                 ]
               ]}
               onPress={() => setActiveTab('my_deliveries')}
@@ -110,7 +109,7 @@ export default function DasherScreen() {
               </Text>
             </Pressable>
           </View>
-        </GlassCard>
+        </View>
 
         {/* Active Order Banner */}
         {activeOrder && activeTab === 'available' && (
@@ -118,8 +117,8 @@ export default function DasherScreen() {
             style={styles.activeOrderPressable}
             onPress={() => router.push(`/order/${activeOrder.id}` as const)}
           >
-            <GlassCard style={styles.activeOrderCard} variant="accent">
-              <View style={[styles.activeOrderIcon, { backgroundColor: colors.isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.8)' }]}>
+            <View style={[styles.activeOrderCard, { backgroundColor: colors.accent, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
+              <View style={[styles.activeOrderIcon, { backgroundColor: colors.isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,248,240,0.8)' }]}>
                 <MaterialIcons name="local-shipping" size={24} color={colors.accent} />
               </View>
               <View style={styles.activeOrderContent}>
@@ -129,7 +128,7 @@ export default function DasherScreen() {
                 </Text>
               </View>
               <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
-            </GlassCard>
+            </View>
           </Pressable>
         )}
 
@@ -141,7 +140,7 @@ export default function DasherScreen() {
             </Text>
 
             {availableRequests.map((request) => (
-              <GlassCard key={request.id} style={styles.deliveryCard} noBorder>
+              <View key={request.id} style={[styles.deliveryCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }]}>
                 <Image 
                   source={{ uri: request.pickupLocation.image }} 
                   style={styles.deliveryImage}
@@ -210,16 +209,16 @@ export default function DasherScreen() {
                     <Text style={styles.claimButtonText}>Claim Delivery</Text>
                   </Pressable>
                 </View>
-              </GlassCard>
+              </View>
             ))}
 
             {/* Info Card */}
-            <GlassCard style={styles.infoCard}>
+            <View style={[styles.infoCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
               <MaterialIcons name="info-outline" size={20} color={colors.mutedText} />
               <Text style={[styles.infoText, { color: colors.mutedText }]}>
                   Deliveries are matched to nearby partner locations. Update your address in settings to see more relevant options.
               </Text>
-            </GlassCard>
+            </View>
           </>
         )}
 
@@ -237,7 +236,7 @@ export default function DasherScreen() {
                     ]}
                     onPress={() => router.push(`/order/${order.id}` as const)}
                   >
-                    <GlassCard style={styles.historyCard}>
+                    <View style={[styles.historyCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
                       <View style={styles.historyLeft}>
                         <View style={[
                           styles.statusDot,
@@ -253,18 +252,18 @@ export default function DasherScreen() {
                         </View>
                       </View>
                       <MaterialIcons name="chevron-right" size={24} color={colors.mutedText} />
-                    </GlassCard>
+                    </View>
                   </Pressable>
                 ))}
               </>
             ) : (
-              <GlassCard style={styles.emptyState}>
+              <View style={[styles.emptyState, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
                 <MaterialIcons name="delivery-dining" size={48} color={colors.border} />
                 <Text style={[styles.emptyTitle, { color: colors.text }]}>No deliveries yet</Text>
                 <Text style={[styles.emptyText, { color: colors.mutedText }]}>
                   Claim a delivery from the Available tab to get started
                 </Text>
-              </GlassCard>
+              </View>
             )}
           </>
         )}
@@ -425,7 +424,7 @@ const styles = StyleSheet.create({
   claimButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
   infoCard: {
     flexDirection: 'row',

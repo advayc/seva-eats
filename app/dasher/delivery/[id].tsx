@@ -4,7 +4,6 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GlassCard } from '@/components/glass-card';
 import { availableRequests } from '@/constants/mock-data';
 import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { useOrders, useUser } from '@/context';
@@ -90,7 +89,7 @@ export default function DasherDeliveryDetailsScreen() {
           <View style={styles.backButton} />
         </View>
 
-        <GlassCard style={[styles.card, shadows.card]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderRadius: Radii.lg }, shadows.card]}>
           <Image source={{ uri: request.pickupLocation.image }} style={styles.cardImage} />
           <View style={styles.cardBody}>
             <Text style={[styles.cardTitle, { color: colors.text }]}>{request.pickupLocation.name}</Text>
@@ -106,9 +105,9 @@ export default function DasherDeliveryDetailsScreen() {
               </View>
             </View>
           </View>
-        </GlassCard>
+        </View>
 
-        <GlassCard style={[styles.card, shadows.card]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderRadius: Radii.lg }, shadows.card]}>
           <View style={styles.cardBody}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Drop-off</Text>
             <View style={styles.detailRow}>
@@ -117,7 +116,7 @@ export default function DasherDeliveryDetailsScreen() {
             </View>
             <Text style={[styles.helperText, { color: colors.mutedText }]}>Be respectful. Notes are shared with drivers.</Text>
           </View>
-        </GlassCard>
+        </View>
 
         <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={handleClaimDelivery}>
           <Text style={styles.primaryText}>Claim this delivery</Text>
@@ -207,7 +206,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 15,
     fontWeight: '700',
   },

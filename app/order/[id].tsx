@@ -153,7 +153,7 @@ export default function OrderTrackingScreen() {
             {/* Store Marker */}
             <Marker coordinate={storeLocation} title={order.storeName}>
               <View style={[styles.markerStore, { backgroundColor: colors.accent }]}>
-                <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
+                <MaterialIcons name="storefront" size={16} color="#FFF8F0" />
               </View>
             </Marker>
 
@@ -165,7 +165,7 @@ export default function OrderTrackingScreen() {
               }}
               title="Delivery Address">
               <View style={[styles.markerDelivery, { backgroundColor: colors.success }]}>
-                <MaterialIcons name="home" size={16} color="#FFFFFF" />
+                <MaterialIcons name="home" size={16} color="#FFF8F0" />
               </View>
             </Marker>
 
@@ -173,7 +173,7 @@ export default function OrderTrackingScreen() {
             {driverLocation && order.status === 'on_the_way' && (
               <Marker coordinate={driverLocation} title="Driver">
                 <View style={[styles.markerDriver, { backgroundColor: colors.accent }]}>
-                  <MaterialIcons name="delivery-dining" size={16} color="#FFFFFF" />
+                  <MaterialIcons name="delivery-dining" size={16} color="#FFF8F0" />
                 </View>
               </Marker>
             )}
@@ -214,8 +214,8 @@ export default function OrderTrackingScreen() {
                       isCompleted && { backgroundColor: colors.success },
                       isCurrent && { backgroundColor: colors.accent },
                     ]}>
-                    {isCompleted && (
-                      <MaterialIcons name="check" size={12} color="#FFFFFF" />
+                      {isCompleted && (
+                      <MaterialIcons name="check" size={12} color="#FFF8F0" />
                     )}
                   </View>
                   {index < progressSteps.length - 1 && (
@@ -334,7 +334,7 @@ export default function OrderTrackingScreen() {
             {/* Store Marker */}
             <Marker coordinate={storeLocation} title={order.storeName}>
               <View style={[styles.markerStore, { backgroundColor: colors.accent }]}>
-                <MaterialIcons name="storefront" size={16} color="#FFFFFF" />
+                <MaterialIcons name="storefront" size={16} color="#FFF8F0" />
               </View>
             </Marker>
 
@@ -346,7 +346,7 @@ export default function OrderTrackingScreen() {
               }}
               title="Delivery Address">
               <View style={[styles.markerDelivery, { backgroundColor: colors.success }]}>
-                <MaterialIcons name="home" size={16} color="#FFFFFF" />
+                <MaterialIcons name="home" size={16} color="#FFF8F0" />
               </View>
             </Marker>
 
@@ -354,7 +354,7 @@ export default function OrderTrackingScreen() {
             {driverLocation && order.status === 'on_the_way' && (
               <Marker coordinate={driverLocation} title="Driver">
                 <View style={[styles.markerDriver, { backgroundColor: colors.accent }]}>
-                  <MaterialIcons name="delivery-dining" size={16} color="#FFFFFF" />
+                  <MaterialIcons name="delivery-dining" size={16} color="#FFF8F0" />
                 </View>
               </Marker>
             )}
@@ -382,12 +382,12 @@ export default function OrderTrackingScreen() {
 const darkMapStyle = [
   { elementType: 'geometry', stylers: [{ color: '#0F141A' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#9CA3AF' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#111827' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1F2937' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#111827' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#181A18' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#181A18' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#181A18' }] },
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0B0F14' }] },
   { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#1A2330' }] },
-  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#1F2937' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#181A18' }] },
 ];
 
 const styles = StyleSheet.create({
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 13,
     fontWeight: '700',
   },

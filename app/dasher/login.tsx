@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 15,
     fontWeight: '700',
   },

@@ -5,9 +5,8 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GlassCard } from '@/components/glass-card';
 import { availableRequests, distributionLeaderboard, sevadarBadges, sevadarStats } from '@/constants/mock-data';
-import { Radii, Spacing } from '@/constants/theme';
+import { Radii, Shadows, Spacing } from '@/constants/theme';
 import { useOrders, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
@@ -63,13 +62,13 @@ export default function DasherDashboardScreen() {
             onPress={() => router.push(`/order/${activeOrder.id}` as const)}
           >
             <View style={styles.activeOrderLeft}>
-              <MaterialIcons name="local-shipping" size={20} color="#FFFFFF" />
+              <MaterialIcons name="local-shipping" size={20} color="#FFF8F0" />
               <View style={styles.activeOrderText}>
                 <Text style={styles.activeOrderTitle}>Active Delivery</Text>
                 <Text style={styles.activeOrderSubtitle}>Tap to see your route</Text>
               </View>
             </View>
-            <MaterialIcons name="chevron-right" size={24} color="#FFFFFF" />
+            <MaterialIcons name="chevron-right" size={24} color="#FFF8F0" />
           </Pressable>
         )}
 
@@ -92,7 +91,7 @@ export default function DasherDashboardScreen() {
             ]}
             onPress={() => handleViewDelivery(request.id)}
           >
-            <GlassCard style={styles.deliveryCard} noBorder>
+            <View style={[styles.deliveryCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
               <Image source={{ uri: request.pickupLocation.image }} style={styles.deliveryImage} />
               <View style={styles.deliveryContent}>
                 <View style={styles.deliveryHeader}>
@@ -113,7 +112,7 @@ export default function DasherDashboardScreen() {
                   </View>
                 </View>
               </View>
-            </GlassCard>
+            </View>
           </Pressable>
         ))}
 
@@ -122,7 +121,7 @@ export default function DasherDashboardScreen() {
         )}
 
         {/* Sevadar Impact */}
-        <GlassCard style={styles.impactCard}>
+        <View style={[styles.impactCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
           <View style={styles.impactHeader}>
             <View style={[styles.impactIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF4DD' }]}> 
               <MaterialIcons name="workspace-premium" size={22} color={colors.accent} />
@@ -148,15 +147,15 @@ export default function DasherDashboardScreen() {
               <Text style={[styles.impactLabel, { color: colors.mutedText }]}>Food Saved</Text>
             </View>
           </View>
-        </GlassCard>
+        </View>
 
-        <GlassCard style={styles.badgesCard}>
+        <View style={[styles.badgesCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Badges</Text>
           <View style={styles.badgeList}>
             {sevadarBadges.map((badge) => (
               <View key={badge.id} style={styles.badgeRow}>
-                <View style={[styles.badgeIconBubble, { backgroundColor: badge.color || colors.accent }]}>
-                  <MaterialIcons name={badge.icon as never} size={20} color="#FFFFFF" />
+                <View style={[styles.badgeIconBubble, { backgroundColor: badge.color || colors.accent }]}> 
+                  <MaterialIcons name={badge.icon as never} size={20} color="#FFF8F0" />
                 </View>
                 <View style={styles.badgeContent}>
                   <Text style={[styles.badgeTitle, { color: colors.text }]}>{badge.title}</Text>
@@ -169,9 +168,9 @@ export default function DasherDashboardScreen() {
               </View>
             ))}
           </View>
-        </GlassCard>
+        </View>
 
-        <GlassCard style={styles.leaderboardCard}>
+        <View style={[styles.leaderboardCard, { backgroundColor: colors.surface, borderRadius: Radii.lg }, colors.isDark ? Shadows.dark.card : Shadows.light.card]}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Leaderboard</Text>
           <View style={styles.leaderboardList}>
             {distributionLeaderboard.map((entry, index) => (
@@ -195,7 +194,7 @@ export default function DasherDashboardScreen() {
               </View>
             ))}
           </View>
-        </GlassCard>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -256,11 +255,11 @@ const styles = StyleSheet.create({
   activeOrderTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
   },
   activeOrderSubtitle: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,248,240,0.8)',
   },
   sectionTitle: {
     fontSize: 17,

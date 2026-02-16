@@ -76,7 +76,7 @@ export function ProofOfDelivery({ onPhotoCapture, initialPhoto }: ProofOfDeliver
             style={[styles.removeButton, { backgroundColor: colors.accent }]}
             onPress={() => setPhoto(null)}
           >
-            <MaterialIcons name="close" size={18} color="#FFFFFF" />
+            <MaterialIcons name="close" size={18} color="#FFF8F0" />
           </Pressable>
           <Text style={[styles.photoStatus, { color: colors.accent }]}>Photo captured ✓</Text>
         </View>
@@ -87,7 +87,7 @@ export function ProofOfDelivery({ onPhotoCapture, initialPhoto }: ProofOfDeliver
             onPress={handleTakePhoto}
             disabled={isLoading}
           >
-            <MaterialIcons name="photo-camera" size={20} color="#FFFFFF" />
+            <MaterialIcons name="photo-camera" size={20} color="#FFF8F0" />
             <Text style={styles.buttonText}>Take Photo</Text>
           </Pressable>
 
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: Radii.md,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     left: Spacing.sm,
     fontWeight: '600',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
     borderRadius: 4,

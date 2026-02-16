@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   cartBadgeText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 10,
     fontWeight: '700',
   },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   promoText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   addButtonTextActive: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 12,
   },
   itemName: {
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   cartButtonBadgeText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 12,
     fontWeight: '700',
   },

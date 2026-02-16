@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
   checkoutButtonText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   browseButtonText: {
-    color: '#FFFFFF',
+    color: '#FFF8F0',
     fontSize: 14,
     fontWeight: '600',
   },
