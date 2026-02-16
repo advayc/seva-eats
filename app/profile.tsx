@@ -18,11 +18,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LocationPicker } from '@/components/location-picker';
 import { Radii, Spacing } from '@/constants/theme';
 import { useLocation, useTheme, useUser } from '@/context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user, updateProfile, clearProfile, hasCompletedProfile } = useUser();
+  const { user, updateProfile, clearProfile, hasCompletedProfile, setRole } = useUser();
   const { themeMode, setThemeMode } = useTheme();
   const { userLocation } = useLocation();
   const colors = useThemeColors();
@@ -195,15 +196,26 @@ export default function ProfileScreen() {
             <Text style={[styles.inputHint, { color: colors.mutedText }]}>Change account settings or switch role (hidden)</Text>
             <Pressable
               style={[styles.roleButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-              onPress={() => {
-                // only allow access to choose-role via deep link or admin flag
-                // show an info alert and copy a deep link to clipboard for admins
-                // fallback: navigate to tabs
-                router.replace('/(tabs)');
+              onPress={async () => {
+                // Toggle between recipient and dasher for quick role preview
+                const nextRole = user?.role === 'dasher' ? 'recipient' : 'dasher';
+                try {
+                  await setRole(nextRole);
+                  // mark onboarding completed so the dasher/home flows work as expected
+                  await AsyncStorage.setItem('onboarding-completed', 'true');
+                  if (nextRole === 'dasher') {
+                    router.replace('/dasher/dashboard' as any);
+                  } else {
+                    router.replace('/(tabs)' as any);
+                  }
+                } catch (e) {
+                  // fallback: navigate to tabs
+                  router.replace('/(tabs)');
+                }
               }}
             >
               <MaterialIcons name="swap-horiz" size={20} color={colors.accent} />
-              <Text style={[styles.roleButtonText, { color: colors.text }]}>Switch role</Text>
+              <Text style={[styles.roleButtonText, { color: colors.text }]}>{user?.role === 'dasher' ? 'Switch to recipient' : 'Switch to sevadar'}</Text>
             </Pressable>
           </View>
 
