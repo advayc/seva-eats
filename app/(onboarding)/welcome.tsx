@@ -32,7 +32,7 @@ export default function WelcomeScreen() {
           </Pressable>
           <Pressable
             style={[styles.secondaryButton, { borderColor: colors.border }]}
-            onPress={() => router.push('/(onboarding)/intro')}
+            onPress={() => router.push('/(onboarding)/learn-more')}
           >
             <Text style={[styles.secondaryText, { color: colors.text }]}>How it works</Text>
           </Pressable>
@@ -60,20 +60,20 @@ const styles = StyleSheet.create({
     gap: Spacing.xxl,
   },
   logoWrap: {
-    width: 140,
-    height: 140,
+    width: 220,
+    height: 220,
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 200,
+    height: 200,
   },
   titleBlock: {
     alignItems: 'flex-start',
   },
   title: {
-    fontSize: 34,
+    fontSize: 40,
     fontWeight: '800',
     letterSpacing: -0.5,
   },

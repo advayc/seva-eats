@@ -20,7 +20,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl md:text-6xl font-bold text-foreground text-center"
+          className="text-6xl md:text-7xl font-bold text-foreground text-center"
         >
           Seva Eats
         </motion.h1>
@@ -46,7 +46,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               <img
                 src={require('@/assets/images/logo.png')}
                 alt="Seva Eats logo"
-                className="w-48 h-48 md:w-64 md:h-64 object-contain"
+                className="w-64 h-64 md:w-96 md:h-96 object-contain"
               />
           </div>
         </motion.div>

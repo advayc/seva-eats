@@ -3,11 +3,11 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    Dimensions,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -64,24 +64,29 @@ export default function IndexScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
       <View style={styles.content}>
-        <View style={styles.heroSection}>
-          <Animated.View entering={FadeIn.duration(600).delay(200)}>
-            <LogoMark size={PLATE_SIZE} />
+        <View style={styles.headerTop}>
+          <Animated.View entering={FadeIn.duration(600).delay(100)}>
+            <View style={[styles.logoWrap, { backgroundColor: colors.surfaceElevated }]}> 
+              <LogoMark size={48} />
+            </View>
           </Animated.View>
-          <Animated.View entering={FadeInDown.duration(500).delay(400)} style={styles.titleBlock}>
-            <Text style={[styles.title, { color: colors.text }]}>Seva Eats</Text>
-            <Text style={[styles.tagline, { color: colors.accent }]}>FOOD • COMMUNITY • SERVICE</Text>
+
+          <Animated.View entering={FadeInDown.duration(500).delay(300)} style={styles.heroText}>
+            <Text style={[styles.heroTitle, { color: colors.text }]}>Request a free langar{"\n"}meal near you</Text>
+            <Text style={[styles.heroSubtitle, { color: colors.mutedText }]}>Food is shared with dignity. No payment, no paperwork.</Text>
           </Animated.View>
         </View>
 
-        <Animated.View entering={FadeInDown.duration(500).delay(600)} style={styles.actions}>
-          <Pressable
-            style={[styles.continueButton, { backgroundColor: colors.accent }]}
-            onPress={handleContinue}
-          >
-            <Text style={styles.continueText}>Continue</Text>
+        <Animated.View entering={FadeInDown.duration(500).delay(500)} style={styles.actions}>
+          <Pressable onPress={() => router.push('/request/new') as any} style={[styles.requestButton, { backgroundColor: colors.accent }]}> 
+            <Text style={styles.requestText}>Request a Meal</Text>
+          </Pressable>
+
+          <Pressable onPress={() => router.push('/(onboarding)/welcome' as any)} style={styles.learnWrap}>
+            <Text style={[styles.learnText, { color: colors.accent }]}>Learn how it works →</Text>
           </Pressable>
         </Animated.View>
+
       </View>
     </SafeAreaView>
   );
@@ -93,9 +98,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: Spacing.xxl,
-    paddingVertical: Spacing.xxxl,
-    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.xxl,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   heroSection: {
     flex: 1,
@@ -119,15 +125,92 @@ const styles = StyleSheet.create({
   },
   actions: {
     paddingBottom: Spacing.xl,
-  },
-  continueButton: {
-    borderRadius: Radii.pill,
-    paddingVertical: 16,
+    marginTop: Spacing.lg,
+    width: '100%',
     alignItems: 'center',
   },
-  continueText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '700',
+  requestButton: {
+    borderRadius: Radii.xl,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    width: '100%',
+  },
+  requestText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  learnWrap: {
+    marginTop: Spacing.md,
+    alignItems: 'center',
+  },
+  learnText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  headerTop: {
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  logoWrap: {
+    width: 96,
+    height: 64,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    elevation: 2,
+  },
+  heroText: {
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+  },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    textAlign: 'center',
+    lineHeight: 32,
+  },
+  heroSubtitle: {
+    marginTop: Spacing.sm,
+    fontSize: 14,
+    textAlign: 'center',
+    maxWidth: 320,
+  },
+  locationCardWrap: {
+    marginTop: Spacing.lg,
+  },
+  locationCard: {
+    borderRadius: Radii.xl,
+    padding: Spacing.lg,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+  },
+  locationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  pinIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locationTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  locationBody: {
+    marginTop: Spacing.md,
+  },
+  nextDelivery: {
+    fontSize: 13,
   },
 });
