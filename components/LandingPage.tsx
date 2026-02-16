@@ -30,7 +30,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-destructive text-sm md:text-base tracking-widest mt-2 mb-8 text-center"
+          className="text-destructive text-sm md:text-base tracking-widest mt-6 mb-12 text-center"
         >
           {"FOOD\u2009•\u2009COMMUNITY\u2009•\u2009SERVICE"}
         </motion.p>
@@ -40,7 +40,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="mb-12 flex-1 flex items-center justify-center"
+          className="mb-20 flex items-center justify-center"
         >
           <div className="bg-yellow-100 rounded-3xl p-8 md:p-12 flex items-center justify-center">
               <img

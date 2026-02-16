@@ -79,7 +79,7 @@ export default function HomeScreen() {
               style={[styles.iconButton, { backgroundColor: colors.surface }]} 
               onPress={() => router.push('/profile')}
             >
-              <MaterialIcons name="person-outline" size={22} color={colors.text} />
+              <MaterialIcons name="account-circle" size={22} color={colors.text} />
             </Pressable>
           </View>
         </View>
@@ -173,10 +173,10 @@ export default function HomeScreen() {
         <GlassCard
           style={[styles.actionButton, !colors.isDark && { borderColor: colors.border, borderWidth: 1 }]}
         >
-          <Pressable
-            style={styles.actionButtonPress}
-            onPress={() => router.push('/request/new')}
-          >
+           <Pressable
+             style={styles.actionButtonPress}
+             onPress={() => router.push('/request/location')}
+           >
             <MaterialIcons name="restaurant" size={24} color={colors.accent} />
             <View style={styles.actionButtonText}>
               <Text style={[styles.actionButtonTitle, { color: colors.text }]}>Request a shelter drop-off</Text>

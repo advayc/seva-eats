@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -5,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Radii, Spacing } from '@/constants/theme';
 import { useThemeColors } from '@/hooks/use-theme-colors';
+
+const ONBOARDING_KEY = 'onboarding-completed';
 
 export default function LearnMoreScreen() {
   const router = useRouter();
@@ -48,13 +51,43 @@ export default function LearnMoreScreen() {
           <Text style={[styles.quoteSub, { color: colors.mutedText }]}>Built with seva in mind</Text>
         </View>
 
+        <View style={[styles.perksCard, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.15)' : '#FFF7ED' }]}> 
+          <View style={styles.perkRow}>
+            <View style={[styles.perkIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF3E0' }]}> 
+              <MaterialIcons name="volunteer-activism" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.perkText, { color: colors.text }]}>Langar is always free</Text>
+          </View>
+          <View style={styles.perkRow}>
+            <View style={[styles.perkIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF3E0' }]}>
+              <MaterialIcons name="directions-car" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.perkText, { color: colors.text }]}>Delivered by local volunteers</Text>
+          </View>
+          <View style={styles.perkRow}>
+            <View style={[styles.perkIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF3E0' }]}>
+              <MaterialIcons name="verified" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.perkText, { color: colors.text }]}>No eligibility checks</Text>
+          </View>
+          <View style={styles.perkRow}>
+            <View style={[styles.perkIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF3E0' }]}>
+              <MaterialIcons name="lock" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.perkText, { color: colors.text }]}>Privacy respected</Text>
+          </View>
+        </View>
+
         <View style={styles.actions}>
-          <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={() => router.replace('/(tabs)')}>
-            <Text style={styles.primaryText}>Get started</Text>
-          </Pressable>
-          <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={() => router.replace('/') }>
-            <Text style={[styles.secondaryText, { color: colors.text }]}>Back</Text>
-          </Pressable>
+           <Pressable style={[styles.primaryButton, { backgroundColor: colors.accent }]} onPress={async () => {
+             await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+             router.replace('/(tabs)');
+           }}>
+             <Text style={styles.primaryText}>Get started</Text>
+           </Pressable>
+          <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={() => router.back()}>
+             <Text style={[styles.secondaryText, { color: colors.text }]}>Back</Text>
+           </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -118,4 +151,27 @@ const styles = StyleSheet.create({
   quoteWrap: { marginTop: Spacing.xl, alignItems: 'center', paddingVertical: Spacing.xl },
   quote: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: Spacing.sm, lineHeight: 30 },
   quoteSub: { fontSize: 14, textAlign: 'center' },
+  perksCard: {
+    marginTop: Spacing.lg,
+    borderRadius: Radii.xl,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.md,
+  },
+  perkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  perkIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  perkText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
 });

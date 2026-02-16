@@ -67,6 +67,9 @@ type RequestContextType = {
     servingSize: number;
     dietaryRestrictions: string[];
     driverNote: string;
+    pickupLocation?: { address: string; latitude: number; longitude: number };
+    pickupLocationId?: string;
+    pickupLocationName?: string;
   }) => MealRequest;
   cancelRequest: (requestId: string) => void;
   getRequest: (requestId: string) => MealRequest | undefined;
@@ -132,6 +135,9 @@ export function RequestProvider({ children }: { children: ReactNode }) {
     servingSize: number;
     dietaryRestrictions: string[];
     driverNote: string;
+    pickupLocation?: { address: string; latitude: number; longitude: number };
+    pickupLocationId?: string;
+    pickupLocationName?: string;
   }): MealRequest => {
     const now = new Date();
     const newRequest: MealRequest = {
@@ -143,6 +149,9 @@ export function RequestProvider({ children }: { children: ReactNode }) {
       servingSize: request.servingSize,
       dietaryRestrictions: request.dietaryRestrictions,
       driverNote: request.driverNote,
+      pickupLocationId: request.pickupLocationId,
+      pickupLocationName: request.pickupLocationName,
+      pickupLocation: request.pickupLocation,
       status: 'pending',
       createdAt: now,
       liveActivityId: null,
@@ -180,20 +189,20 @@ export function RequestProvider({ children }: { children: ReactNode }) {
               volunteerId: 'vol-123',
               volunteerName: 'Gurpreet Singh',
               showVolunteerName: false,
-            gurdwaraId: 'hub-brampton',
-            gurdwaraName: 'Brampton Distribution Hub',
-            gurdwaraLocation: {
-              address: '123 Community Way, Brampton, ON',
-              latitude: 43.7315,
-              longitude: -79.7624,
-            },
-            pickupLocationId: 'hub-brampton',
-            pickupLocationName: 'Brampton Distribution Hub',
-            pickupLocation: {
-              address: '123 Community Way, Brampton, ON',
-              latitude: 43.7315,
-              longitude: -79.7624,
-            },
+             gurdwaraId: req.pickupLocationId ?? 'hub-brampton',
+             gurdwaraName: req.pickupLocationName ?? 'Brampton Distribution Hub',
+             gurdwaraLocation: req.pickupLocation ?? {
+               address: '123 Community Way, Brampton, ON',
+               latitude: 43.7315,
+               longitude: -79.7624,
+             },
+             pickupLocationId: req.pickupLocationId ?? 'hub-brampton',
+             pickupLocationName: req.pickupLocationName ?? 'Brampton Distribution Hub',
+             pickupLocation: req.pickupLocation ?? {
+               address: '123 Community Way, Brampton, ON',
+               latitude: 43.7315,
+               longitude: -79.7624,
+             },
             estimatedDelivery,
             statusHistory: [...req.statusHistory, { status: 'matched' as MealRequestStatus, timestamp: now }],
           };

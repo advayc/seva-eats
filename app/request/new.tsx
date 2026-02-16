@@ -1,5 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState, useCallback } from 'react';
 import {
   Pressable,
@@ -137,6 +137,7 @@ function MealCard({
 
 export default function MealSelectionScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const colors = useThemeColors();
   const shadows = colors.isDark ? Shadows.dark : Shadows.light;
   const [selectedMeals, setSelectedMeals] = useState<Map<string, SelectedMeal>>(
@@ -190,11 +191,12 @@ export default function MealSelectionScreen() {
   }, []);
 
   const handleContinue = () => {
-    // Pass selected meals to next screen via search params
+    // Pass selected meals and location to next screen via search params
     const mealsParam = Array.from(selectedMeals.entries())
       .map(([id, item]) => `${id}:${item.quantity}`)
       .join(',');
-    router.push(`/request/details?meals=${mealsParam}` as any);
+    const locationParam = params.location ? `&location=${params.location}` : '';
+    router.push(`/request/details?meals=${mealsParam}${locationParam}` as any);
   };
 
   const mainMeals = mealOptions.filter((m) => m.category === 'main');

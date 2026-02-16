@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LocationPicker } from '@/components/location-picker';
 import { getMealById } from '@/constants/meals';
+import { pickupLocations } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
 import { useLocation, useRequests, useUser } from '@/context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
@@ -27,7 +28,7 @@ const MAX_NOTE_LENGTH = 200;
 
 export default function DeliveryDetailsScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ meals: string }>();
+  const params = useLocalSearchParams<{ meals: string; location: string }>();
   const { userLocation } = useLocation();
   const { user } = useUser();
   const { submitRequest, activeRequest } = useRequests();
@@ -43,11 +44,17 @@ export default function DeliveryDetailsScreen() {
     }).filter(Boolean) as { meal: NonNullable<ReturnType<typeof getMealById>>; quantity: number }[];
   }, [params.meals]);
 
+  // Find selected location
+  const selectedLocation = useMemo(() => {
+    if (!params.location) return null;
+    return pickupLocations.find((loc) => loc.id === params.location) || null;
+  }, [params.location]);
+
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
-  const [address, setAddress] = useState(user?.homeAddress?.address ?? '');
-  const [selectedLat, setSelectedLat] = useState(user?.homeAddress?.latitude ?? userLocation?.latitude ?? 43.7315);
-  const [selectedLon, setSelectedLon] = useState(user?.homeAddress?.longitude ?? userLocation?.longitude ?? -79.7624);
+  const [address, setAddress] = useState(user?.homeAddress?.address ?? selectedLocation?.location.address ?? '');
+  const [selectedLat, setSelectedLat] = useState(user?.homeAddress?.latitude ?? selectedLocation?.location.latitude ?? userLocation?.latitude ?? 43.7315);
+  const [selectedLon, setSelectedLon] = useState(user?.homeAddress?.longitude ?? selectedLocation?.location.longitude ?? userLocation?.longitude ?? -79.7624);
   const [servingSize, setServingSize] = useState(user?.servingSize ?? 2);
   const [thankYouNote, setThankYouNote] = useState('');
   const [deliveryPreference, setDeliveryPreference] = useState<'leave_at_door' | 'hand_to_me'>('leave_at_door');
@@ -101,10 +108,18 @@ export default function DeliveryDetailsScreen() {
       },
       servingSize,
       dietaryRestrictions: [],
+      pickupLocation: selectedLocation ? {
+        address: selectedLocation.address,
+        latitude: selectedLocation.location.latitude,
+        longitude: selectedLocation.location.longitude,
+      } : undefined,
+      pickupLocationId: selectedLocation?.id,
+      pickupLocationName: selectedLocation?.name,
       driverNote: [
         `Meals: ${mealDescription}`,
         `Delivery: ${deliveryPreference === 'leave_at_door' ? 'Leave at door' : 'Hand to me'}`,
         `Window: ${deliveryWindow}`,
+        selectedLocation ? `Pickup: ${selectedLocation.name}` : null,
         thankYouNote.trim() ? `Thank you: ${thankYouNote.trim()}` : null,
         donationAmount.trim() ? `Donation: $${donationAmount.trim()}` : null,
       ].filter(Boolean).join('\n'),
@@ -180,25 +195,43 @@ export default function DeliveryDetailsScreen() {
             <Text style={[styles.helper, { color: colors.mutedText }]}>So the driver can contact if there are any issues</Text>
           </Animated.View>
 
-          {/* Shelter / Partner Location */}
-          <Animated.View entering={FadeInDown.delay(250)} style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Shelter or partner location</Text>
-            <LocationPicker
-              address={address}
-              onAddressChange={setAddress}
-              onLocationChange={(lat, lon) => {
-                setSelectedLat(lat);
-                setSelectedLon(lon);
-              }}
-              initialLatitude={selectedLat}
-              initialLongitude={selectedLon}
-              currentAddress={userLocation?.address}
-              currentLat={userLocation?.latitude}
-              currentLon={userLocation?.longitude}
-              placeholder="Enter a nearby shelter or partner address"
-            />
-            <Text style={[styles.helper, { color: colors.mutedText }]}>Beta: deliveries go to partner shelters and community drop-offs.</Text>
-          </Animated.View>
+           {/* Delivery Location */}
+           <Animated.View entering={FadeInDown.delay(250)} style={styles.inputGroup}>
+             <Text style={[styles.label, { color: colors.text }]}>Delivery location</Text>
+             {selectedLocation ? (
+               <View style={[styles.selectedLocationCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                 <View style={[styles.locationIcon, { backgroundColor: colors.isDark ? 'rgba(249, 115, 22, 0.2)' : '#FFF7ED' }]}>
+                   <MaterialIcons name="location-on" size={20} color={colors.accent} />
+                 </View>
+                 <View style={styles.locationDetails}>
+                   <Text style={[styles.locationName, { color: colors.text }]}>{selectedLocation.name}</Text>
+                   <Text style={[styles.locationAddress, { color: colors.mutedText }]}>{selectedLocation.address}</Text>
+                   <Text style={[styles.locationPartner, { color: colors.accent }]}>{selectedLocation.nextPickupWindow}</Text>
+                 </View>
+               </View>
+             ) : (
+               <LocationPicker
+                 address={address}
+                 onAddressChange={setAddress}
+                 onLocationChange={(lat, lon) => {
+                   setSelectedLat(lat);
+                   setSelectedLon(lon);
+                 }}
+                 initialLatitude={selectedLat}
+                 initialLongitude={selectedLon}
+                 currentAddress={userLocation?.address}
+                 currentLat={userLocation?.latitude}
+                 currentLon={userLocation?.longitude}
+                 placeholder="Enter a nearby shelter or partner address"
+               />
+             )}
+             <Text style={[styles.helper, { color: colors.mutedText }]}>
+               {selectedLocation
+                 ? 'Meals are prepared at this hub for partner drop-offs.'
+                 : 'Beta: deliveries go to partner shelters and community drop-offs.'
+               }
+             </Text>
+           </Animated.View>
 
           {/* Serving Size */}
           <Animated.View entering={FadeInDown.delay(300)} style={styles.inputGroup}>
@@ -507,6 +540,37 @@ const styles = StyleSheet.create({
   },
   deliveryOptionText: {
     fontSize: 13,
+    fontWeight: '600',
+  },
+  selectedLocationCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: Radii.lg,
+    borderWidth: 1,
+    padding: Spacing.md,
+    gap: Spacing.md,
+  },
+  locationIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locationDetails: {
+    flex: 1,
+  },
+  locationName: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  locationAddress: {
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  locationPartner: {
+    fontSize: 11,
     fontWeight: '600',
   },
   footer: {

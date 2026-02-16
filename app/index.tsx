@@ -78,7 +78,7 @@ export default function IndexScreen() {
         </View>
 
         <Animated.View entering={FadeInDown.duration(500).delay(500)} style={styles.actions}>
-          <Pressable onPress={() => router.push('/request/new') as any} style={[styles.requestButton, { backgroundColor: colors.accent }]}> 
+           <Pressable onPress={() => router.push('/request/location' as any)} style={[styles.requestButton, { backgroundColor: colors.accent }]}>
             <Text style={styles.requestText}>Request a Meal</Text>
           </Pressable>
 

@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.advay.sevaeats",
+      "bundleIdentifier": "com.advay.sewaeats",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We use your location to show nearby Seva Eats drop-off points and delivery updates.",
         "ITSAppUsesNonExemptEncryption": false
@@ -27,7 +27,7 @@
       ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.advay.sevaeats"
+      "package": "com.advay.sewaeats"
     },
     "web": {
       "output": "static",

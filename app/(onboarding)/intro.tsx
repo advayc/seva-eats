@@ -17,7 +17,7 @@ export default function IntroScreen() {
   };
 
   const goToLanding = () => {
-    router.replace('/(onboarding)/intro' as any);
+    router.back();
   };
 
   return (
