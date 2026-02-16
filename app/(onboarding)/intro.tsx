@@ -1,3 +1,4 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -35,17 +36,62 @@ export default function IntroScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.accent }]}>How it works</Text>
-          <View style={styles.stepRow}>
-            <Text style={[styles.stepNumber, { color: colors.text, backgroundColor: colors.isDark ? colors.surface : '#E5E7EB' }]}>1</Text>
-            <Text style={[styles.stepText, { color: colors.text }]}>Pick up a prepared meal box at a nearby distribution hub.</Text>
+        <View style={styles.howItWorksSection}>
+          <Text style={[styles.processLabel, { color: '#F97316' }]}>SIMPLE PROCESS</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>How It Works</Text>
+          <Text style={[styles.sectionDescription, { color: colors.mutedText }]}>Access nutritious meals in three easy steps</Text>
+
+          <View style={styles.stepsContainer}>
+            {/* Step 1 */}
+            <View style={styles.stepWrapper}>
+              <View style={styles.stepLeft}>
+                <View style={[styles.stepBadge, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.1)' : '#FEF3E8', borderColor: '#F97316' }]}>
+                  <Text style={styles.stepNumber}>01</Text>
+                </View>
+                <View style={styles.connectorLine} />
+              </View>
+              <View style={[styles.stepIconContainer, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.15)' : '#FFF4ED' }]}>
+                <MaterialIcons name="restaurant" size={20} color="#F97316" />
+              </View>
+              <View style={styles.stepRight}>
+                <Text style={[styles.stepTitle, { color: colors.text }]}>Choose Your Meal</Text>
+                <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Browse available meals from local donors and restaurants</Text>
+              </View>
+            </View>
+
+            {/* Step 2 */}
+            <View style={styles.stepWrapper}>
+              <View style={styles.stepLeft}>
+                <View style={[styles.stepBadge, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.1)' : '#FEF3E8', borderColor: '#F97316' }]}>
+                  <Text style={styles.stepNumber}>02</Text>
+                </View>
+                <View style={styles.connectorLine} />
+              </View>
+              <View style={[styles.stepIconContainer, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.15)' : '#FFF4ED' }]}>
+                <MaterialIcons name="location-on" size={20} color="#F97316" />
+              </View>
+              <View style={styles.stepRight}>
+                <Text style={[styles.stepTitle, { color: colors.text }]}>Confirm Delivery</Text>
+                <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Set your preferred pickup location and time</Text>
+              </View>
+            </View>
+
+            {/* Step 3 */}
+            <View style={styles.stepWrapper}>
+              <View style={styles.stepLeft}>
+                <View style={[styles.stepBadge, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.1)' : '#FEF3E8', borderColor: '#F97316' }]}>
+                  <Text style={styles.stepNumber}>03</Text>
+                </View>
+              </View>
+              <View style={[styles.stepIconContainer, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.15)' : '#FFF4ED' }]}>
+                <MaterialIcons name="volunteer-activism" size={20} color="#F97316" />
+              </View>
+              <View style={styles.stepRight}>
+                <Text style={[styles.stepTitle, { color: colors.text }]}>Receive with Dignity</Text>
+                <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Get your meal delivered with care and respect</Text>
+              </View>
+            </View>
           </View>
-          <View style={styles.stepRow}>
-            <Text style={[styles.stepNumber, { color: colors.text, backgroundColor: colors.isDark ? colors.surface : '#E5E7EB' }]}>2</Text>
-            <Text style={[styles.stepText, { color: colors.text }]}>Drop it off at a nearby shelter or community location.</Text>
-          </View>
-          <Text style={[styles.helperText, { color: colors.mutedText }]}>Takes about 1 minute to get started</Text>
         </View>
 
         <View style={styles.actions}>
@@ -56,10 +102,7 @@ export default function IntroScreen() {
             <Text style={[styles.secondaryText, { color: colors.text }]}>Go Back</Text>
           </Pressable>
         </View>
-
-        <Text style={[styles.disclaimer, { color: colors.mutedText }]}>
-          Locations are curated by partner programs. You can update delivery preferences later.
-        </Text>
+      
       </ScrollView>
     </SafeAreaView>
   );
@@ -71,70 +114,117 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.xxl,
-    paddingTop: Spacing.xxxl,
+    paddingTop: Spacing.lg,
     paddingBottom: Spacing.xxxl,
   },
   heroRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.lg,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.xl * 1.5,
   },
   logo: {
-    width: 96,
-    height: 96,
+    width: 80,
+    height: 80,
   },
   heroText: {
     flex: 1,
   },
   title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '800',
     letterSpacing: -0.5,
     marginBottom: 6,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13,
     letterSpacing: 0.2,
   },
-  section: {
-    marginBottom: Spacing.xxl,
+  howItWorksSection: {
+    marginBottom: Spacing.xl * 1.5,
+  },
+  processLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: Spacing.xs,
+    textAlign: 'center',
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 36,
     fontWeight: '700',
-    marginBottom: Spacing.md,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    letterSpacing: -0.8,
+    marginBottom: Spacing.sm,
+    textAlign: 'center',
   },
-  stepRow: {
+  sectionDescription: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: Spacing.xl * 1.5,
+    textAlign: 'center',
+  },
+  stepsContainer: {
+    paddingHorizontal: Spacing.sm,
+  },
+  stepWrapper: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.xl * 1.2,
+  },
+  stepLeft: {
     alignItems: 'center',
-    gap: 12,
-    marginBottom: Spacing.md,
+    width: 56,
+  },
+  stepBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   stepNumber: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontSize: 12,
+    fontSize: 17,
     fontWeight: '700',
-    lineHeight: 22,
-    overflow: 'hidden',
+    color: '#F97316',
+    letterSpacing: 0.5,
   },
-  stepText: {
+  connectorLine: {
+    width: 2,
     flex: 1,
+    minHeight: 50,
+    backgroundColor: 'rgba(251, 146, 60, 0.2)',
+    marginTop: 6,
+  },
+  stepIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: Spacing.md,
+    marginRight: Spacing.md,
+    marginTop: 10,
+  },
+  stepRight: {
+    flex: 1,
+    paddingTop: 8,
+  },
+  stepTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: -0.3,
+    marginBottom: Spacing.xs,
+  },
+  stepDesc: {
     fontSize: 15,
     lineHeight: 22,
-  },
-  helperText: {
-    fontSize: 12,
+    letterSpacing: -0.2,
   },
   actions: {
     gap: Spacing.md,
-    marginBottom: Spacing.lg,
+    marginTop: Spacing.xl,
   },
   primaryButton: {
     borderRadius: Radii.pill,
@@ -155,9 +245,5 @@ const styles = StyleSheet.create({
   secondaryText: {
     fontSize: 13,
     fontWeight: '600',
-  },
-  disclaimer: {
-    fontSize: 12,
-    textAlign: 'center',
   },
 });

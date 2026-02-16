@@ -1,15 +1,14 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GlassCard } from '@/components/glass-card';
 import { communityStats } from '@/constants/mock-data';
 import { Radii, Spacing } from '@/constants/theme';
 import { useLocation, useRequests } from '@/context';
@@ -59,7 +58,7 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
+          <View style={styles.headerLeft}>
             <Text style={[styles.appTitle, { color: colors.text }]}>Seva Eats</Text>
             <Pressable 
               style={({ pressed }) => [
@@ -68,35 +67,70 @@ export default function HomeScreen() {
               ]} 
               onPress={refreshLocation}
             >
-              <MaterialIcons name="location-on" size={14} color={colors.mutedText} />
+              <MaterialIcons name="location-on" size={15} color="#F97316" />
               <Text style={[styles.locationText, { color: colors.mutedText }]}>
                 {isLoading ? 'Getting location...' : locationLabel}
               </Text>
             </Pressable>
           </View>
-          <View style={styles.headerActions}>
-            <Pressable 
-              style={[styles.iconButton, { backgroundColor: colors.surface }]} 
-              onPress={() => router.push('/profile')}
-            >
-              <MaterialIcons name="account-circle" size={22} color={colors.text} />
-            </Pressable>
+          <Pressable 
+            style={[styles.profileButton, { backgroundColor: colors.isDark ? colors.surface : '#FFFFFF', borderColor: colors.border }]} 
+            onPress={() => router.push('/profile')}
+          >
+            <MaterialIcons name="account-circle" size={26} color={colors.text} />
+          </Pressable>
+        </View>
+
+        {/* Beta Access Card */}
+        <View style={[styles.betaCard, { 
+          backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.1)' : '#FFF7ED',
+          borderColor: colors.isDark ? 'rgba(251, 146, 60, 0.2)' : '#FED7AA',
+        }]}>
+          <View style={[styles.betaIconContainer, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.15)' : '#FFEDD5' }]}>
+            <MaterialIcons name="restaurant" size={22} color="#F97316" />
+          </View>
+          <View style={styles.betaContent}>
+            <Text style={[styles.betaTitle, { color: colors.text }]}>Recipient access</Text>
+            <Text style={[styles.betaSubtitle, { color: colors.mutedText }]}>Beta: shelter drop-offs only</Text>
           </View>
         </View>
 
-        <GlassCard style={styles.sectionNotice}>
-          <View style={[styles.noticeLeft]}> 
-            <MaterialIcons name="restaurant" size={20} color={colors.accent} />
+        {/* Community Impact Stats */}
+        <View style={[styles.impactCard, { 
+          backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+          borderColor: colors.border,
+        }]}>
+          <Text style={[styles.impactLabel, { color: colors.mutedText }]}>COMMUNITY IMPACT</Text>
+          <View style={styles.statsGrid}>
+            <View style={styles.statBox}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {communityStats.mealsDelivered.toLocaleString()}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Meals</Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.statBox}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {communityStats.familiesServed.toLocaleString()}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Shelters</Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.statBox}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {communityStats.activeVolunteers}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Volunteers</Text>
+            </View>
           </View>
-          <View style={styles.noticeText}>
-            <Text style={[styles.noticeTitle, { color: colors.text }]}>Recipient access</Text>
-            <Text style={[styles.noticeSubtitle, { color: colors.mutedText }]}>Beta: shelter drop-offs only</Text>
-          </View>
-        </GlassCard>
+        </View>
 
         {/* Active Meal Request Banner */}
         {activeRequest && (
-          <Pressable style={[styles.activeRequestBanner, { backgroundColor: colors.success }]} onPress={handleViewActiveRequest}>
+          <Pressable 
+            style={[styles.activeRequestBanner, { backgroundColor: colors.success }]} 
+            onPress={handleViewActiveRequest}
+          >
             <View style={styles.activeOrderLeft}>
               <View style={styles.requestIconPulse}>
                 <MaterialIcons 
@@ -124,10 +158,16 @@ export default function HomeScreen() {
         )}
 
         {activeRequest && (
-          <GlassCard style={styles.statusCard}>
+          <View style={[styles.statusCard, { 
+            backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+            borderColor: colors.border,
+          }]}>
             <View style={styles.statusHeader}>
               <Text style={[styles.statusTitle, { color: colors.text }]}>Delivery status</Text>
-              <Text style={[styles.statusBadge, { color: colors.accent }]}>Live</Text>
+              <View style={styles.liveBadge}>
+                <View style={styles.liveDot} />
+                <Text style={[styles.liveText, { color: '#F97316' }]}>Live</Text>
+              </View>
             </View>
             <Text style={[styles.statusValue, { color: colors.text }]}>
               {REQUEST_STATUS_LABELS[activeRequest.status]}
@@ -137,88 +177,86 @@ export default function HomeScreen() {
                 <Text style={[styles.statusLabel, { color: colors.mutedText }]}>Window</Text>
                 <Text style={[styles.statusText, { color: colors.text }]}>{requestMeta?.window ?? 'TBD'}</Text>
               </View>
-                <View style={[styles.statusDivider, { backgroundColor: colors.border }]} />
+              <View style={[styles.statusDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statusItem}>
                 <Text style={[styles.statusLabel, { color: colors.mutedText }]}>Drop-off</Text>
                 <Text style={[styles.statusText, { color: colors.text }]}>{requestMeta?.delivery ?? 'TBD'}</Text>
               </View>
             </View>
-          </GlassCard>
+          </View>
         )}
 
-        {/* Impact Stats Card */}
-        <GlassCard style={styles.statsCard}>
-          <Text style={[styles.statsLabel, { color: colors.mutedText }]}>Community Impact</Text>
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.mealsDelivered.toLocaleString()}</Text>
-              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Meals</Text>
-            </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-            <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.familiesServed.toLocaleString()}</Text>
-              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Shelters</Text>
-            </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-            <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: colors.text }]}>{communityStats.activeVolunteers}</Text>
-              <Text style={[styles.statLabel, { color: colors.mutedText }]}>Volunteers</Text>
-            </View>
-          </View>
-        </GlassCard>
-
-        {/* Main Action Cards */}
+        {/* Start a Request Section */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Start a request</Text>
 
-        <GlassCard
-          style={[styles.actionButton, !colors.isDark && { borderColor: colors.border, borderWidth: 1 }]}
+        <Pressable
+          style={({ pressed }) => [
+            styles.requestCard,
+            { 
+              backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+              borderColor: colors.border,
+            },
+            pressed && { opacity: 0.7 }
+          ]}
+          onPress={() => router.push('/request/location')}
         >
-           <Pressable
-             style={styles.actionButtonPress}
-             onPress={() => router.push('/request/location')}
-           >
-            <MaterialIcons name="restaurant" size={24} color={colors.accent} />
-            <View style={styles.actionButtonText}>
-              <Text style={[styles.actionButtonTitle, { color: colors.text }]}>Request a shelter drop-off</Text>
-              <Text style={[styles.actionButtonDesc, { color: colors.mutedText }]}>Request a free langar meal for a partner shelter or community drop-off</Text>
-            </View>
-            <MaterialIcons name="arrow-forward" size={20} color={colors.mutedText} />
-          </Pressable>
-        </GlassCard>
+          <View style={[styles.requestIconBox, { backgroundColor: colors.isDark ? 'rgba(251, 146, 60, 0.15)' : '#FFF7ED' }]}>
+            <MaterialIcons name="restaurant" size={26} color="#F97316" />
+          </View>
+          <View style={styles.requestContent}>
+            <Text style={[styles.requestTitle, { color: colors.text }]}>Request a shelter drop-off</Text>
+            <Text style={[styles.requestDesc, { color: colors.mutedText }]}>
+              Request a free langar meal for a partner shelter or community drop-off
+            </Text>
+          </View>
+          <MaterialIcons name="arrow-forward" size={22} color={colors.mutedText} />
+        </Pressable>
 
-        <GlassCard style={styles.howItWorksCard}>
+        {/* How it Works Card */}
+        <View style={[styles.howItWorksCard, { 
+          backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+          borderColor: colors.border,
+        }]}>
           <Text style={[styles.howItWorksTitle, { color: colors.text }]}>How it works</Text>
 
-          <View style={styles.stepItem}>
-            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
-              <Text style={styles.stepNumber}>1</Text>
+          <View style={styles.stepsContainer}>
+            <View style={styles.stepRow}>
+              <View style={[styles.stepCircle, { backgroundColor: '#F97316' }]}>
+                <Text style={styles.stepNumber}>1</Text>
+              </View>
+              <View style={styles.stepTextContainer}>
+                <Text style={[styles.stepTitle, { color: colors.text }]}>Request</Text>
+                <Text style={[styles.stepDesc, { color: colors.mutedText }]}>
+                  Choose meals and a shelter drop-off window
+                </Text>
+              </View>
             </View>
-            <View style={styles.stepContent}>
-              <Text style={[styles.stepTitle, { color: colors.text }]}>Request</Text>
-              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Choose meals and a shelter drop-off window</Text>
-            </View>
-          </View>
 
-          <View style={styles.stepItem}>
-            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
-              <Text style={styles.stepNumber}>2</Text>
+            <View style={styles.stepRow}>
+              <View style={[styles.stepCircle, { backgroundColor: '#F97316' }]}>
+                <Text style={styles.stepNumber}>2</Text>
+              </View>
+              <View style={styles.stepTextContainer}>
+                <Text style={[styles.stepTitle, { color: colors.text }]}>Pickup</Text>
+                <Text style={[styles.stepDesc, { color: colors.mutedText }]}>
+                  A volunteer collects meals from a nearby distribution hub
+                </Text>
+              </View>
             </View>
-            <View style={styles.stepContent}>
-              <Text style={[styles.stepTitle, { color: colors.text }]}>Pickup</Text>
-              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>A volunteer collects meals from a nearby distribution hub</Text>
-            </View>
-          </View>
 
-          <View style={styles.stepItem}>
-            <View style={[styles.stepNumberWrap, { backgroundColor: colors.accent }]}>
-              <Text style={styles.stepNumber}>3</Text>
-            </View>
-            <View style={styles.stepContent}>
-              <Text style={[styles.stepTitle, { color: colors.text }]}>Drop-off</Text>
-              <Text style={[styles.stepDesc, { color: colors.mutedText }]}>Confirm delivery at the shelter</Text>
+            <View style={styles.stepRow}>
+              <View style={[styles.stepCircle, { backgroundColor: '#F97316' }]}>
+                <Text style={styles.stepNumber}>3</Text>
+              </View>
+              <View style={styles.stepTextContainer}>
+                <Text style={[styles.stepTitle, { color: colors.text }]}>Drop-off</Text>
+                <Text style={[styles.stepDesc, { color: colors.mutedText }]}>
+                  Confirm delivery at the shelter
+                </Text>
+              </View>
             </View>
           </View>
-        </GlassCard>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -229,54 +267,143 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: 20,
-    paddingBottom: 100,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: 120,
   },
+  
+  // Header Styles
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: Spacing.md,
-    marginBottom: Spacing.lg,
+    alignItems: 'flex-start',
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.xl,
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
+  headerLeft: {
+    flex: 1,
   },
   appTitle: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: '700',
+    letterSpacing: -0.8,
+    marginBottom: 4,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginTop: 2,
+    marginTop: 4,
   },
   locationText: {
-    fontSize: 13,
+    fontSize: 14,
+    letterSpacing: -0.2,
   },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  profileButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
+
+  // Beta Access Card
+  betaCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderRadius: Radii.xl,
+    borderWidth: 1,
+    marginBottom: Spacing.lg,
+  },
+  betaIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  betaContent: {
+    flex: 1,
+  },
+  betaTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: -0.3,
+    marginBottom: 2,
+  },
+  betaSubtitle: {
+    fontSize: 13,
+    letterSpacing: -0.1,
+  },
+
+  // Community Impact Card
+  impactCard: {
+    padding: Spacing.lg,
+    borderRadius: Radii.xl,
+    borderWidth: 1,
+    marginBottom: Spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  impactLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: Spacing.lg,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 26,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 13,
+    letterSpacing: -0.1,
+  },
+  statDivider: {
+    width: 1,
+    height: 40,
+  },
+
+  // Active Request Banner
   activeRequestBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: Radii.lg,
-    padding: Spacing.md,
+    borderRadius: Radii.xl,
+    padding: Spacing.lg,
     marginBottom: Spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 4,
   },
   requestIconPulse: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.25)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -284,24 +411,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+    flex: 1,
   },
-  activeOrderText: {},
+  activeOrderText: {
+    flex: 1,
+  },
   activeOrderTitle: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '700',
     color: '#FFFFFF',
+    letterSpacing: -0.3,
+    marginBottom: 2,
   },
   activeOrderSubtitle: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.85)',
+    letterSpacing: -0.1,
   },
-  statsCard: {
-    padding: Spacing.lg,
-    marginBottom: Spacing.xl,
-  },
+
+  // Status Card
   statusCard: {
     padding: Spacing.lg,
-    marginBottom: Spacing.lg,
+    borderRadius: Radii.xl,
+    borderWidth: 1,
+    marginBottom: Spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   statusHeader: {
     flexDirection: 'row',
@@ -310,22 +448,37 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   statusTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
+    letterSpacing: -0.2,
   },
-  statusBadge: {
-    fontSize: 11,
+  liveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#F97316',
+  },
+  liveText: {
+    fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   statusValue: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
+    letterSpacing: -0.4,
     marginBottom: Spacing.md,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingTop: Spacing.sm,
   },
   statusItem: {
     flex: 1,
@@ -333,142 +486,116 @@ const styles = StyleSheet.create({
   statusLabel: {
     fontSize: 11,
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0.8,
     marginBottom: 4,
   },
   statusText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
+    letterSpacing: -0.2,
   },
   statusDivider: {
     width: 1,
-    height: 28,
+    height: 36,
+    marginHorizontal: Spacing.md,
   },
-  sectionNotice: {
+
+  // Start a Request Section
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    marginBottom: Spacing.md,
+    marginTop: Spacing.sm,
+  },
+  requestCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
-    padding: Spacing.md,
-    marginBottom: Spacing.lg,
+    padding: Spacing.lg,
+    borderRadius: Radii.xl,
+    borderWidth: 1,
+    marginBottom: Spacing.xl,
+    gap: Spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  noticeLeft: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+  requestIconBox: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: Spacing.sm,
   },
-  noticeText: {
+  requestContent: {
     flex: 1,
   },
-  noticeTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  noticeSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  statsLabel: {
-    fontSize: 11,
+  requestTitle: {
+    fontSize: 16,
     fontWeight: '600',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: Spacing.md,
+    letterSpacing: -0.3,
+    marginBottom: 4,
   },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  statLabel: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 32,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    marginBottom: Spacing.md,
-  },
-  seeAllLink: {
+  requestDesc: {
     fontSize: 13,
-    fontWeight: '600',
+    lineHeight: 19,
+    letterSpacing: -0.1,
   },
+
+  // How it Works Card
   howItWorksCard: {
-    padding: Spacing.lg,
-    marginTop: Spacing.md,
+    padding: Spacing.xl,
+    borderRadius: Radii.xl,
+    borderWidth: 1,
+    marginBottom: Spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   howItWorksTitle: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: -0.3,
     marginBottom: Spacing.lg,
   },
-  stepItem: {
-    flexDirection: 'row',
-    marginBottom: Spacing.md,
+  stepsContainer: {
+    gap: Spacing.lg,
   },
-  stepNumberWrap: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.md,
+  },
+  stepCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: Spacing.md,
+    marginTop: 2,
   },
   stepNumber: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
     color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
-  stepContent: {
+  stepTextContainer: {
     flex: 1,
   },
   stepTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  stepDesc: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  actionButton: {
-    marginVertical: Spacing.md,
-    overflow: 'hidden',
-  },
-  actionButtonPress: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    gap: Spacing.md,
-  },
-  actionButtonText: {
-    flex: 1,
-  },
-  actionButtonTitle: {
     fontSize: 15,
     fontWeight: '600',
+    letterSpacing: -0.2,
     marginBottom: 4,
   },
-  actionButtonDesc: {
-    fontSize: 12,
+  stepDesc: {
+    fontSize: 13,
+    lineHeight: 19,
+    letterSpacing: -0.1,
   },
 });
