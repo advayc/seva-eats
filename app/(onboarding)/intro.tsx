@@ -11,11 +11,13 @@ export default function IntroScreen() {
   const colors = useThemeColors();
 
   const goToRoleSelection = () => {
-    router.replace('/(onboarding)/choose-role' as any);
+    // Keep onboarding focused on recipients — default role is 'recipient'.
+    // Navigate into the app; role switching is available from the profile/account menu.
+    router.replace('/(tabs)');
   };
 
   const goToLanding = () => {
-    router.replace('/(onboarding)/welcome' as any);
+    router.replace('/(onboarding)/intro' as any);
   };
 
   return (

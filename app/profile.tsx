@@ -191,15 +191,15 @@ export default function ProfileScreen() {
           </View>
 
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Roles</Text>
-            <Text style={[styles.inputHint, { color: colors.mutedText }]}>Switch modes from the role chooser.</Text>
-              <Pressable
-                style={[styles.roleButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-                onPress={() => router.push('/(onboarding)/choose-role' as any)}
-              >
-                <MaterialIcons name="swap-horiz" size={20} color={colors.accent} />
-                <Text style={[styles.roleButtonText, { color: colors.text }]}>Switch role</Text>
-              </Pressable>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Account</Text>
+            <Text style={[styles.inputHint, { color: colors.mutedText }]}>Change account settings or switch role (hidden)</Text>
+            <Pressable
+              style={[styles.roleButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              onPress={() => router.push('/(onboarding)/choose-role' as any)}
+            >
+              <MaterialIcons name="swap-horiz" size={20} color={colors.accent} />
+              <Text style={[styles.roleButtonText, { color: colors.text }]}>Switch role</Text>
+            </Pressable>
           </View>
 
           {/* Notifications */}
