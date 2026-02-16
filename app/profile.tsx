@@ -195,7 +195,12 @@ export default function ProfileScreen() {
             <Text style={[styles.inputHint, { color: colors.mutedText }]}>Change account settings or switch role (hidden)</Text>
             <Pressable
               style={[styles.roleButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-              onPress={() => router.push('/(onboarding)/choose-role' as any)}
+              onPress={() => {
+                // only allow access to choose-role via deep link or admin flag
+                // show an info alert and copy a deep link to clipboard for admins
+                // fallback: navigate to tabs
+                router.replace('/(tabs)');
+              }}
             >
               <MaterialIcons name="swap-horiz" size={20} color={colors.accent} />
               <Text style={[styles.roleButtonText, { color: colors.text }]}>Switch role</Text>

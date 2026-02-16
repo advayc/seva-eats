@@ -21,9 +21,9 @@ export default function DispatcherDashboardScreen() {
           </View>
           <Pressable
             style={[styles.backButton, { borderColor: colors.border }]}
-            onPress={() => router.push('/(onboarding)/choose-role' as any)}
+            onPress={() => router.push('/profile')}
           >
-            <Text style={[styles.backText, { color: colors.text }]}>Switch role</Text>
+            <Text style={[styles.backText, { color: colors.text }]}>Account</Text>
           </Pressable>
         </View>
 

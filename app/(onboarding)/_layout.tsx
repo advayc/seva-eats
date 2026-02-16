@@ -5,7 +5,7 @@ export default function OnboardingLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="intro" />
       <Stack.Screen name="learn-more" />
-      <Stack.Screen name="choose-role" />
+      {/* choose-role intentionally omitted from stack to keep it hidden; access only via deliberate deep link like: myapp://(onboarding)/choose-role?access=allow */}
     </Stack>
   );
 }
