@@ -57,7 +57,7 @@ export default function IndexScreen() {
         router.replace('/(tabs)');
       }
     } else {
-      router.replace('/(onboarding)/welcome');
+      router.replace('/(onboarding)/intro');
     }
   };
 
@@ -66,8 +66,8 @@ export default function IndexScreen() {
       <View style={styles.content}>
         <View style={styles.headerTop}>
           <Animated.View entering={FadeIn.duration(600).delay(100)}>
-            <View style={[styles.logoWrap, { backgroundColor: colors.surfaceElevated }]}> 
-              <LogoMark size={48} />
+            <View style={[styles.logoWrap]}> 
+              <LogoMark size={150} />
             </View>
           </Animated.View>
 
@@ -82,7 +82,7 @@ export default function IndexScreen() {
             <Text style={styles.requestText}>Request a Meal</Text>
           </Pressable>
 
-          <Pressable onPress={() => router.push('/(onboarding)/welcome' as any)} style={styles.learnWrap}>
+          <Pressable onPress={() => router.push('/(onboarding)/intro' as any)} style={styles.learnWrap}>
             <Text style={[styles.learnText, { color: colors.accent }]}>Learn how it works →</Text>
           </Pressable>
         </Animated.View>
@@ -157,9 +157,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   logoWrap: {
-    width: 96,
-    height: 64,
-    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

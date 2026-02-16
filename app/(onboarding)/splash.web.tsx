@@ -7,7 +7,7 @@ export default function SplashWeb() {
 
   return (
     <View style={{ flex: 1 }}>
-      <LandingPage onGetStarted={() => router.replace('/(onboarding)/welcome')} />
+      <LandingPage onGetStarted={() => router.replace('/(onboarding)/intro')} />
     </View>
   );
 }
