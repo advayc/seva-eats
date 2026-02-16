@@ -21,7 +21,7 @@ export default function DasherLayout() {
   useEffect(() => {
     if (isLoading || hasOnboarded === null) return;
     if (!hasOnboarded) {
-      router.replace('/(onboarding)/welcome');
+      router.replace('/(onboarding)/intro');
       return;
     }
 

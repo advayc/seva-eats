@@ -50,7 +50,7 @@ function RootLayoutContent() {
     if (!isReady || hasOnboarded === null) return;
     const inOnboarding = segments[0] === '(onboarding)';
     if (!hasOnboarded && !inOnboarding) {
-      router.replace('/(onboarding)/welcome');
+      router.replace('/(onboarding)/intro');
     }
   }, [isReady, hasOnboarded, segments, router]);
 
@@ -64,8 +64,7 @@ function RootLayoutContent() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-         <Stack.Screen name="dasher" options={{ headerShown: false }} />
-         <Stack.Screen name="dispatcher" options={{ headerShown: false }} />
+        <Stack.Screen name="dasher" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ headerShown: true, presentation: 'modal', title: 'Categories' }} />
         <Stack.Screen name="store/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="cart" options={{ headerShown: true, presentation: 'modal', title: 'Cart' }} />
