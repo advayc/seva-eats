@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Radii, Spacing } from '@/constants/theme';
@@ -19,19 +20,25 @@ export default function LearnMoreScreen() {
         <View style={styles.cardsRow}>
           <View style={[styles.card, { backgroundColor: colors.surface }] }>
             <View style={styles.cardBadge}><Text style={styles.badgeText}>1</Text></View>
-            <View style={styles.cardIcon}><Text style={styles.emoji}>🍽️</Text></View>
+            <View style={styles.cardIcon}>
+              <MaterialIcons name="restaurant" size={32} color="#F97316" />
+            </View>
             <Text style={[styles.cardTitle, { color: colors.text }]}>Choose a meal</Text>
           </View>
 
           <View style={[styles.card, { backgroundColor: colors.surface }] }>
             <View style={styles.cardBadge}><Text style={styles.badgeText}>2</Text></View>
-            <View style={styles.cardIcon}><Text style={styles.emoji}>📍</Text></View>
+            <View style={styles.cardIcon}>
+              <MaterialIcons name="pin-drop" size={32} color="#F97316" />
+            </View>
             <Text style={[styles.cardTitle, { color: colors.text }]}>Confirm delivery</Text>
           </View>
 
           <View style={[styles.card, { backgroundColor: colors.surface }] }>
             <View style={styles.cardBadge}><Text style={styles.badgeText}>3</Text></View>
-            <View style={styles.cardIcon}><Text style={styles.emoji}>🤝</Text></View>
+            <View style={styles.cardIcon}>
+              <MaterialIcons name="volunteer-activism" size={32} color="#F97316" />
+            </View>
             <Text style={[styles.cardTitle, { color: colors.text }]}>Receive with dignity</Text>
           </View>
         </View>

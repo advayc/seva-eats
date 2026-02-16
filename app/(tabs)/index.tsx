@@ -85,7 +85,9 @@ export default function HomeScreen() {
         </View>
 
         <GlassCard style={styles.sectionNotice}>
-          <MaterialIcons name="info" size={18} color={colors.accent} />
+          <View style={[styles.noticeLeft]}> 
+            <MaterialIcons name="restaurant" size={20} color={colors.accent} />
+          </View>
           <View style={styles.noticeText}>
             <Text style={[styles.noticeTitle, { color: colors.text }]}>Recipient access</Text>
             <Text style={[styles.noticeSubtitle, { color: colors.mutedText }]}>Beta: shelter drop-offs only</Text>
@@ -348,6 +350,14 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
+  },
+  noticeLeft: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.sm,
   },
   noticeText: {
     flex: 1,
