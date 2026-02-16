@@ -36,13 +36,13 @@ export const Colors = {
   },
   dark: {
     text: '#FAFAFA', // Neutral 50
-    background: '#0A0A0A', // Neutral 950
+    background: '#181A18', // Softer black
     tint: '#F97316',
     icon: '#A3A3A3', // Neutral 400
     tabIconDefault: '#737373', // Neutral 500
     tabIconSelected: '#F97316',
-    surface: '#171717', // Neutral 900
-    surfaceElevated: '#262626', // Neutral 800
+    surface: '#1F211F', // Slightly lighter than background
+    surfaceElevated: '#262826', // Even lighter for elevated surfaces
     border: '#404040', // Neutral 700 - more visible
     mutedText: '#A3A3A3', // Neutral 400
     success: '#10B981',

@@ -1,0 +1,65 @@
+name: iOS Build & Upload (Fastlane)
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build_and_upload:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Homebrew deps
+        run: |
+          brew update || true
+          brew install node || true
+          brew install cocoapods || true
+
+      - name: Install Ruby gems (fastlane)
+        run: |
+          gem install bundler -v 2.4.13 || true
+          if [ -f ./Gemfile ]; then bundle install; else gem install fastlane -NV; fi
+
+      - name: Install CocoaPods
+        run: pod install --project-directory=ios
+      - name: Install certificate & provisioning profile from secrets
+          if: ${{ secrets.CERTIFICATE_P12 != '' && secrets.PROVISIONING_PROFILE != '' }}
+          env:
+            CERT_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          run: |
+            echo "Decoding certificate and provisioning profile"
+            echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > /tmp/cert.p12
+            echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > /tmp/profile.mobileprovision
+            security create-keychain -p "" build.keychain
+            security import /tmp/cert.p12 -k ~/Library/Keychains/build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
+            security list-keychains -s ~/Library/Keychains/build.keychain
+            security default-keychain -s ~/Library/Keychains/build.keychain
+            security unlock-keychain -p "" ~/Library/Keychains/build.keychain
+            security set-keychain-settings -t 3600 -u ~/Library/Keychains/build.keychain
+            mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+            cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Prepare App Store Connect API key
+        if: ${{ secrets.APP_STORE_CONNECT_KEY != '' }}
+        run: echo "${{ secrets.APP_STORE_CONNECT_KEY }}" | base64 --decode > /tmp/asc_key.p8
+
+      - name: Build and upload with Fastlane
+        env:
+          APP_STORE_CONNECT_API_KEY_PATH: /tmp/asc_key.p8
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          CERTIFICATE_P12: ${{ secrets.CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+        run: |
+          if [ -f ./Gemfile ]; then bundle exec fastlane ios ci; else fastlane ios ci; fi
+
+# Required repository secrets:
+# - APP_STORE_CONNECT_KEY: base64 encoded contents of your App Store Connect .p8 key
+#   (create with: `base64 AuthKey_ABC123.p8 | tr -d '\n'`)
+# - APP_STORE_CONNECT_KEY_ID: the Key ID from App Store Connect
+# - APP_STORE_CONNECT_ISSUER_ID: the Issuer ID from App Store Connect
+
