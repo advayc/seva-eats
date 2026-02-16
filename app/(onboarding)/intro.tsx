@@ -51,7 +51,7 @@ export default function IntroScreen() {
             <Text style={styles.primaryText}>Choose your role</Text>
           </Pressable>
           <Pressable style={[styles.secondaryButton, { borderColor: colors.border }]} onPress={goToLanding}>
-            <Text style={[styles.secondaryText, { color: colors.text }]}>Back to landing</Text>
+            <Text style={[styles.secondaryText, { color: colors.text }]}>Go Back</Text>
           </Pressable>
         </View>
 
