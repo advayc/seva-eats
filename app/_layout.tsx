@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
-import { CartProvider, ThemeProvider as CustomThemeProvider, LocationProvider, OrderProvider, RequestProvider, UserProvider } from '@/context';
+import { ThemeProvider as CustomThemeProvider, LocationProvider, RequestProvider, UserProvider } from '@/context';
 import { useTheme } from '@/context/ThemeContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -64,11 +64,6 @@ function RootLayoutContent() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="dasher" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ headerShown: true, presentation: 'modal', title: 'Categories' }} />
-        <Stack.Screen name="store/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="cart" options={{ headerShown: true, presentation: 'modal', title: 'Cart' }} />
-        <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="request/new" options={{ headerShown: false }} />
         <Stack.Screen name="request/details" options={{ headerShown: false }} />
         <Stack.Screen name="request/[id]" options={{ headerShown: false }} />
@@ -84,13 +79,9 @@ export default function RootLayout() {
     <CustomThemeProvider>
       <UserProvider>
         <LocationProvider>
-          <CartProvider>
-            <OrderProvider>
-              <RequestProvider>
-                <RootLayoutContent />
-              </RequestProvider>
-            </OrderProvider>
-          </CartProvider>
+          <RequestProvider>
+            <RootLayoutContent />
+          </RequestProvider>
         </LocationProvider>
       </UserProvider>
     </CustomThemeProvider>

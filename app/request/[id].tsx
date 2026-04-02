@@ -30,10 +30,6 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 const PROGRESS_STEPS: { status: MealRequestStatus; icon: string; label: string }[] = [
   { status: 'pending', icon: 'search', label: 'Finding Driver' },
   { status: 'matched', icon: 'verified', label: 'Driver Matched' },
-  { status: 'supply_confirmed', icon: 'inventory-2', label: 'Supply Confirmed' },
-  { status: 'batch_assigned', icon: 'assignment-turned-in', label: 'Batch Assigned' },
-  { status: 'prep_ops', icon: 'local-dining', label: 'Prep Ops' },
-  { status: 'ready_for_pickup', icon: 'check-circle', label: 'Ready for Pickup' },
   { status: 'picked_up', icon: 'takeout-dining', label: 'Meal Picked Up' },
   { status: 'on_the_way', icon: 'directions-car', label: 'On the Way' },
   { status: 'delivered', icon: 'check-circle', label: 'Delivered' },

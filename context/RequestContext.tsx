@@ -6,10 +6,6 @@ const REQUESTS_STORAGE_KEY = 'meal-requests';
 export type MealRequestStatus = 
   | 'pending'           // Request submitted, waiting for volunteer
   | 'matched'           // Volunteer assigned
-  | 'supply_confirmed'  // Supply confirmed by gurdwara
-  | 'batch_assigned'    // Batch assigned to volunteer
-  | 'prep_ops'          // Prep operations in progress
-  | 'ready_for_pickup'  // Ready for pickup
   | 'picked_up'         // Volunteer picked up the meal
   | 'on_the_way'        // Volunteer is delivering
   | 'delivered'         // Delivered successfully
@@ -52,7 +48,6 @@ export type MealRequest = {
     latitude: number;
     longitude: number;
   };
-  liveActivityId?: string | null;
   statusHistory: { status: MealRequestStatus; timestamp: Date }[];
 };
 
@@ -104,7 +99,6 @@ export function RequestProvider({ children }: { children: ReactNode }) {
           driverNote: r.driverNote ?? r.specialInstructions ?? '',
           createdAt: new Date(r.createdAt),
           estimatedDelivery: r.estimatedDelivery ? new Date(r.estimatedDelivery) : undefined,
-          liveActivityId: r.liveActivityId ?? null,
           statusHistory: r.statusHistory.map((h: any) => ({
             ...h,
             timestamp: new Date(h.timestamp),
@@ -154,7 +148,6 @@ export function RequestProvider({ children }: { children: ReactNode }) {
       pickupLocation: request.pickupLocation,
       status: 'pending',
       createdAt: now,
-      liveActivityId: null,
       showVolunteerName: false,
       statusHistory: [{ status: 'pending', timestamp: now }],
     };
@@ -219,13 +212,9 @@ export function RequestProvider({ children }: { children: ReactNode }) {
 
   const simulateDeliveryProgression = useCallback((requestId: string) => {
     const statusProgression: { status: MealRequestStatus; delay: number }[] = [
-      { status: 'supply_confirmed', delay: 6000 },
-      { status: 'batch_assigned', delay: 12000 },
-      { status: 'prep_ops', delay: 16000 },
-      { status: 'ready_for_pickup', delay: 20000 },
-      { status: 'picked_up', delay: 24000 },
-      { status: 'on_the_way', delay: 30000 },
-      { status: 'delivered', delay: 42000 },
+      { status: 'picked_up', delay: 12000 },
+      { status: 'on_the_way', delay: 20000 },
+      { status: 'delivered', delay: 35000 },
     ];
 
     statusProgression.forEach(({ status, delay }) => {
@@ -366,10 +355,6 @@ export function useRequests() {
 export const REQUEST_STATUS_LABELS: Record<MealRequestStatus, string> = {
   pending: 'Finding a Driver',
   matched: 'Driver Assigned',
-  supply_confirmed: 'Supply Confirmed',
-  batch_assigned: 'Batch Assigned',
-  prep_ops: 'Prep Ops Underway',
-  ready_for_pickup: 'Ready for Pickup',
   picked_up: 'Meal Picked Up',
   on_the_way: 'On the Way',
   delivered: 'Delivered',
