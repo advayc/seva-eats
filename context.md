@@ -30,17 +30,17 @@ To eliminate food insecurity in communities by leveraging the Sikh tradition of 
 
 ### Mission
 Build a mobile platform that:
-- Connects recipients with free meals from gurdwara distribution hubs
-- Empowers community volunteers to deliver meals with transparency
+- Connects low-income families with complementary meals from gurdwara distribution hubs
+- Empowering community volunteers to deliver meals
 - Maintains recipient dignity through privacy-first, barrier-free access
-- Scales the langar tradition beyond physical gurdwara locations
+- Scaling the langar tradition beyond physical gurdwara locations
 
 ### Core Values
-1. **Dignity First**: No payment, paperwork, or invasive questions
-2. **Cultural Authenticity**: Rooted in Sikh langar principles of equality and service
-3. **Community-Driven**: Powered by volunteers, not gig workers
-4. **Transparency**: Real-time tracking and clear communication
-5. **Accessibility**: Simple, warm, and welcoming for all backgrounds
+1. **Dignity First**
+2. **Cultural Authenticity**
+3. **Community-Driven**
+4. **Transparency**
+5. **Accessibility**
 
 ---
 
@@ -48,64 +48,40 @@ Build a mobile platform that:
 
 ### What is Seva Eats?
 
-Seva Eats is a two-sided marketplace connecting:
-- **Recipients**: Individuals or shelters requesting free meals
+Seva Eats is a platform connecting:
+- **Recipients**: In-need families that need support through complementary meals
 - **Volunteers (Dashers)**: Community members delivering meals from pickup hubs
 
-**Current Beta Focus**: Partner shelter drop-offs in the Greater Toronto Area (Brampton, Mississauga)
-
-### Key Differentiators
-
-| Feature | Seva Eats | Traditional Food Banks | Food Delivery Apps |
-|---------|-----------|------------------------|-------------------|
-| Cost | 100% Free | Free | Paid |
-| Barriers | None | Paperwork, proof of need | Credit card required |
-| Cultural Foods | Authentic langar meals | Generic donations | Restaurant variety |
-| Delivery Model | Volunteer-driven | Self-pickup | Gig economy |
-| Privacy | Minimal data collection | Extensive documentation | Account required |
-| Transparency | Live tracking with map | None | Basic tracking |
-
-### Success Metrics (As of Beta Launch)
-- **12,847** meals delivered
-- **892** shelters and individuals served
-- **234** active volunteers
-- **4.8/5** average recipient satisfaction (future metric)
+**Current Beta Focus**: Gurdwara's in the Greater Toronto Area (Brampton, Mississauga)
 
 ---
 
 ## Target Users
 
-### Primary User Persona: Meal Recipient
+### Primary User: Meal Recipient
 
 **Demographics:**
-- Age: 18-65+
+- Age: 16-65+
 - Location: Urban areas near gurdwara hubs (GTA initial launch)
 - Situation: Experiencing temporary or chronic food insecurity
 - Tech proficiency: Low to medium (smartphone access assumed)
 
 **Needs:**
-- Immediate access to nutritious meals
+- Access to nutritious meals
 - Delivery to safe locations (shelters, community centers)
-- No financial barriers or bureaucratic hurdles
 - Respectful, dignified service
 
-**Pain Points:**
-- Stigma associated with food assistance programs
-- Transportation barriers to food banks
-- Cultural dietary preferences not met by generic donations
-- Unpredictable meal availability at shelters
-
-### Secondary User Persona: Volunteer Dasher (Future Feature)
+### Secondary User: Volunteer Dasher
 
 **Demographics:**
-- Age: 16-70
+- Age: 16-40
 - Motivation: Community service, religious duty (seva)
 - Availability: Flexible hours (lunch/dinner windows)
 - Transportation: Personal vehicle
 
 **Needs:**
 - Clear pickup/delivery instructions
-- Route optimization
+- Route optimization — route convenient for drive back
 - Recognition for contributions
 - Flexible scheduling
 
@@ -184,12 +160,6 @@ textTertiary: '#9CA3AF'   // Gray 400 (disabled text)
   - Headline: "Request a free langar meal near you"
   - Subtext: "No payment, no paperwork"
   - CTA button: "Request a Meal" → `/request/location`
-  
-- **Stats Display:**
-  - Meals delivered: 12,847
-  - Shelters served: 892
-  - Active volunteers: 234
-  - Layout: 3-column grid with icons
 
 - **Secondary Actions:**
   - "Learn how it works" → `/onboarding`
@@ -301,7 +271,6 @@ textTertiary: '#9CA3AF'   // Gray 400 (disabled text)
    - Address (autocomplete text input)
    - Quick-fill button: "Use my current location" (GPS)
    - Map preview (optional)
-   - Default: Selected hub address (for shelter drop-offs)
 
 3. **Serving Size:**
    - Segmented control: 1 / 2 / 3 servings
@@ -321,21 +290,19 @@ textTertiary: '#9CA3AF'   // Gray 400 (disabled text)
    - Default: Leave at door
 
 6. **Optional: Driver Note:**
-   - Multiline text input (200 char limit)
+   - Multiline text input (200 character limit)
    - Placeholder: "Give a message to your driver ❤️ (optional)"
    - Example: "Thank you for your service!"
 
 7. **Optional: Donation:**
    - Checkbox: "Support packaging & delivery costs"
    - Amounts: $2 / $5 / $10 / Custom
-   - Payment method: Link to Stripe (future)
    - Note: "100% optional - never required"
 
 **Validation:**
 - Name: 2-50 characters
 - Phone: Valid North American format
 - Address: Must have street + city
-- Window: Must be in future
 
 **Submit Button:**
 - Label: "Submit Request"
@@ -438,13 +405,10 @@ textTertiary: '#9CA3AF'   // Gray 400 (disabled text)
 - Full Name
 - Phone Number
 - Default Home Address (with map picker)
-- Default Serving Size (1-3)
 
 **Saved Addresses:**
-- List of frequently used addresses
 - Add new address
 - Edit/delete saved addresses
-- Set one as default
 
 **Preferences:**
 - Default delivery window
